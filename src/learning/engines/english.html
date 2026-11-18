@@ -4,7 +4,7 @@
       <nav aria-label="영어 연습 메뉴">
         <button data-view="home" aria-label="연습">연습</button>
         <button data-view="wrong" aria-label="기록">기록</button>
-        <button type="button" class="icon-button" id="home-settings" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정"></button>
+        <button type="button" class="plain-button settings-button" id="home-settings" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정"></button>
       </nav>
     </div>
   </header>
@@ -37,19 +37,9 @@
       <div class="volume-setting"><label for="sound-volume">효과음 음량</label><output id="sound-volume-value" for="sound-volume">70%</output><span class="range-track"><input id="sound-volume" type="range" min="0" max="100" step="5"></span></div>
     </section>
     <section class="preferences-section" aria-labelledby="settings-support"><h3 id="settings-support">사용자 지원</h3>
-      <div class="support-links"><button type="button" id="open-help" class="button secondary"><span data-icon="book"></span>도움말</button>
-      <button type="button" id="open-about" class="button secondary"><span data-icon="logo"></span>소개</button></div>
+      <div class="support-links"><button type="button" data-support="help" class="button secondary"><span data-icon="book"></span>도움말</button>
+      <button type="button" data-support="about" class="button secondary"><span data-icon="logo"></span>소개</button></div>
     </section>
-  </dialog>
-  <dialog id="help-dialog" class="preferences-dialog" aria-labelledby="help-title">
-    <header class="preferences-header"><h2 id="help-title">도움말</h2><form method="dialog"><button class="plain-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
-    <h3>학습하기</h3><p>단어장과 학습 방식을 선택하고 구간 간격 또는 수동 범위를 정해 연습합니다.</p>
-    <h3>단축키</h3><p>[는 힌트, ]는 정답 보기, 역슬래시 또는 원화 키는 별표입니다. 채점 후 스페이스로 다음 문제를 엽니다.</p>
-    <h3>학습 기록</h3><p>기록에서 복습과 보관한 단어를 확인합니다. 진행 중인 학습은 같은 브라우저에서 이어 풀 수 있습니다.</p>
-  </dialog>
-  <dialog id="about-dialog" class="preferences-dialog" aria-labelledby="about-title">
-    <header class="preferences-header"><h2 id="about-title">소개</h2><form method="dialog"><button class="plain-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
-    <p>풀림 영어는 단어를 보고 떠올리고 직접 입력하며 복습할 수 있는 학습 도구입니다.</p>
   </dialog>
   <dialog id="reset-dialog" aria-labelledby="reset-title">
     <h2 id="reset-title">학습 기록을 초기화할까요?</h2>

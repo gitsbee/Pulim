@@ -7,7 +7,7 @@ const forgeIcons = {
   "trash": "<path d=\"M4 6h16M9 6V3h6v3m3 0-1 14H7L6 6m4 4v6m4-6v6\"/>",
   "close": "<path d=\"m6 6 12 12M18 6 6 18\"/>",
   "check": "<path d=\"m5 12 5 5 9-10\"/>",
-  "settings": "<path d=\"M5 3v18m7-18v18m7-18v18\"/><path d=\"M2 8h6m1 8h6m1-6h6\"/>",
+  "settings": `<path d="M10 3h4l.6 2.5 2 .9L19 5.5 21 9l-1.9 1.7v2.6L21 15l-2 3.5-2.4-.9-2 .9L14 21h-4l-.6-2.5-2-.9L5 18.5 3 15l1.9-1.7v-2.6L3 9l2-3.5 2.4.9 2-.9z"/><circle cx="12" cy="12" r="3"/>`,
   "repeat": "<path d=\"M5 8a8 8 0 1 1-1 7m1-12v5h5\"/>",
   "search": "<circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"m15 15 5 5\"/>",
   "next": "<path d=\"M4 12h15m-6-6 6 6-6 6\"/>",
@@ -270,6 +270,8 @@ document.addEventListener('click', event => {
   const theme = settingsDialog.querySelector(`[name="theme"][value="${runtime.getTheme()}"]`);
   if (theme) theme.checked = true;
   settingsDialog.showModal();
+  settingsDialog.scrollTop = 0;
+  settingsDialog.querySelector('.settings-units [aria-pressed="true"]')?.focus();
 });
 settingsDialog.addEventListener('close', () => {
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
@@ -292,11 +294,6 @@ $('#manual-setting').checked = preferences.manual;
 $('#manual-setting').onchange = event => { preferences.manual = event.target.checked; state.range = preferences; save(); if (view === 'home') renderSetup(); };
 $('#sound-enabled').onchange = event => { state.sound = event.target.checked; save(); };
 $('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; updateVolumeTrack(); save(); };
-for (const name of ['help', 'about']) {
-  const dialog = $('#' + name + '-dialog');
-  $('#open-' + name).onclick = () => { settingsDialog.close(); dialog.showModal(); };
-  dialog.addEventListener('close', () => { if (dialog.returnValue === 'settings') settingsDialog.showModal(); });
-}
 $('#ime').checked = state.ime;
 $('#ime').onchange = event => { state.ime = event.target.checked; save(); h3Reset(); };
 
@@ -690,7 +687,7 @@ function renderComplete() {
       ${chip(`${session.length}개 단어`, 'cards', 'neutral')}</div>
     <div class="complete-stats">${statsMarkup()}</div>
     <div class="complete-actions">
-      <button class="button secondary" id="back-home">학습 범위 선택</button>
+      <button class="plain-button" id="back-home">학습 범위 선택</button>
       <button class="button primary action-start" id="repeat">같은 구간 다시 학습</button>
     </div></section>`;
   $('#back-home').onclick = () => go('home');

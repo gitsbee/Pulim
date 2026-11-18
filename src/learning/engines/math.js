@@ -145,20 +145,6 @@ export default function mountMath(runtime) {
       if (volumeLevel === 0) stopAudio();
     });
     volumeInput.addEventListener("change", () => play("tap"));
-    for (const kind of ["help","about"]) {
-      const target = document.getElementById(kind + "-dialog");
-      document.getElementById("open-" + kind).addEventListener("click", () => {
-        dialog.close();
-        target.showModal();
-        target.scrollTop = 0;
-      });
-      target.addEventListener("close", () => {
-        if (target.returnValue === "settings") {
-          dialog.showModal();
-          document.getElementById("open-" + kind).focus();
-        }
-      });
-    }
     for (const button of document.querySelectorAll("[data-open-preferences]")) {
       button.addEventListener("click", () => {
         dialog.querySelector(`input[name="theme"][value="${runtime.getTheme()}"]`).checked = true;
@@ -166,7 +152,7 @@ export default function mountMath(runtime) {
         syncFullscreen();
         dialog.showModal();
         dialog.scrollTop = 0;
-        dialog.querySelector("input:checked").focus();
+        dialog.querySelector('.settings-units [aria-pressed="true"]')?.focus();
       });
     }
     document.addEventListener("change", event => {

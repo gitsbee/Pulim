@@ -3,12 +3,12 @@
 .pulim-header .service-nav { flex: none; }
 .pulim-header .service-nav a { min-width: 44px; }
 .pulim-header .page-nav { margin-inline-start: auto; }
-.pulim-header .header-link { border: 0; background: transparent; }
 .pulim-header .settings-button, .pulim-header .account-icon, .pulim-header .post-menu > summary {
-  min-width: 44px; width: 44px; border-color: transparent; box-shadow: none; background: transparent;
+  min-width: 44px; width: 44px;
 }
-.account-entry { display: flex; align-items: center; gap: 5px; min-width: 0; }
-.account-label { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pulim-header .pulim-tab { min-width: auto; white-space: nowrap; }
+.account-entry { display: flex; align-items: center; }
+.account-menu-name { padding: 8px 9px; overflow-wrap: anywhere; font-weight: 700; }
 @media (max-width: 650px) {
   .pulim-header .header-inner { width: calc(100% - 12px); gap: 4px; }
   .pulim-header .page-nav, .pulim-header .service-nav { gap: 2px; }
@@ -16,11 +16,14 @@
   .pulim-header .account-icon, .pulim-header .post-menu > summary {
     min-width: 34px; width: 34px; padding-inline: 4px;
   }
-  .pulim-header .page-nav span, .account-label { display: none; }
+  .pulim-header .page-nav span { display: none; }
 }
 @media (max-width: 325px) {
   .pulim-header .header-inner nav > :is(a, button),
   .pulim-header .account-icon, .pulim-header .post-menu > summary { min-width: 32px; width: 32px; }
+}
+@media (max-width: 650px) {
+  .pulim-header .header-inner .pulim-tab { min-width: auto; width: auto; padding-inline: 6px; }
 }
 [data-engine-header] { display: none !important; }
 .study-main { min-width: 0; }
@@ -46,13 +49,8 @@
   display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
 }
 .section-tabs, .wall-actions, .feed-toolbar { margin-bottom: 16px; }
-.section-tabs a, .filter-tabs button, .tags button, .profile-shortcuts > a {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 6px 11px;
-  background: transparent; color: var(--ink); border: 0; border-radius: var(--round);
-}
-.section-tabs a[aria-current], .filter-tabs [aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
-.section-tabs a:hover:not([aria-current]), .filter-tabs button:hover:not([aria-pressed="true"]), .tags button:hover { background: var(--control-wash); }
-.tags button.context-chip { min-height: 32px; padding: 5px 9px; }
+.section-tabs .plain-button, .filter-tabs .plain-button, .profile-shortcuts .plain-button { padding-inline: 11px; }
+.tags .tag-link { min-width: 0; min-height: 32px; padding: 5px 9px; color: var(--secondary); font-size: .875rem; }
 .profile-shortcuts { margin-bottom: 18px; }
 .muted, .post-time, .handle, .field-counter, .connection, .feed-scope { font-size: .875rem; color: var(--secondary); }
 .feed-scope { text-align: end; }
@@ -82,15 +80,11 @@ textarea { vertical-align: top; resize: vertical; }
 .identity-link { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
 .identity-link:hover, .post-time:hover, .application-main footer a:hover { text-decoration: underline; }
 .post-time { display: block; }
-.post-actions { display: flex; justify-content: space-between; gap: 5px; padding-top: 8px; border-top: 1px solid var(--divider); }
-.reaction-button, .post-menu-options button {
-  display: inline-flex; align-items: center; gap: 6px; min-width: 42px; min-height: 44px;
-  background: transparent; border: 0; border-radius: var(--round); padding: 6px;
-}
-.reaction-button:hover:not(:disabled), .reaction-button[aria-pressed="true"], .post-menu-options button:hover { background: var(--control-wash); }
+.post-actions { display: flex; justify-content: space-between; gap: 5px; padding-top: 8px; border-top: var(--border-width) solid var(--divider); }
+.reaction-button { gap: 6px; min-width: 42px; }
 .reaction-button[aria-pressed] svg { fill: none; }
 .reaction-button[aria-pressed="true"] svg { fill: currentColor; }
-.reaction-button:disabled { opacity: .5; }
+.reaction-button[aria-pressed="true"] span { font-weight: 700; }
 .post-menu { position: relative; flex: none; }
 .post-menu > summary { list-style: none; cursor: pointer; }
 .post-menu > summary::-webkit-details-marker { display: none; }
@@ -101,22 +95,23 @@ textarea { vertical-align: top; resize: vertical; }
 }
 .account-entry .post-menu-options { inset: calc(100% + 5px) 0 auto auto; }
 .post-menu-options button { width: 100%; justify-content: flex-start; padding-inline: 9px; }
+.post-menu-options .danger { color: var(--status-bad); }
 .original-reference { background: var(--panel); margin: 12px 0; }
 .original-excerpt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .original-reference > * + *, .comments > * + *, .comment-list > * + * { margin-top: 12px; }
-.comments { border-top: 1px solid var(--divider); margin-top: 20px; padding-top: 16px; }
+.comments { border-top: var(--border-width) solid var(--divider); margin-top: 20px; padding-top: 16px; }
 .pulim-dialog .panel.post { padding: 0; background: transparent; }
 .pulim-dialog .section-heading { margin-bottom: 16px; }
 .pulim-dialog { width: min(calc(100% - 28px), 740px); max-height: 90dvh; padding: clamp(16px, 4vw, 28px); }
 .pulim-dialog::backdrop { background: rgb(0 0 0 / .52); }
 .learning-list, .people { list-style: none; padding: 0; }
-.learning-list li, .people li { display: flex; align-items: baseline; gap: 8px; padding-block: 9px; border-top: 1px solid var(--divider); }
+.learning-list li, .people li { display: flex; align-items: baseline; gap: 8px; padding-block: 9px; border-top: var(--border-width) solid var(--divider); }
 .learning-list li > :last-child, .people li > :last-child { margin-inline-start: auto; flex: none; }
 .learning-list strong { overflow-wrap: anywhere; }
 .post-info { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; }
 .post-info dd { margin: 0; }
-.about h2 { margin-top: 1.1rem; }
-.application-main footer { display: flex; justify-content: space-between; border-top: 1px solid var(--divider); margin-top: 28px; padding-block: 14px; color: var(--secondary); font-size: .875rem; }
+.application-main footer { display: flex; justify-content: space-between; border-top: var(--border-width) solid var(--divider); margin-top: 28px; padding-block: 14px; color: var(--secondary); font-size: .875rem; }
+.footer-links { display: flex; gap: 16px; }
 @media (max-width: 500px) { .subject-grid { grid-template-columns: 1fr; } }
 
 /* Extra layout for the original vocabulary screens. Control faces come from Forge. */

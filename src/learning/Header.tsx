@@ -17,12 +17,15 @@ const tools = [
   { key: 'inspection', label: '점검', icon: 'search' },
 ] as const;
 
-export default function Header({ user, name, loggedOut, subject, view, onStudyAction }: {
+export default function Header({ user, name, loggedOut, subject, view, pulimTab, records, onSettings, onStudyAction }: {
   user: User | null;
   name?: string;
   loggedOut: () => void;
   subject: Subject | null;
   view?: StudyView;
+  pulimTab?: 'home' | 'wall';
+  records: boolean;
+  onSettings: () => void;
   onStudyAction: (action: StudyAction) => void;
 }) {
   const active = subject || 'pulleem';
@@ -30,7 +33,7 @@ export default function Header({ user, name, loggedOut, subject, view, onStudyAc
     <div className="header-inner">
       <nav aria-label="서비스" className="service-nav">
         {services.map(({ key, label, path }) =>
-          <a key={key} href={base + path} aria-label={label} title={label}
+          <a key={key} className="plain-button nav-tab" href={base + path} aria-label={label} title={label}
             aria-current={active === key ? 'page' : undefined}
             onPointerEnter={() => { if (key !== 'pulleem') warmStudy(key); }}
             onFocus={() => { if (key !== 'pulleem') warmStudy(key); }}
@@ -40,22 +43,26 @@ export default function Header({ user, name, loggedOut, subject, view, onStudyAc
       </nav>
       <nav aria-label="화면 메뉴" className="page-nav">
         {subject ? tools.filter(item => subject === 'math' || item.key !== 'inspection').map(item =>
-          <button type="button" className="header-link" key={item.key}
+          <button type="button" className="header-link plain-button nav-tab" key={item.key}
             aria-label={item.label} title={item.label}
             aria-current={(view?.tab || 'practice') === item.key ? 'page' : undefined}
             onClick={() => onStudyAction(item.key)}><Icon name={item.icon} /><span>{item.label}</span></button>
-        ) : <a href={base + '#/records'} aria-label="내 기록" title="내 기록"><Icon name="records" /><span>기록</span></a>}
-        {subject ? <button type="button" className="icon-button settings-button" aria-label="설정" title="설정"
-          onClick={() => onStudyAction('settings')}><Icon name="settings" /></button> :
-          <a className="icon-button settings-button" href={base + '#/settings'} aria-label="설정" title="설정"><Icon name="settings" /></a>}
+        ) : <>
+          <a className="plain-button nav-tab pulim-tab" href={base} aria-current={pulimTab === 'home' ? 'page' : undefined}>홈</a>
+          <a className="plain-button nav-tab pulim-tab" href={base + '#/wall'} aria-current={pulimTab === 'wall' ? 'page' : undefined}>담벼락</a>
+          <a className="plain-button nav-tab" href={base + '#/records'} aria-label="내 기록" title="내 기록"
+            aria-current={records ? 'page' : undefined}><Icon name="records" /><span>기록</span></a>
+        </>}
+        <button type="button" className="plain-button settings-button" aria-label="설정" title="설정"
+          onClick={subject ? () => onStudyAction('settings') : onSettings}><Icon name="settings" /></button>
       </nav>
       <div className="account-entry">
         {user ? <PostMenu label="계정 메뉴" icon="person" iconOnly>
-          <button type="button" onClick={() => navigate(base + '#/me')}><Icon name="person" />프로필</button>
-          <button type="button" onClick={() => navigate(base + '#/records')}><Icon name="records" />내 기록</button>
-          <button type="button" onClick={loggedOut}><Icon name="logout" />로그아웃</button>
+          {name && <p className="account-menu-name">{name}</p>}
+          <button className="plain-button" type="button" onClick={() => navigate(base + '#/me')}><Icon name="person" />프로필</button>
+          <button className="plain-button" type="button" onClick={() => navigate(base + '#/records')}><Icon name="records" />내 기록</button>
+          <button className="plain-button" type="button" onClick={loggedOut}><Icon name="logout" />로그아웃</button>
         </PostMenu> : <a className="plain-button account-icon" href={base + '#/me'} aria-label="로그인" title="로그인"><Icon name="person" /></a>}
-        {user && name && <span className="account-label" aria-hidden="true">{name}</span>}
       </div>
     </div>
   </header>;

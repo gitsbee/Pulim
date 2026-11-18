@@ -29,6 +29,11 @@ async function openProfile(page: Page) {
   await page.getByRole('button', { name: '계정 메뉴' }).click();
   await page.getByRole('button', { name: '프로필', exact: true }).click();
 }
+async function expectFlat(control: Locator) {
+  await expect(control).toHaveCSS('border-top-width', '0px');
+  await expect(control).toHaveCSS('box-shadow', 'none');
+  await expect(control).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+}
 async function post(page: Page, body: string) {
   await page.getByRole('button', { name: '새 글 쓰기', exact: true }).click();
   const composer = page.getByRole('dialog', { name: '새 글 쓰기', exact: true });
@@ -70,7 +75,14 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await expect(original.getByText('@writer', { exact: true })).toBeVisible();
     expect(await original.locator('.post-body').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBe(17);
     expect(await author.getByRole('navigation', { name: '서비스' }).getByRole('link').allTextContents()).toEqual(['', '', '']);
-    await expect(author.getByRole('button', { name: '계정 메뉴', exact: true })).toHaveText('');
+    const header = author.locator('.pulim-header');
+    const profileMenu = header.getByRole('button', { name: '계정 메뉴', exact: true });
+    await expect(profileMenu).toHaveText('');
+    await expect(header.getByText('writer', { exact: true })).toBeHidden();
+    await profileMenu.click();
+    await expect(header.getByText('writer', { exact: true })).toBeVisible();
+    await expectFlat(header.getByRole('button', { name: '프로필', exact: true }));
+    await author.keyboard.press('Escape');
     await author.screenshot({ path: 'test-results/feed-desktop.png', fullPage: true });
     await signup(reader, 'reader');
     const foreign = reader.getByRole('article', { name: 'writer의 글', exact: true });
@@ -98,6 +110,8 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await reader.keyboard.press('Escape');
 
     await foreign.getByRole('button', { name: '게시물 메뉴', exact: true }).click();
+    await expectFlat(foreign.getByRole('button', { name: '게시물 정보', exact: true }));
+    await expectFlat(foreign.getByRole('button', { name: '링크 복사', exact: true }));
     const bounds = await foreign.getByRole('button', { name: '링크 복사', exact: true }).locator('svg').evaluate(el => { const box = (el as SVGSVGElement).getBBox(); return { x: box.x, y: box.y, right: box.x + box.width, bottom: box.y + box.height }; });
     expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.y).toBeGreaterThanOrEqual(0);
     expect(bounds.right).toBeLessThanOrEqual(24); expect(bounds.bottom).toBeLessThanOrEqual(24);
@@ -172,8 +186,8 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await page.getByRole('button', { name: '로그인', exact: true }).click();
   await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
   await expect(page.getByRole('main').getByText('@phone', { exact: true })).toBeVisible();
-  await page.getByRole('link', { name: '설정', exact: true }).first().click();
-  await page.getByText('다크 모드', { exact: true }).click();
+  await page.locator('.profile-shortcuts').getByRole('button', { name: '설정', exact: true }).click();
+  await page.getByRole('dialog', { name: '설정', exact: true }).getByText('다크', { exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
@@ -396,4 +410,75 @@ test('English restores the vocabulary layout and uses Forge control roles on des
   await expect(english.locator('.verdict.is-wrong')).toBeVisible();
   await page.screenshot({ path: 'test-results/pulim-english-layout-mobile.png' });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('one header, two control styles and shared support at mobile width', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 760 });
+  await page.goto('./');
+  const header = page.locator('.pulim-header');
+  const tabs = header.getByRole('navigation', { name: '화면 메뉴' });
+  await expect(tabs.getByRole('link', { name: '홈', exact: true })).toHaveAttribute('aria-current', 'page');
+  await tabs.getByRole('link', { name: '담벼락', exact: true }).click();
+  await expect(tabs.getByRole('link', { name: '담벼락', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('main').getByRole('link', { name: '담벼락', exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+  const flame = page.getByRole('link', { name: '탐색', exact: true });
+  await expect(flame).toHaveCSS('border-top-width', '2px');
+  await expect(flame).not.toHaveCSS('box-shadow', 'none');
+  await expect(flame).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  expect(await flame.locator('svg').evaluate(el => {
+    const box = (el as SVGSVGElement).getBBox();
+    const stroke = parseFloat(getComputedStyle(el).strokeWidth);
+    return stroke === 2 && box.x > stroke / 2 && box.y > stroke / 2
+      && box.x + box.width + stroke / 2 < 24 && box.y + box.height + stroke / 2 < 24;
+  })).toBe(true);
+
+  const gear = tabs.getByRole('button', { name: '설정', exact: true });
+  await expectFlat(gear);
+  await expect(gear.locator('svg circle')).toHaveCount(1);
+  await gear.click();
+  const settings = page.getByRole('dialog', { name: '설정', exact: true });
+  const units = settings.getByRole('group', { name: '설정 단원' });
+  await expect(units.getByRole('button', { name: '화면', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await units.getByRole('button', { name: '계정', exact: true }).click();
+  await expect(settings.getByRole('link', { name: '로그인', exact: true })).toBeVisible();
+  await units.getByRole('button', { name: '지원', exact: true }).click();
+  await settings.getByRole('button', { name: '소개', exact: true }).click();
+  const about = page.getByRole('dialog', { name: '소개', exact: true });
+  const introTabs = about.getByRole('tablist');
+  await expect(introTabs.getByRole('tab')).toHaveCount(3);
+  await introTabs.getByRole('tab', { name: '풀림' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(about.getByRole('tabpanel', { name: '수학' })).toContainText('문제를 만드는 방식');
+  await page.keyboard.press('End');
+  await expect(about.getByRole('tabpanel', { name: '영어' })).toContainText('단어장');
+  await page.keyboard.press('Escape');
+  await expect(about).toBeHidden();
+  await expect(settings).toBeVisible();
+  await expect(settings.getByRole('button', { name: '소개', exact: true })).toBeFocused();
+  await settings.getByRole('button', { name: '닫기', exact: true }).click();
+
+  await page.getByRole('link', { name: '도움말', exact: true }).click();
+  await expectFlat(page.getByRole('button', { name: '이전 화면으로', exact: true }));
+  await expect(page.getByRole('tablist').getByRole('tab')).toHaveCount(3);
+
+  for (const [subject, engine, setting] of [['수학', 'math', '펜 전용'], ['영어', 'english', '세벌식 390']]) {
+    await header.getByRole('link', { name: subject, exact: true }).click();
+    await expect(page.locator('.study-' + engine)).toBeVisible();
+    await gear.click();
+    await units.getByRole('button', { name: '입력', exact: true }).click();
+    await expect(settings.getByRole('switch', { name: setting, exact: true })).toBeVisible();
+    await units.getByRole('button', { name: '지원', exact: true }).click();
+    await settings.getByRole('button', { name: '도움말', exact: true }).click();
+    const help = page.getByRole('dialog', { name: '도움말', exact: true });
+    await expect(help.getByRole('tab', { name: subject })).toHaveAttribute('aria-selected', 'true');
+    await expect(help.getByRole('tab')).toHaveCount(3);
+    await expectFlat(help.getByRole('button', { name: '닫기', exact: true }));
+    await help.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect(settings.getByRole('button', { name: '도움말', exact: true })).toBeFocused();
+    await settings.getByRole('button', { name: '닫기', exact: true }).click();
+    await expect(page.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
 });
