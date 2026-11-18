@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 const paths = {
+  book: <path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z" />,
   pulleem: <><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4" /></>,
   math: <path d="M19 4H5l7 8-7 8h14" />,
   english: <path d="m3 19 6-14 6 14m-10-4h8m3-4h5m-1 0v8m0-5c-6-2-6 6 0 4" />,

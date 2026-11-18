@@ -68,7 +68,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await post(author, '첫 번째 이야기 #일상 #React');
     const original = author.getByRole('article', { name: 'writer의 글', exact: true });
     await expect(original.getByText('@writer', { exact: true })).toBeVisible();
-    expect(await original.locator('.post-body').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeCloseTo(18.6667, 1);
+    expect(await original.locator('.post-body').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBe(17);
     expect(await author.getByRole('navigation', { name: '서비스' }).getByRole('link').allTextContents()).toEqual(['', '', '']);
     await expect(author.getByRole('button', { name: '계정 메뉴', exact: true })).toHaveText('');
     await author.screenshot({ path: 'test-results/feed-desktop.png', fullPage: true });
@@ -173,14 +173,14 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
   await expect(page.getByRole('main').getByText('@phone', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: '설정', exact: true }).first().click();
-  await page.getByRole('radio', { name: '다크 모드', exact: true }).check();
+  await page.getByText('다크 모드', { exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   expect(await nav.getByRole('link').allTextContents()).toEqual(['', '', '']);
-  expect(await page.locator('html').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
-  expect(await page.locator('html').evaluate(el => getComputedStyle(el).color)).toBe('rgb(255, 255, 255)');
-  expect(await page.locator('.pulleem-header').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
+  expect(await page.locator('html').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(21, 21, 21)');
+  expect(await page.locator('html').evaluate(el => getComputedStyle(el).color)).toBe('rgb(244, 244, 244)');
+  expect(await page.locator('.pulim-header').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(21, 21, 21)');
   await openWall(page);
   await page.getByRole('link', { name: '검색', exact: true }).click();
   await expect(page.getByRole('searchbox', { name: '검색어' })).toBeVisible();
@@ -188,8 +188,8 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await page.getByRole('searchbox', { name: '검색어' }).fill('@phone');
   await expect(page.getByRole('article').filter({ hasText: '모바일 글 #테스트' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
-  expect(await page.locator('.post-body').first().evaluate(el => getComputedStyle(el).color)).toBe('rgb(255, 255, 255)');
-  expect(await page.locator('.post').first().evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
+  expect(await page.locator('.post-body').first().evaluate(el => getComputedStyle(el).color)).toBe('rgb(244, 244, 244)');
+  await expect(page.locator('.post').first()).toHaveCSS('background-color', 'rgb(34, 34, 34)');
   await page.screenshot({ path: 'test-results/search-dark-mobile.png', fullPage: true });
   await openWall(page);
   await page.screenshot({ path: 'test-results/feed-dark-mobile.png', fullPage: true });
@@ -260,38 +260,72 @@ test('quote text and independent comment threads survive original deletion safel
 });
 
 
-test('native study headers, original daily math, and synchronized practice records', async ({ browser }) => {
-  const context = await browser.newContext({ viewport: { width: 320, height: 720 } });
+test('one study document, shared dark theme and synchronized practice records', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 320, height: 720 }, colorScheme: 'light' });
+  await context.addInitScript(() => {
+    if (location.protocol.startsWith('http')) localStorage.setItem('pulleem:guest:math:math-forge:theme', 'dark');
+  });
   const second = await browser.newContext();
   const author = await context.newPage();
   const other = await second.newPage();
+  let unblockMath!: () => void;
+  const mathGate = new Promise<void>(resolve => { unblockMath = resolve; });
+  await author.route('**/src/learning/engines/math.js*', async route => {
+    await mathGate;
+    await route.continue();
+  });
   try {
     const email = await signup(author, 'study_user');
+    const bar = author.locator('.pulim-header');
+    const signature = () => bar.locator('.header-inner').evaluate(element => {
+      const css = getComputedStyle(element);
+      return [css.height, css.width, css.fontFamily, getComputedStyle(element.parentElement!).backgroundColor];
+    });
+    await expect(bar).toBeVisible();
+    const originalBar = await signature();
+    await author.evaluate(() => document.querySelector('.pulim-header')?.setAttribute('data-persistent', 'yes'));
     await author.getByRole('link', { name: '수학', exact: true }).click();
-    const math = author.frameLocator('iframe[title="수학 연습"]');
+    await expect(author.getByRole('heading', { name: '수학', exact: true })).toBeVisible();
+    await expect(author.locator('html')).toHaveCSS('background-color', 'rgb(21, 21, 21)');
+    await expect(bar).toHaveAttribute('data-persistent', 'yes');
+    expect(await signature()).toEqual(originalBar);
+    await expect(author.locator('iframe')).toHaveCount(0);
+    unblockMath();
+    const math = author.locator('.study-math');
     const start = math.locator('#quick-practice');
     await expect(start).toHaveText(/오늘의 문제/);
-    await expect(author.locator('.pulleem-header')).toHaveCount(0);
-    await expect(math.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
-    await expect(math.getByRole('button', { name: '화면과 소리 설정' })).toHaveCount(1);
-    await expect(math.getByRole('navigation', { name: '서비스' }).getByRole('link')).toHaveCount(3);
-    await expect(math.getByRole('link', { name: '프로필' })).toBeVisible();
-    expect(await math.locator('body').evaluate(body => body.scrollWidth <= window.innerWidth)).toBe(true);
+    await expect(author.getByRole('button', { name: '설정', exact: true })).toHaveCount(1);
+    expect(await author.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await author.screenshot({ path: 'test-results/pulim-math-dark.png' });
     await start.click();
     await expect(math.locator('#daily-navigation')).toBeVisible();
-    await expect(math.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
-    await expect(math.getByRole('button', { name: '정답 확인' })).toBeVisible();
+    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    await expect(math.locator('#session-view .katex').first()).toBeVisible();
     await math.getByRole('link', { name: '연습 나가기' }).click();
-    await math.getByRole('navigation', { name: '서비스' }).getByRole('link', { name: '영어' }).click();
+    await author.getByRole('button', { name: '설정', exact: true }).click();
+    const preferences = math.getByRole('dialog', { name: '설정', exact: true });
+    await preferences.getByText('종이', { exact: true }).click();
+    await expect(author.locator('html')).toHaveAttribute('data-theme', 'paper');
+    await preferences.getByRole('button', { name: '닫기' }).click();
+    await author.getByRole('link', { name: '영어', exact: true }).click();
 
-    const english = author.frameLocator('iframe[title="영어 연습"]');
-    await expect(english.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
-    await expect(english.getByRole('button', { name: '화면 및 입력 설정' })).toHaveCount(1);
-    expect(await english.locator('body').evaluate(body => body.scrollWidth <= window.innerWidth)).toBe(true);
+    const english = author.locator('.study-english');
+    await expect(english.getByRole('heading', { name: '오늘의 학습', level: 1 })).toBeVisible();
+    await expect(author.locator('html')).toHaveAttribute('data-theme', 'paper');
+    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
+    expect(await author.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await author.getByRole('button', { name: '설정', exact: true }).click();
+    const englishPreferences = english.getByRole('dialog', { name: '설정', exact: true });
+    await englishPreferences.getByText('다크', { exact: true }).click();
+    await englishPreferences.getByRole('button', { name: '닫기' }).click();
+    await author.screenshot({ path: 'test-results/pulim-english-dark.png' });
+    expect(await signature()).toEqual(originalBar);
     await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
-    await expect(english.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
+    await expect(author.locator('.app-header:visible, .session-header:visible')).toHaveCount(1);
     await english.getByRole('button', { name: '정답 확인', exact: true }).click();
     await english.getByRole('button', { name: '쉬움', exact: true }).click();
+    await author.reload();
+    await expect(author.locator('html')).toHaveAttribute('data-theme', 'dark');
 
     await other.goto('./#/me');
     await other.getByLabel('이메일', { exact: true }).fill(email);
@@ -301,6 +335,7 @@ test('native study headers, original daily math, and synchronized practice recor
     await other.getByRole('link', { name: '내 기록', exact: true }).first().click();
     await expect(other.getByText('as part of', { exact: true })).toBeVisible();
   } finally {
+    unblockMath();
     await context.close();
     await second.close();
   }

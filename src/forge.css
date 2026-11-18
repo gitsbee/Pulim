@@ -107,9 +107,9 @@ button, a, label, input, select { -webkit-tap-highlight-color: transparent; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 800; white-space: nowrap; }
 .brand .icon { width: 35px; height: 35px; padding: 6px; border-radius: 9px; background: var(--primary); color: var(--on-primary); }
 nav { display: flex; gap: 5px; }
-nav a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; min-width: 78px; padding: 5px 11px; border-radius: 9px; font-weight: 750; }
-nav a[aria-current] { color: var(--on-primary); background: var(--primary); }
-nav a:hover:not([aria-current]) { background: var(--control-wash); }
+nav :is(a, .header-link) { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; min-width: 78px; padding: 5px 11px; border-radius: 9px; font-weight: 750; }
+nav :is(a, .header-link)[aria-current] { color: var(--on-primary); background: var(--primary); }
+nav :is(a, .header-link):hover:not([aria-current]) { background: var(--control-wash); }
 .setup-view, .history-view { width: min(calc(100% - 44px), 740px); margin: 45px auto 56px; }
 .page-intro { margin-bottom: 23px; }
 .page-intro h1 { font-size: clamp(29px, 5.6vw, 39px); font-weight: 750; line-height: 1.28; word-break: keep-all; }

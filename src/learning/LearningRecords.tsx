@@ -27,9 +27,9 @@ export function LearningRecords({ uid, onLogin }: { uid?: string; onLogin: () =>
   const visible = items.filter(item => subject === 'all' || item.subject === subject);
   return <section className="panel record-panel">
     <h2>풀이 기록</h2>
-    {!uid ? <><p>로그인하면 수학과 영어 풀이 결과를 다른 기기에서도 볼 수 있어요.</p><button onClick={onLogin}>로그인</button></> : <>
+    {!uid ? <><p>로그인하면 수학과 영어 풀이 결과를 다른 기기에서도 볼 수 있어요.</p><button className="button secondary" onClick={onLogin}>로그인</button></> : <>
       <div className="filter-tabs" aria-label="기록 과목">
-        {(['all', 'math', 'english'] as const).map(value => <button key={value} aria-pressed={subject === value}
+        {(['all', 'math', 'english'] as const).map(value => <button className="button secondary" key={value} aria-pressed={subject === value}
           onClick={() => setSubject(value)}>{value === 'all' ? '전체' : subjects[value]}</button>)}
       </div>
       <p className="muted">불러온 기록 {visible.length}개 · 정답 {visible.filter(item => item.result === 'correct').length}개</p>
@@ -42,7 +42,7 @@ export function LearningRecords({ uid, onLogin }: { uid?: string; onLogin: () =>
           <span className={item.result === 'wrong' ? 'wrong-result' : 'correct-result'}>{resultNames[item.result]}</span>
         </li>)}
       </ul>
-      {items.length === size && <button onClick={() => setSize(value => value + 30)}>이전 기록 더 보기</button>}
+      {items.length === size && <button className="button secondary" onClick={() => setSize(value => value + 30)}>이전 기록 더 보기</button>}
     </>}
   </section>;
 }

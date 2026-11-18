@@ -1,25 +1,25 @@
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
+export default function mountMath(runtime) {
+  const { document, window, matchMedia, ResizeObserver, MutationObserver } = runtime;
+  const { location, addEventListener } = runtime;
+  const globalThis = { katex, crypto: window.crypto };
+  let ForgePreferences, MathForge, ForgeNotation, ForgeTopics, ForgeAnswerPaths, ForgeExpressionCompiler, ForgePlaneCompositions, ForgeTypeFamilies, ForgeVariations, ForgeLineCompiler, ForgePlaneConceptCompiler, ForgeChallengeRelations, ForgeGeometryEquations, ForgeChallengeGeometry, ForgeChallengeValidation, ForgeProblemProse, ForgeRelationSearch, ForgeChallengeCompiler, ForgeLogicCompiler, ForgeFunctionCurriculum, ForgeFunctionRelations, ForgeFunctionBounds, ForgeFunctionSymbolic, ForgeFunctionSynthesis, ForgeFunctionIntervalSynthesis, ForgeFunctionRelationPractice, ForgePieceFunctionSynthesis, ForgeFiniteFunctionSynthesis, ForgeAlgebraSynthesis, ForgeFunctionCompiler, ForgeCatalog, ForgeCurriculum, ForgeLearning, ForgeBackup, ForgeRecommendations, ForgeMathView, ForgeScratchpad, ForgeInspection;
 /* preferences.js */
 (() => {
   "use strict";
 
-  const root = document.documentElement;
-  const system = matchMedia("(prefers-color-scheme: dark)");
-  const themeKey = "math-forge:theme";
   const soundKey = "math-forge:sound";
   const volumeKey = "math-forge:volume";
-  const allowedThemes = ["system","light","dark","paper"];
   let plus = true;
   try { plus = window.studyBridge.local.getItem("math-forge:plus") !== "off"; } catch {}
-  let theme = "system";
   let sound = true;
   let volumeLevel = 0.7;
   let context;
   let notes = [];
 
   try {
-    const storedTheme = window.studyBridge.local.getItem(themeKey);
-    if (allowedThemes.includes(storedTheme)) theme = storedTheme;
     sound = window.studyBridge.local.getItem(soundKey) !== "off";
     const storedVolume = window.studyBridge.local.getItem(volumeKey);
     if (storedVolume !== null && Number.isFinite(Number(storedVolume))) volumeLevel = Math.max(0,Math.min(1,Number(storedVolume)));
@@ -27,13 +27,6 @@
 
   function store(key, value) {
     try { window.studyBridge.local.setItem(key, value); } catch { /* Keep the current choice. */ }
-  }
-
-  function applyTheme() {
-    const dark = theme === "dark" || (theme === "system" && system.matches);
-    root.dataset.theme = theme === "paper" ? "paper" : dark ? "dark" : "light";
-    document.querySelector('meta[name="theme-color"]').content = theme === "paper" ? "#f3eedf" : dark ? "#151922" : "#f6f8fb";
-    document.dispatchEvent(new Event("forge-themechange"));
   }
 
   function stopAudio() {
@@ -77,8 +70,6 @@
     } catch { /* A browser with audio disabled still supports practice. */ }
   }
 
-  applyTheme();
-  system.addEventListener("change",applyTheme);
   document.addEventListener("DOMContentLoaded", () => {
     const dialog = document.getElementById("preferences-dialog");
     // Snap the desktop dialog itself to the device-pixel grid, including at browser zoom.
@@ -170,7 +161,7 @@
     }
     for (const button of document.querySelectorAll("[data-open-preferences]")) {
       button.addEventListener("click", () => {
-        dialog.querySelector(`input[value="${theme}"]`).checked = true;
+        dialog.querySelector(`input[name="theme"][value="${runtime.getTheme()}"]`).checked = true;
         soundInput.checked = sound;
         syncFullscreen();
         dialog.showModal();
@@ -180,11 +171,7 @@
     }
     document.addEventListener("change", event => {
       const input = event.target;
-      if (input.name === "theme") {
-        theme = input.value;
-        applyTheme();
-        store(themeKey,theme);
-      }
+      if (input.name === "theme") runtime.setTheme(input.value);
       if (input === soundInput) {
         sound = input.checked;
         store(soundKey,sound ? "on" : "off");
@@ -197,7 +184,7 @@
       if (button && !button.disabled && button.id !== "check-answer") play("tap");
     });
   });
-  globalThis.ForgePreferences = Object.freeze({play,plusEnabled:()=>plus});
+  ForgePreferences = globalThis.ForgePreferences = Object.freeze({play,plusEnabled:()=>plus});
 })();
 
 
@@ -632,7 +619,7 @@
     return { valid: true, correct };
   }
 
-  globalThis.MathForge = Object.freeze({ TYPES, LEVELS, generate, grade });
+  MathForge = globalThis.MathForge = Object.freeze({ TYPES, LEVELS, generate, grade });
 })();
 
 
@@ -775,7 +762,7 @@
     return variable?{...data,intro:`${variable[1]}는 실수이다.`}:data;
   }
 
-  globalThis.ForgeNotation=Object.freeze({math,definitions,plainText,parseSet,numberLabels,needsDisplay,layoutQuestion,compactPrompt});
+  ForgeNotation = globalThis.ForgeNotation = Object.freeze({math,definitions,plainText,parseSet,numberLabels,needsDisplay,layoutQuestion,compactPrompt});
 })();
 
 
@@ -1137,7 +1124,7 @@
     };
   }
 
-  globalThis.ForgeTopics = Object.freeze({ types, generate, tex, add, alternative, one, problem, choice, scalar, point, set, m, counted, separatingCondition, rand, pick, symbols, signed, shift, term, linear, coord, par, sq, relationAnswer });
+  ForgeTopics = globalThis.ForgeTopics = Object.freeze({ types, generate, tex, add, alternative, one, problem, choice, scalar, point, set, m, counted, separatingCondition, rand, pick, symbols, signed, shift, term, linear, coord, par, sq, relationAnswer });
 })();
 
 
@@ -1618,7 +1605,7 @@
     if(!entry) throw new Error("Unknown point template "+id);
     entry.variants=entry.variants.map(variant=>({...variant,subject,resultType:pointType,answerPaths:[...paths,...pointLinearPaths(subject)]}));
   }
-  globalThis.ForgeAnswerPaths=Object.freeze({choose,apply,configure,pointType,pointPaths:paths,linearPairPaths,pairValuePaths,pointLinearPaths,affineScalar,scalarValuePaths});
+  ForgeAnswerPaths = globalThis.ForgeAnswerPaths = Object.freeze({choose,apply,configure,pointType,pointPaths:paths,linearPairPaths,pairValuePaths,pointLinearPaths,affineScalar,scalarValuePaths});
 })();
 
 
@@ -1794,7 +1781,7 @@
   const plans={distance,minimum,intersection,parallelThrough:rng=>parallel(rng,false),
     parallelDistance:rng=>parallel(rng,true),perpendicularThrough:perpendicular};
   const compile=(rng,concept,sign)=>compilePlan(sign?minimumParameter(rng,sign):plans[concept](rng));
-  globalThis.ForgeExpressionCompiler=Object.freeze({compile});
+  ForgeExpressionCompiler = globalThis.ForgeExpressionCompiler = Object.freeze({compile});
 })();
 
 
@@ -2729,7 +2716,7 @@
     "perpendicular-line":"perpendicularThrough",
     "line-intersection":"intersection",
   };
-  globalThis.ForgePlaneCompositions=Object.freeze(Object.fromEntries(Object.entries(compositeTypes).map(([type,required])=>[
+  ForgePlaneCompositions = globalThis.ForgePlaneCompositions = Object.freeze(Object.fromEntries(Object.entries(compositeTypes).map(([type,required])=>[
     type,{...composedDistance,answerPaths:[{id:"generated",label:"연산 연결 자동 생성",required,outputType:"Scalar",passthrough:true},
       ...(required==="intersection"?[{id:"common-value",label:"함숫값 차와 부호 조건",structure:"common-value",manualOnly:true,environment:"expression",required,
         operations:["Intersection","EvaluateExpression"],outputType:"Scalar",passthrough:true}]:[])]},
@@ -4500,7 +4487,7 @@
     "intersection-positive":"intersection-sum","intersection-distance":"intersection-sum",
     "inequality-count":"inequality-compare",
   });
-  globalThis.ForgeTypeFamilies=Object.freeze({aliases});
+  ForgeTypeFamilies = globalThis.ForgeTypeFamilies = Object.freeze({aliases});
 })();
 
 
@@ -4958,7 +4945,7 @@
     if(kind==='point'&&!v.answerPaths&&pointSubjects[id])v.answerPaths=pointPaths(pointSubjects[id]);
   }
   for(const id of ['truth-value','a-proposition-compare-squares'])for(const v of types[id].variants)v.answerKind='boolean';
-  globalThis.ForgeVariations=Object.freeze({present,setPaths,pointPaths});
+  ForgeVariations = globalThis.ForgeVariations = Object.freeze({present,setPaths,pointPaths});
 })();
 
 
@@ -5916,7 +5903,7 @@
       },
     };
   }
-  globalThis.ForgeLineCompiler=Object.freeze({plans,modes,compile});
+  ForgeLineCompiler = globalThis.ForgeLineCompiler = Object.freeze({plans,modes,compile});
 })();
 
 
@@ -6315,7 +6302,7 @@
     return finishPoint(ctx,`두 직선 ${m(equation(L))}, ${m("kx-"+factor+"y="+c)}는 일치한다. 직선 ${m("kx-"+factor+"y="+(c-factor*factor))} 위에 가로 좌표가 ${m(t)}인 점 ${m("Q")}가 있다.`,Q,"Q",0);
   };
 
-  globalThis.ForgePlaneConceptCompiler=Object.freeze({has:concept=>Object.hasOwn(recipes,concept),compile:compiler, math:Object.freeze({add,sub,mul,dot,through,meet,between,centroid,triangleArea})});
+  ForgePlaneConceptCompiler = globalThis.ForgePlaneConceptCompiler = Object.freeze({has:concept=>Object.hasOwn(recipes,concept),compile:compiler, math:Object.freeze({add,sub,mul,dot,through,meet,between,centroid,triangleArea})});
 })();
 
 
@@ -6672,7 +6659,7 @@
     return {...data,question:data.question.replace("모두 구하시오.","모두 나타낸 것을 고르시오."),
       answer:ForgeTopics.choice(rng,text,wrong)};
   }
-  globalThis.ForgeChallengeRelations=Object.freeze({rules,relation,math,present,pointSetAnswer,setKey});
+  ForgeChallengeRelations = globalThis.ForgeChallengeRelations = Object.freeze({rules,relation,math,present,pointSetAnswer,setKey});
 })();
 
 
@@ -6759,7 +6746,7 @@
     const value=parse(input);
     return value?{valid:true,correct:equivalent(value,answer.value)}:{valid:false};
   }
-  globalThis.ForgeGeometryEquations=Object.freeze({answer,grade,circleText,lineText,equivalent});
+  ForgeGeometryEquations = globalThis.ForgeGeometryEquations = Object.freeze({answer,grade,circleText,lineText,equivalent});
 })();
 
 
@@ -7124,7 +7111,7 @@
     const terms=[-2*h,-2*k,h*h+k*k-r2].map((n,i)=>n?(n>0?"+":"")+(i===2?n:term(n,["x","y"][i])):"");
     return "x^2+y^2"+terms.join("")+"=0";
   }
-  globalThis.ForgeChallengeGeometry=Object.freeze({rules,circleGiven,circleSeed,circleText,lineText,axes,images,relation:{circlePair,circlePositions,axisSection,externalPoint}});
+  ForgeChallengeGeometry = globalThis.ForgeChallengeGeometry = Object.freeze({rules,circleGiven,circleSeed,circleText,lineText,axes,images,relation:{circlePair,circlePositions,axisSection,externalPoint}});
 })();
 
 
@@ -7321,7 +7308,7 @@
       return sameSet(points,sides.filter((_,i)=>lengths[i]===best).map(([a,b])=>a.map((x,i)=>(x+b[i])/2)));
     },
   };
-  globalThis.ForgeChallengeValidation=Object.freeze({
+  ForgeChallengeValidation = globalThis.ForgeChallengeValidation = Object.freeze({
     check({op,value,inputs,data}){
       if(op==="given")return true;
       return Boolean(checks[op]?.(value,inputs.map(node=>node.value),data,inputs));
@@ -7425,7 +7412,7 @@
     return intro===data.intro&&question===data.question?data:{...data,intro,question};
   }
 
-  globalThis.ForgeProblemProse=Object.freeze({compose,equality,setDefinition,polish,topic,subject,object});
+  ForgeProblemProse = globalThis.ForgeProblemProse = Object.freeze({compose,equality,setDefinition,polish,topic,subject,object});
 })();
 
 
@@ -7469,7 +7456,7 @@
     return visit(output??graph.at(-1).at(-1).id);
   }
 
-  globalThis.ForgeRelationSearch=Object.freeze({solve,signature});
+  ForgeRelationSearch = globalThis.ForgeRelationSearch = Object.freeze({solve,signature});
 })();
 
 
@@ -8050,7 +8037,7 @@
     throw new UnsatisfiedGraph("서로 다른 점과 직선으로 조건을 구성하지 못했습니다.");
   }
 
-  globalThis.ForgeChallengeCompiler=Object.freeze({generate,UnsatisfiedGraph,units:Object.keys(units)});
+  ForgeChallengeCompiler = globalThis.ForgeChallengeCompiler = Object.freeze({generate,UnsatisfiedGraph,units:Object.keys(units)});
 })();
 
 
@@ -8885,7 +8872,7 @@
       ["해당 용어는 "+terms[which]+"이다."]),
       format:"tex",actionHistory:[],answerPath:{id:"proof-terminology/"+which,label:"증명에 쓰는 용어"}};
   }
-  globalThis.ForgeLogicCompiler=Object.freeze({units:["sets","propositions"],generate,generateSetParameters,generatePeriodic,generateInequality,realProperties,foundation,check});
+  ForgeLogicCompiler = globalThis.ForgeLogicCompiler = Object.freeze({units:["sets","propositions"],generate,generateSetParameters,generatePeriodic,generateInequality,realProperties,foundation,check});
 })();
 
 
@@ -9013,7 +9000,7 @@
     .flatMap(([goal,ids])=>ids.split(" ").map(id=>[id,unit+"-goal-"+goal]))));
   for(const [id,target] of Object.entries(aliases))aliases[id]=grouped.get(target)?.id??target;
   for(const [id,entry] of grouped)aliases[id]=entry.id;
-  globalThis.ForgeFunctionCurriculum=Object.freeze({units:Object.keys(units),concepts,entries,aliases});
+  ForgeFunctionCurriculum = globalThis.ForgeFunctionCurriculum = Object.freeze({units:Object.keys(units),concepts,entries,aliases});
 })();
 
 
@@ -9229,7 +9216,7 @@
     if(kind==="piece")return {kind,h,left:{kind:"affine",a:nonzero(),k},right:{kind:"affine",a:nonzero(),k:k+2}};
     return {kind:"affine",a:nonzero(),k};
   }
-  globalThis.ForgeFunctionRelations=Object.freeze({operations,apply,finite,domain,range,value,rule,points,validTable,count,sample,intervalText,
+  ForgeFunctionRelations = globalThis.ForgeFunctionRelations = Object.freeze({operations,apply,finite,domain,range,value,rule,points,validTable,count,sample,intervalText,
     interval,except,includes,uniq,same,list,close,affine});
 })();
 
@@ -9477,7 +9464,7 @@
     if(["domain","range","codomain","graph-bounds"].includes(goal))return basic(goal,level,rng,ctx,format);
     return null;
   }
-  globalThis.ForgeFunctionBounds=Object.freeze({generate});
+  ForgeFunctionBounds = globalThis.ForgeFunctionBounds = Object.freeze({generate});
 })();
 
 
@@ -9660,7 +9647,7 @@
     return finish(m("("+name+")("+(backward?"x":x)+")"+(backward?"="+output:""))+(backward?"를 만족시키는 "+m("x")+"의 값을":"의 값을")+" 구하시오.",answer,
       ["안쪽 함수부터 적용하면 "+m("("+name+")(x)="+R.rule(selected))+"이다."+(backward?" 이 식을 주어진 출력과 같게 놓고 푼다.":"")]);
   }
-  globalThis.ForgeFunctionSymbolic=Object.freeze({generate});
+  ForgeFunctionSymbolic = globalThis.ForgeFunctionSymbolic = Object.freeze({generate});
 })();
 
 
@@ -10030,7 +10017,7 @@
     const result=finish(plan,rng,makeContext(),format);
     return {...result,answerPath:{...result.answerPath,id:"function/"+plan.key+"/"+result.answer.kind}};
   }
-  globalThis.ForgeFunctionSynthesis=Object.freeze({supports,generate});
+  ForgeFunctionSynthesis = globalThis.ForgeFunctionSynthesis = Object.freeze({supports,generate});
 })();
 
 
@@ -10210,7 +10197,7 @@
     }
     return null;
   }
-  globalThis.ForgeFunctionIntervalSynthesis=Object.freeze({generate,supports});
+  ForgeFunctionIntervalSynthesis = globalThis.ForgeFunctionIntervalSynthesis = Object.freeze({generate,supports});
 })();
 
 
@@ -10581,7 +10568,7 @@
     if(!supports(unit,goal))return null;
     return (goal==="piece-compose"?piecePractice:inversePractice)(rng,level,format,grade,ctx);
   }
-  globalThis.ForgeFunctionRelationPractice=Object.freeze({supports,generate});
+  ForgeFunctionRelationPractice = globalThis.ForgeFunctionRelationPractice = Object.freeze({supports,generate});
 })();
 
 
@@ -10825,7 +10812,7 @@
       ordered?"두 값을 순서대로 적는다.":"따라서 구하는 값은 "+m(answer.value)+"이다."],rank);
   }
 
-  globalThis.ForgePieceFunctionSynthesis=Object.freeze({generate});
+  ForgePieceFunctionSynthesis = globalThis.ForgePieceFunctionSynthesis = Object.freeze({generate});
 })();
 
 
@@ -10919,7 +10906,7 @@
       inspection:{...result.inspection,structure,conditions:checked.effects.map(({removed})=>
         "‘"+removed.module.describe(removed.args)+"’ 조건을 빼면 답이 달라진다.")}};
   }
-  globalThis.ForgeFiniteFunctionSynthesis=Object.freeze({supports:goal=>goals.has(goal),generate});
+  ForgeFiniteFunctionSynthesis = globalThis.ForgeFiniteFunctionSynthesis = Object.freeze({supports:goal=>goals.has(goal),generate});
 })();
 
 
@@ -11095,7 +11082,7 @@
     const structure=S.signature(result.inspection.graph);
     return {...result,answerPath:{...result.answerPath,id:"function/"+structure+"/"+result.answer.kind},inspection:{...result.inspection,structure}};
   }
-  globalThis.ForgeAlgebraSynthesis=Object.freeze({generate,supports:(unit,goal)=>
+  ForgeAlgebraSynthesis = globalThis.ForgeAlgebraSynthesis = Object.freeze({generate,supports:(unit,goal)=>
     (unit==="rational"?rationalGoals:unit==="radical"?radicalGoals:new Set()).has(goal)});
 })();
 
@@ -11958,7 +11945,7 @@
     }
     throw new RangeError("주어진 조건에서 함수 문제를 구성할 수 없습니다.");
   }
-  globalThis.ForgeFunctionCompiler=Object.freeze({generate});
+  ForgeFunctionCompiler = globalThis.ForgeFunctionCompiler = Object.freeze({generate});
 })();
 
 
@@ -12965,7 +12952,7 @@
     return base.grade(input, answer);
   }
 
-  globalThis.ForgeCatalog = Object.freeze({ COURSES, UNITS, TYPES, LEVELS, DEFAULT_SETTINGS, courseForUnit, canonicalType, normalizeSelection, isPlaneType, typeFor, pool, generate, generatePlanePractice, generateChallenge, grade, assessDifficulty, difficultyLabels });
+  ForgeCatalog = globalThis.ForgeCatalog = Object.freeze({ COURSES, UNITS, TYPES, LEVELS, DEFAULT_SETTINGS, courseForUnit, canonicalType, normalizeSelection, isPlaneType, typeFor, pool, generate, generatePlanePractice, generateChallenge, grade, assessDifficulty, difficultyLabels });
 })();
 
 
@@ -13073,7 +13060,7 @@
     return code ? "10공수"+code : undefined;
   }
 
-  globalThis.ForgeCurriculum = Object.freeze({standards,forType});
+  ForgeCurriculum = globalThis.ForgeCurriculum = Object.freeze({standards,forType});
 })();
 
 
@@ -13247,7 +13234,7 @@
     window.studyBridge.session.removeItem("math-forge:active-ink");
   }
 
-  globalThis.ForgeLearning = Object.freeze({clearLearning,
+  ForgeLearning = globalThis.ForgeLearning = Object.freeze({clearLearning,
     day,offset,uid,read,write,dailyStatus,putInk,deleteInk,getInk,allInk,reviews,activity,park,unpark,
     persistent:()=>saved,
   });
@@ -13275,7 +13262,7 @@
         && new Set(plot.elements.flat()).size===plot.elements.flat().length)
     : ["rational","radical","circle"].includes(plot.kind) && [plot.h,plot.k,plot.a].every(number) && [undefined,-1,1].includes(plot.sign));
   const validAnswer=answer=>{
-    if (!answer || !kinds.includes(answer.kind) || !text(answer.text)) return false;
+    if (!answer || !kinds.includes(answer.kind) || !text(answer.text) || !validPlot(answer.plot)) return false;
     switch (answer.kind) {
       case "choice": return list(answer.options,textValue=>text(textValue),12) && Number.isInteger(answer.value) && answer.value>=0 && answer.value<answer.options.length;
       case "equation": return list(answer.value,Number.isSafeInteger,6) && answer.value.length===6 && ForgeGeometryEquations.grade(answer.input,answer).correct;
@@ -13330,7 +13317,7 @@
     }
     return data;
   }
-  globalThis.ForgeBackup=Object.freeze({readBackup});
+  ForgeBackup = globalThis.ForgeBackup = Object.freeze({readBackup});
 })();
 
 
@@ -13407,7 +13394,7 @@
     return {type:chosen.type,reason};
   }
 
-  globalThis.ForgeRecommendations=Object.freeze({STRATEGIES,recommend});
+  ForgeRecommendations = globalThis.ForgeRecommendations = Object.freeze({STRATEGIES,recommend});
 })();
 
 
@@ -13592,7 +13579,7 @@
     return (problem.answer.kind === "choice" || problem.answer.kind === "truth" || problem.format === "tex" && problem.answer.kind !== "scalar") ? prose(value, "tex") : render(legacyTeX(value));
   }
 
-  globalThis.ForgeMathView = Object.freeze({ esc, prose, mathBlock, plotBlock, shareText, solutionList, answer });
+  ForgeMathView = globalThis.ForgeMathView = Object.freeze({ esc, prose, mathBlock, plotBlock, shareText, solutionList, answer });
 })();
 
 
@@ -13942,7 +13929,7 @@
   penOnly.addEventListener("change",()=>{
       try { window.studyBridge.local.setItem(preferenceKey,String(penOnly.checked)); } catch { /* Use the setting for this page. */ }
   });
-  globalThis.ForgeScratchpad=Object.freeze({start,acceptsPointer,exitFullscreen,renderSaved});
+  ForgeScratchpad = globalThis.ForgeScratchpad = Object.freeze({start,acceptsPointer,exitFullscreen,renderSaved});
 })();
 
 
@@ -14162,7 +14149,7 @@
   path.addEventListener("change",updateEnvironment);
   $("form").addEventListener("submit",event=>{event.preventDefault();generate();});
   $("random").addEventListener("click",()=>{seed.value=randomSeed();generate();});
-  globalThis.ForgeInspection={open};
+  ForgeInspection = globalThis.ForgeInspection = {open};
 })();
 
 
@@ -14976,6 +14963,7 @@
     $("session-view").hidden = !session;
     $("history-view").hidden = !history;
     const tab=inspection?"inspection":history?"history":"practice";
+    runtime.updateView(tab, session);
     for (const name of ["practice","history","inspection"]) {
       const link=$(name+"-nav");
       if(name===tab) link.setAttribute("aria-current","page");
@@ -15150,7 +15138,7 @@
       id: "math-" + draft.record.id,
       subject: "math",
       label: TYPES[typeFor(draft.problem)]?.label ?? "수학 연습",
-      mode: draft.record.reviewOf ? "복습" : "연습",
+      mode: draft.record.dailyDay ? "오늘의 문제" : draft.record.reviewOf ? "복습" : "연습",
       result: draft.record.correct ? "correct" : "wrong"
     });
     syncTimer();
@@ -15459,3 +15447,5 @@ ${text}`;
   if (draft) renderProblem();
   updateRoute(false);
 })();
+  runtime.ready();
+}

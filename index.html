@@ -5,9 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f8f8f8" />
     <meta name="description" content="수학과 영어를 연습하고 풀이를 나누는 학습 공간, 풀림." />
-    <script>try { const t = localStorage.getItem('postpost:theme'); const dark = t === 'dark' || ((!t || t === 'system') && matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.dataset.theme = dark ? 'dark' : 'light'; document.documentElement.style.colorScheme = dark ? 'dark' : 'light'; document.querySelector('meta[name=theme-color]')?.setAttribute('content', dark ? '#000000' : '#f8f8f8'); } catch {}</script>
+    <style>html{background:#f8f8f8;color:#161616}html[data-theme=dark]{background:#151515;color:#f4f4f4;color-scheme:dark}html[data-theme=paper]{background:#eee8d9;color:#27231e}</style>
+    <script>
+      (() => {
+        let preference;
+        try {
+          preference = localStorage.getItem('pulim:theme');
+          if (!preference) {
+            preference = localStorage.getItem('postpost:theme');
+            if (!preference || preference === 'system') {
+              const legacy = new Set();
+              for (const key of Object.keys(localStorage)) {
+                if (!key.startsWith('pulleem:')) continue;
+                try {
+                  const value = key.endsWith(':math:math-forge:theme') ? localStorage.getItem(key)
+                    : key.endsWith(':english:amgi-v1') ? JSON.parse(localStorage.getItem(key))?.theme : null;
+                  if (['light', 'dark', 'paper'].includes(value)) legacy.add(value);
+                } catch {}
+              }
+              if (legacy.size === 1) preference = [...legacy][0];
+            }
+            localStorage.setItem('pulim:theme', preference || 'system');
+          }
+        } catch {}
+        const dark = preference === 'dark' || ((!preference || preference === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = preference === 'paper' ? 'paper' : dark ? 'dark' : 'light';
+        document.querySelector('meta[name="theme-color"]').content = preference === 'paper' ? '#eee8d9' : dark ? '#151515' : '#f8f8f8';
+      })();
+    </script>
     <link rel="icon" href="%BASE_URL%pulleem.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/study/palette.css" />
     <title>풀림 · 함께 푸는 학습 공간</title>
   </head>
   <body>

@@ -1,21 +1,4 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="description" content="공통수학 2 단원별 문제를 풀고 필기할 수 있는 학습 앱">
-  <title>풀림 수학 · 수학 연습</title>
-  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNiAzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iOSIgZmlsbD0iI2Q5ZmE4OCIvPjxwYXRoIGQ9Ik04IDEyLjUgMTggN2wxMCA1LjVMMTggMTggOCAxMi41Wm0wIDUuNSAxMCA1LjVMMjggMThNOCAyMy41IDE4IDI5bDEwLTUuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjIxYjM0IiBzdHJva2Utd2lkdGg9IjEuNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+Cg==" type="image/svg+xml">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <link rel="stylesheet" href="./math.css">
-  <link rel="stylesheet" href="./overlay.css">
-</head>
-<body>
-  <p class="study-loading" role="status">연습 화면을 불러오는 중…</p>
-  <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+<svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
     <symbol id="i-logo" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4-9 4-9-4ZM3 12l9 4 9-4M3 17l9 4 9-4"/></symbol>
     <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z"/></symbol>
     <symbol id="i-resume" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
@@ -65,9 +48,8 @@
     <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M4 8h4V4m12 4h-4V4M8 20v-4H4m12 4v-4h4"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
   </svg>
-  <header class="app-header" id="app-header">
+  <header data-engine-header class="app-header" id="app-header">
     <div class="header-inner">
-      <div id="pulim-services"></div>
       <a class="brand" href="#practice"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-logo"/></svg>풀림 수학</a>
       <nav aria-label="수학 연습 메뉴">
         <a id="practice-nav" href="#practice" aria-label="연습" aria-current="page"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-book"/></svg><span>연습</span></a>
@@ -75,11 +57,10 @@
         <a id="inspection-nav" href="#inspection" aria-label="점검"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-search"/></svg><span>점검</span></a>
         <button type="button" class="icon-button settings-button" data-open-preferences aria-label="화면과 소리 설정" title="화면과 소리 설정"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button>
       </nav>
-      <div id="pulim-profile"></div>
     </div>
   </header>
 
-  <main>
+  <div class="study-content">
     <section id="practice-view" class="setup-view" aria-labelledby="setup-heading">
       <header class="page-intro">
         <h1 id="setup-heading" tabindex="-1">오늘의 학습</h1>
@@ -285,7 +266,7 @@
         <p id="backup-status" role="status"></p>
       </details>
     </section>
-  </main>
+  </div>
   <dialog id="daily-protected-dialog" class="confirm-dialog" aria-labelledby="daily-protected-title"><h2 id="daily-protected-title">오늘의 문제 기록</h2><p>오늘의 문제는 기록을 삭제하거나 최초 결과를 수정할 수 없습니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>확인</button></form></dialog>
   <dialog id="item-confirm-dialog" class="confirm-dialog" aria-labelledby="item-confirm-title"><h2 id="item-confirm-title"></h2><p id="item-confirm-message"></p><div class="home-actions"><button type="button" id="item-cancel" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="item-confirm" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>확인</span></button></div></dialog>
   <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">학습 기록을 초기화할까요?</h2><p>풀이 기록, 필기와 보관 문제가 삭제됩니다. 오늘의 도전 결과는 유지됩니다.</p><div class="home-actions"><button type="button" id="cancel-reset" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="confirm-reset" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>기록 초기화</button></div></dialog>
@@ -357,7 +338,3 @@
     </div>
   </dialog>
   <noscript><p>문제를 풀려면 자바스크립트를 켜 주세요.</p></noscript>
-
-<script src="./bridge.js" data-subject="math"></script>
-</body>
-</html>

@@ -1,4 +1,5 @@
-
+export default function mountEnglish(runtime) {
+  const { document, window, matchMedia, ResizeObserver, MutationObserver } = runtime;
 const forgeIcons = {
   "logo": "<path d=\"m3 7 9-4 9 4-9 4-9-4ZM3 12l9 4 9-4M3 17l9 4 9-4\"/>",
   "book": "<path d=\"M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z\"/>",
@@ -84,6 +85,7 @@ document.querySelectorAll('.app-header [data-view]').forEach(button => {
 
 function render() {
   document.body.classList.toggle('studying', view === 'session');
+  runtime.updateView(view === 'wrong' ? 'history' : 'practice', view === 'session');
   const current = view === 'wrong' ? 'wrong' :
     view === 'overview' ? 'overview' : 'home';
   document.querySelectorAll('nav [data-view]').forEach(button => {
@@ -138,7 +140,7 @@ function renderSetup() {
       const status = segmentStatuses(key,mode,indices), draft = state.segmentDrafts[key];
       const done = indices.length > 0 && indices.every(i => status[i]);
       const hasRecord = !!draft || indices.some(i => status[i]);
-      return `<details class="segment-card" data-range="${from},${to}"><summary><span class="segment-heading">${p.manual ? '직접 설정' : `${n+1}구간`}</span><span class="segment-tags">${segmentTags(mode,indices,status)}</span><span class="segment-actions">${hasRecord ? `<button type="button" class="plain-button" data-segment-reset="${key}" aria-label="${n+1}구간 학습 기록 초기화" title="구간 초기화">${icon('repeat')}</button>` : ''}${indices.length && (!done || draft) ? `<button type="button" class="plain-button" data-segment-start="${key}" aria-label="${n+1}구간 ${draft ? '이어서' : '시작'}" title="${draft ? '이어서 풀기' : '학습 시작'}">${icon('next')}</button>` : ''}</span></summary><div class="segment-words">${indices.length ? indices.map(i => `<button type="button" class="word-flip" aria-pressed="false" data-word="${i}"><span lang="en">${escapeHtml(words[i].en)}</span><span class="word-meaning">${escapeHtml(words[i].ko)}</span></button>`).join('') : '<p class="empty">이 범위에 해당하는 단어가 없어요.</p>'}</div></details>`;
+      return `<details class="segment-card" data-range="${from},${to}"><summary><span class="segment-heading">${p.manual ? '직접 설정' : `${n+1}구간`}</span><span class="segment-tags">${segmentTags(mode,indices,status)}</span><span class="segment-actions">${hasRecord ? `<button type="button" class="icon-button" data-segment-reset="${key}" aria-label="${n+1}구간 학습 기록 초기화" title="구간 초기화">${icon('repeat')}</button>` : ''}${indices.length && (!done || draft) ? `<button type="button" class="icon-button" data-segment-start="${key}" aria-label="${n+1}구간 ${draft ? '이어서' : '시작'}" title="${draft ? '이어서 풀기' : '학습 시작'}">${icon('next')}</button>` : ''}</span></summary><div class="segment-words">${indices.length ? indices.map(i => `<button type="button" class="word-flip" aria-pressed="false" data-word="${i}"><span lang="en">${escapeHtml(words[i].en)}</span><span class="word-meaning">${escapeHtml(words[i].ko)}</span></button>`).join('') : '<p class="empty">이 범위에 해당하는 단어가 없어요.</p>'}</div></details>`;
     }).join('')}`;
     $('#segment-list').querySelectorAll('[data-word]').forEach(button => button.onclick = () => button.setAttribute('aria-pressed', button.getAttribute('aria-pressed') !== 'true'));
     $('#segment-list').querySelectorAll('[data-segment-start]').forEach(button => button.onclick = event => {
@@ -192,7 +194,7 @@ function renderCollection() {
     <input id="search" class="search" placeholder="영어 또는 뜻 검색" aria-label="단어 검색" type="search">
     ${groups.map(([key, title]) => review ? `<details class="history-group" open>
       <summary>${title}</summary><div data-words="${key}"></div>
-      ${key === 'hints' && Object.values(state.hints).some(Boolean) ? `<button class="button start wide review-start" id="practice-hints">${icon('repeat')} 복습 시작</button>` : ''}
+      ${key === 'hints' && Object.values(state.hints).some(Boolean) ? `<button class="button primary action-start wide review-start" id="practice-hints">${icon('repeat')} 복습 시작</button>` : ''}
     </details>` : '<div data-words="overview"></div>').join('')}
     ${review ? `<details class="record-settings history-group"><summary>내 정보 관리</summary>
       <div><button class="button danger" data-reset>${icon('trash')} 기록 초기화하기</button></div>
@@ -236,14 +238,6 @@ function renderCollection() {
   draw();
 }
 
-const systemTheme = matchMedia('(prefers-color-scheme: dark)');
-function applyTheme() {
-  const theme = state.theme === 'system' ? (systemTheme.matches ? 'dark' : 'light') : state.theme;
-  document.documentElement.dataset.theme = theme;
-  $('meta[name="theme-color"]').content = theme === 'dark' ? '#151515' : theme === 'paper' ? '#eee8d9' : '#f8f8f8';
-}
-applyTheme();
-systemTheme.addEventListener('change', applyTheme);
 $('.brand-icon').outerHTML = icon('logo');
 for (const [viewName, iconName] of [['home','book'],['wrong','history']]) {
   const button = $('nav [data-view="' + viewName + '"]');
@@ -258,14 +252,16 @@ document.addEventListener('click', event => {
   const button = event.target.closest('[data-settings]');
   if (!button) return;
   returnFocus = document.activeElement;
+  const theme = settingsDialog.querySelector(`[name="theme"][value="${runtime.getTheme()}"]`);
+  if (theme) theme.checked = true;
   settingsDialog.showModal();
 });
 settingsDialog.addEventListener('close', () => {
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
 });
 settingsDialog.querySelectorAll('[name="theme"]').forEach(button => {
-  button.checked = button.value === state.theme;
-  button.onchange = () => { state.theme = button.value; applyTheme(); save(); };
+  button.checked = button.value === runtime.getTheme();
+  button.onchange = () => runtime.setTheme(button.value);
 });
 $('#sound-enabled').checked = state.sound;
 $('#sound-volume').value = state.volume;
@@ -352,7 +348,7 @@ function currentRoundMarkup() {
   const i = draft.session[draft.position], label = studyModes[draft.mode]?.[0] || '학습';
   const parts = draft.key.split('|');
   const range = parts.length === 4 ? `${parts[2]}–${parts[3]}번` : `${Math.min(...draft.session)+1}–${Math.max(...draft.session)+1}번`;
-  return `<article class="saved-round"><dl class="range-list"><div><dt>리스트</dt><dd><span class="context-chip chip chip-list">${icon('book')} 1번 리스트</span></dd></div><div><dt>범위</dt><dd>${range}</dd></div><div><dt>연습 방식</dt><dd>${icon(studyModes[draft.mode]?.[2] || 'book')} ${label}</dd></div></dl><button class="button start wide" data-resume="${draft.key}">${icon('next')} 이어 풀기</button></article>`;
+  return `<article class="saved-round"><dl class="range-list"><div><dt>리스트</dt><dd><span class="context-chip chip chip-list">${icon('book')} 1번 리스트</span></dd></div><div><dt>범위</dt><dd>${range}</dd></div><div><dt>연습 방식</dt><dd>${icon(studyModes[draft.mode]?.[2] || 'book')} ${label}</dd></div></dl><button class="button primary action-start wide" data-resume="${draft.key}">${icon('next')} 이어 풀기</button></article>`;
 }
 function persistRound() {
   const draft = { mode, session, position, outcomes, question, updatedAt: Date.now() };
@@ -451,10 +447,10 @@ function renderSession() {
   const index = session[position], word = words[index];
   app.innerHTML = `<section class="session-view">
     <header class="session-header"><div class="session-header-inner">
-      <button id="exit" class="plain-button" aria-label="연습 나가기" title="연습 나가기">${icon('close')}</button>
+      <button id="exit" class="icon-button exit-button" aria-label="연습 나가기" title="연습 나가기">${icon('close')}</button>
       <div class="session-context"><h1 tabindex="-1">${studyModes[mode][0]}</h1>
         <div class="session-context-info"><div class="session-tags"><span class="context-chip chip chip-list">${icon('book')} 1번 리스트</span><div class="session-stats" id="session-stats" aria-live="polite">${statsMarkup()}</div><span class="context-chip combo" id="combo" title="연속 정답">${icon('target')} ${comboCount()}콤보</span></div></div></div>
-      <div class="session-tools"><button class="plain-button" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정">${icon('settings')}</button></div>
+      <div class="session-tools"><button class="icon-button settings-button" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정">${icon('settings')}</button></div>
     </div></header>
     <div class="session-status-dock" id="session-status-dock"></div>
     <div class="session-content"><div class="question-area">
@@ -481,9 +477,9 @@ function renderSession() {
 function renderCard(word, index) {
   const flash = mode === 'flash';
   $('#interaction').innerHTML = `
-    ${flash || !question.revealed ? `<button class="button start answer-face" id="flip" aria-pressed="${question.revealed}">${question.revealed ? escapeHtml(word.ko) : flash ? '뜻 보기' : '정답 확인'}</button>` : ''}
+    ${flash || !question.revealed ? `<button class="button primary action-start answer-face" id="flip" aria-pressed="${question.revealed}">${question.revealed ? escapeHtml(word.ko) : flash ? '뜻 보기' : '정답 확인'}</button>` : ''}
     <div class="session-actions recall-actions">${flash ? `
-      <button class="button skip" id="previous" ${position === 0 ? 'disabled' : ''}>${icon('chevron-left')} 이전</button>
+      <button class="button secondary action-skip" id="previous" ${position === 0 ? 'disabled' : ''}>${icon('chevron-left')} 이전</button>
       <button class="button primary" id="next">다음 문제 ${icon('next')}</button>` : question.revealed ? `
       <div class="recall-levels">
         <button class="button recall-level" data-level="high" id="miss">${icon('difficulty-high')} <span>어려움</span></button>
@@ -517,7 +513,7 @@ function renderChoice(word, index) {
     question.options = [word.ko, ...unique.slice(0,3)].sort(() => Math.random()-.5); persistRound();
   }
   const done = question.phase !== 'input';
-  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">다음 문제 ${icon('next')}</button>${starMarkup(index)}</div>`;
+  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="button secondary choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">다음 문제 ${icon('next')}</button>${starMarkup(index)}</div>`;
   app.querySelectorAll('[data-choice]').forEach(button => button.onclick = () => { question.selected=Number(button.dataset.choice); question.phase='done'; recordOutcome(normalize(question.options[question.selected]) === normalize(word.ko) ? 'correct' : 'wrong'); renderChoice(word,index); bindStars(); $('#choice-next').focus(); });
   if (done) $('#choice-next').onclick = next;
 }
@@ -530,7 +526,7 @@ function renderType(word, index) {
       <p id="hint" class="help" role="status"></p>
       <div id="feedback" aria-live="polite"></div>
       <div class="session-actions type-actions">
-        <button class="button start primary" id="submit">${icon('check')} 정답 확인</button>
+        <button class="button primary action-start" id="submit">${icon('check')} 정답 확인</button>
         ${starMarkup(index)}
         <button type="button" class="icon-button hint-tool" id="hint-button" aria-label="힌트" aria-keyshortcuts="[" title="힌트 ([)">${icon('bulb')}</button>
         <button type="button" class="icon-button answer-tool" id="show-answer" aria-label="정답 보기" aria-keyshortcuts="]" title="정답 보기 (])">${icon('eye')}</button>
@@ -598,8 +594,8 @@ function renderType(word, index) {
     feedback.innerHTML = `<div class="verdict ${kind}">${icon(kind === 'wrong' ? 'close' : 'check')}<div>${face}</div></div>`;
     if (phase !== 'shown' && phase !== 'wrong') return;
     feedback.insertAdjacentHTML('beforeend', `<div class="feedback-actions">
-      ${phase === 'wrong' ? '<button type="button" class="button" id="accept">인정 답안으로 추가</button>' : ''}
-      <button type="button" class="button" id="rewrite">정답 보고 다시 쓰기</button>
+      ${phase === 'wrong' ? '<button type="button" class="button secondary" id="accept">인정 답안으로 추가</button>' : ''}
+      <button type="button" class="button secondary" id="rewrite">정답 보고 다시 쓰기</button>
     </div>`);
     $('#rewrite').onclick = () => {
       question.phase = 'rewrite';
@@ -667,8 +663,8 @@ function renderComplete() {
   app.innerHTML = `<section class="page">${heading('학습 완료', `${studyModes[mode][0]} · ${session.length}개 단어`)}
     <div class="complete-stats">${statsMarkup()}</div>
     <div class="complete-actions">
-      <button class="button" id="back-home">학습 범위 선택</button>
-      <button class="button start" id="repeat">같은 구간 다시 학습</button>
+      <button class="button secondary" id="back-home">학습 범위 선택</button>
+      <button class="button primary action-start" id="repeat">같은 구간 다시 학습</button>
     </div></section>`;
   $('#back-home').onclick = () => go('home');
   $('#repeat').onclick = startRound;
@@ -736,4 +732,5 @@ for (const panel of document.querySelectorAll('.preferences-dialog')) {
   new MutationObserver(refresh).observe(panel, {attributes:true, attributeFilter:['open']});
   new ResizeObserver(refresh).observe(panel);
   window.addEventListener('resize', refresh);
+}
 }
