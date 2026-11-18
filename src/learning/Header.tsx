@@ -54,7 +54,7 @@ export default function Header({ user, name, loggedOut, subject, view, onStudyAc
           <button type="button" onClick={() => navigate(base + '#/me')}><Icon name="person" />프로필</button>
           <button type="button" onClick={() => navigate(base + '#/records')}><Icon name="records" />내 기록</button>
           <button type="button" onClick={loggedOut}><Icon name="logout" />로그아웃</button>
-        </PostMenu> : <a className="icon-button account-icon" href={base + '#/me'} aria-label="로그인" title="로그인"><Icon name="person" /></a>}
+        </PostMenu> : <a className="plain-button account-icon" href={base + '#/me'} aria-label="로그인" title="로그인"><Icon name="person" /></a>}
         {user && name && <span className="account-label" aria-hidden="true">{name}</span>}
       </div>
     </div>

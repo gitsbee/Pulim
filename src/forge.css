@@ -192,10 +192,10 @@ select { width: 100%; min-height: 49px; background: var(--panel); border: var(--
 .input-error { color: var(--danger); font-weight: 750; }
 .choice-list { display: grid; gap: 9px; }
 .choice-list legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-#answer-form .choice-option { margin: 0; display: grid; grid-template-columns: 34px minmax(0,1fr); align-items: center; gap: 9px; min-height: 54px; background: var(--panel); border: var(--border-width) solid var(--line); border-radius: 11px; padding: 7px 12px; position: relative; font-size: 19px; font-weight: 650; cursor: pointer; }
+:is(#answer-form, .vocabulary-answer) .choice-option { margin: 0; display: grid; grid-template-columns: 34px minmax(0,1fr); align-items: center; gap: 9px; min-height: 54px; background: var(--panel); border: var(--border-width) solid var(--line); border-radius: 11px; padding: 7px 12px; position: relative; font-size: 19px; font-weight: 650; cursor: pointer; }
 .choice-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .choice-option .choice-number { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; font-size: 16px; font-weight: 800; }
-#answer-form .choice-option:has(input:checked) { border-color: var(--control-line); background: var(--control-wash); }
+:is(#answer-form, .vocabulary-answer) .choice-option:has(input:checked) { border-color: var(--control-line); background: var(--control-wash); }
 .choice-option:has(input:checked) .choice-number { background: var(--primary); color: var(--on-primary); border-color: var(--control-line); }
 .choice-text { display: block; min-width: 0; overflow-wrap: anywhere; line-height: 1.7; padding-block: 4px; }
 .choice-text .katex, .choice-text .katex-html { white-space: normal; }
@@ -374,7 +374,7 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 }
 .strategy-new input:checked + span { color: #fff; background: var(--palette-blue); border-color: #203e78; }
 .strategy-wrong input:checked + span { color: #fff; background: var(--palette-red); border-color: #671626; }
-#answer-form .choice-option:has(input:checked) { background: var(--primary); color: var(--on-primary); border-color: var(--primary-depth); }
+:is(#answer-form, .vocabulary-answer) .choice-option:has(input:checked) { background: var(--primary); color: var(--on-primary); border-color: var(--primary-depth); }
 .choice-option:has(input:checked) .choice-number { background: var(--on-primary); color: var(--primary); }
 
 .button.danger { background: var(--danger-fill); color: var(--danger); border-color: var(--danger-line); }
@@ -1024,7 +1024,7 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
 
 /* The face supplies its own color. State rules only add the shared edge and depth. */
 :where(.button, .icon-button, .inline-action, #course-select, .select-card > span,
-  #answer-form .choice-option, .custom-type-option):not(:where(
+  :is(#answer-form, .vocabulary-answer) .choice-option, .custom-type-option):not(:where(
   .exit-button, .settings-button, .preferences-close, .daily-arrow, .strategy-custom > span)) {
   --rest-edge: var(--line);
   --press-fill: var(--primary);
@@ -1056,7 +1056,7 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
 
 /* Specificity is shared across these states; role tokens live in :where above. */
 :is(.button, .icon-button, .inline-action, #course-select, .select-card > span,
-  #answer-form .choice-option, .custom-type-option):not(:where(
+  :is(#answer-form, .vocabulary-answer) .choice-option, .custom-type-option):not(:where(
   .exit-button, .settings-button, .preferences-close, .daily-arrow, .strategy-custom > span)) {
   border-color: var(--rest-edge);
 }
@@ -1064,7 +1064,7 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
   background: color-mix(in srgb, var(--press-fill) 12%, var(--panel));
 }
 :is(.button, .icon-button, .inline-action, #course-select, .select-card > span,
-  #answer-form .choice-option, .custom-type-option):where(
+  :is(#answer-form, .vocabulary-answer) .choice-option, .custom-type-option):where(
   :active:not(:disabled), [aria-pressed="true"], [aria-expanded="true"],
   .select-card input:checked + span, .select-card:active > span, :has(> input:checked)
 ):not(:where(.exit-button, .settings-button, .preferences-close, .daily-arrow, .strategy-custom > span)) {
@@ -1078,7 +1078,7 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
   color: var(--press-ink);
 }
 :is(.button, .icon-button, .inline-action, #course-select, .select-card > span,
-  #answer-form .choice-option, .custom-type-option):where(:disabled) { box-shadow: none; transform: none; }
+  :is(#answer-form, .vocabulary-answer) .choice-option, .custom-type-option):where(:disabled) { box-shadow: none; transform: none; }
 
 /* Switch tracks and thumbs share the neutral edge when raised. */
 .mix-toggle input::before { border-color: var(--line); box-shadow: 0 var(--button-step) 0 var(--line); }
@@ -1200,7 +1200,7 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
 :where(.custom-type-option) { --rest-edge: var(--palette-green); --press-fill: var(--palette-green); --press-ink: var(--palette-white); }
 
 /* Borderless controls and the always-filled start actions retain their roles. */
-:is(.button, .icon-button, .inline-action, .select-card > span, #answer-form .choice-option, .custom-type-option):not(:where(.action-start, #next-problem, .floating-return, .exit-button, .settings-button, .preferences-close, .daily-arrow, .strategy-custom > span)):not(:where(:active:not(:disabled), [aria-pressed="true"], [aria-expanded="true"], :has(> input:checked), .select-card:has(> input:checked) > span, .select-card:active > span)) {
+:is(.button, .icon-button, .inline-action, .select-card > span, :is(#answer-form, .vocabulary-answer) .choice-option, .custom-type-option):not(:where(.action-start, #next-problem, .floating-return, .exit-button, .settings-button, .preferences-close, .daily-arrow, .strategy-custom > span, .word-list-card > span, .choice-correct, .choice-wrong)):not(:where(:active:not(:disabled), [aria-pressed="true"], [aria-expanded="true"], :has(> input:checked), .select-card:has(> input:checked) > span, .select-card:active > span)) {
   background: color-mix(in srgb, var(--rest-edge, var(--line)) 10%, transparent) !important;
   border-color: var(--rest-edge, var(--line)) !important;
   box-shadow: 0 var(--button-step) 0 var(--rest-edge, var(--line)) !important;
@@ -1299,3 +1299,36 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
   color: var(--palette-white);
   background: var(--palette-blue);
 }
+
+/* Reusable roles for controls and tags outside the math screens. */
+.ui-strong { font-weight: 700 !important; }
+.icon.icon-small { width: var(--icon-small); height: var(--icon-small); }
+.plain-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-width: 44px; min-height: 44px; padding: 6px; border: 0; box-shadow: none;
+  border-radius: var(--round); background: transparent; color: inherit;
+}
+.plain-button:hover:not(:disabled) { background: var(--control-wash); }
+.plain-button:disabled { opacity: .6; }
+.plain-button[aria-current], .plain-button[aria-pressed="true"] {
+  color: var(--on-primary); background: var(--primary);
+}
+
+:where([data-tone="success"]) { --role-color: var(--palette-green); }
+:where([data-tone="danger"]) { --role-color: var(--palette-red); }
+:where([data-tone="review"]) { --role-color: var(--palette-gold); }
+:where([data-tone="info"]) { --role-color: var(--palette-blue); }
+:where([data-tone="violet"]) { --role-color: var(--palette-violet); }
+.select-card[data-tone] > span, :is(.button, .icon-button)[data-tone] {
+  --rest-edge: var(--role-color); --press-fill: var(--role-color); --press-ink: var(--palette-white);
+}
+.context-chip[data-tone] { background: var(--role-color); color: var(--palette-white); }
+.context-chip[data-tone="neutral"] { background: var(--control-wash); color: var(--control-ink); }
+
+.tone-review dt .icon, .tone-review dd strong { color: var(--status-review); }
+.verdict.is-hinted { background: var(--palette-gold); color: var(--palette-white); }
+
+/* Graded choices use the same success and error faces as the verdict. */
+.choice-option.choice-correct, .choice-option.choice-wrong { opacity: 1; }
+:is(#answer-form, .vocabulary-answer) .choice-option.choice-correct { color: var(--status-good); border-color: currentColor; background: var(--success-fill); }
+:is(#answer-form, .vocabulary-answer) .choice-option.choice-wrong { color: var(--status-bad); border-color: currentColor; background: var(--danger-fill); }

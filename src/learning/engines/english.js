@@ -35,10 +35,10 @@ function icon(name) {
 const $ = selector => document.querySelector(selector);
 const app = $('#app');
 const studyModes = {
-  flash: ['플래시카드', '단어와 뜻을 번갈아 보기', 'cards', 'blue'],
-  recall: ['암기', '뜻을 떠올리고 스스로 확인하기', 'history', 'gold'],
-  choice: ['선택', '뜻을 보기에서 고르기', 'check', 'blue'],
-  type: ['스펠', '영어를 보고 한국어 뜻 쓰기', 'keyboard', 'green'],
+  flash: ['플래시카드', '단어와 뜻을 번갈아 보기', 'cards', 'info'],
+  recall: ['암기', '뜻을 떠올리고 스스로 확인하기', 'history', 'review'],
+  choice: ['선택', '뜻을 보기에서 고르기', 'check', 'info'],
+  type: ['스펠', '영어를 보고 한국어 뜻 쓰기', 'keyboard', 'success'],
 };
 
 let words = [], view = 'home', mode = 'recall', session = [], position = 0;
@@ -107,22 +107,35 @@ function segmentKey(kind, scope, from, to) { return `${kind}|${scope}|${from}|${
 function segmentStatuses(key, kind, indices) {
   return state.segmentProgress[key] ?? Object.fromEntries(indices.filter(i => state.modeProgress[kind]?.[i]).map(i => [i, state.modeProgress[kind][i]]));
 }
+const outcomeTones = {
+  correct: 'success', seen: 'success', wrong: 'danger', hinted: 'review', medium: 'review', remaining: 'neutral',
+};
+const scopeTones = { all: 'success', wrong: 'danger', stars: 'review', hints: 'info' };
+
+function chip(text, glyph, tone, label = text) {
+  return `<span class="context-chip" data-tone="${tone}" title="${escapeHtml(label)}"
+    aria-label="${escapeHtml(label)}">${glyph ? icon(glyph) : ''}${escapeHtml(text)}</span>`;
+}
+
 function segmentTags(kind, indices, status) {
   const keys = ['correct', kind === 'recall' ? 'medium' : 'hinted', 'wrong', 'remaining'];
   const icons = kind === 'recall' ? ['difficulty-low','difficulty-medium','difficulty-high','history'] : ['check','bulb','close','history'];
   const labels = kind === 'recall' ? ['쉬움','보통','어려움','미학습'] : ['정답','힌트 정답','오답','미학습'];
-  return keys.map((k, n) => `<span class="context-chip chip count-${k}" title="${labels[n]}" aria-label="${labels[n]} ${indices.filter(i => k === 'remaining' ? !status[i] : status[i] === k).length}개">${icon(icons[n])}${indices.filter(i => k === 'remaining' ? !status[i] : status[i] === k).length}</span>`).join('');
+  return keys.map((key, index) => {
+    const count = indices.filter(i => key === 'remaining' ? !status[i] : status[i] === key).length;
+    return chip(count, icons[index], outcomeTones[key], `${labels[index]} ${count}개`);
+  }).join('');
 }
 function renderSetup() {
   if (!['recall','choice','type'].includes(mode)) mode = 'recall';
   app.innerHTML = `<section class="setup-view">${heading('오늘의 학습')}<div class="home-overview">
-    <section class="home-session"><h2>현재 상태</h2>${homeMetrics()}</section>
-    <section class="home-session"><h2>진행 중인 문제</h2>${currentRoundMarkup()}</section>
-    <section class="home-session"><h2>학습하기</h2><form id="setup-form" class="setup-form" novalidate>
-      <fieldset><legend>연습 방식</legend><div class="mode-options">${['recall','choice','type'].map(key => { const [label, description, iconName, color] = studyModes[key]; return `<label class="select-card ${color}"><input type="radio" name="mode" value="${key}" ${key === mode ? 'checked' : ''}><span>${icon(iconName)}<span>${label}</span><span class="sr-only">${description}</span></span></label>`; }).join('')}</div></fieldset>
-      <fieldset><legend>단어장</legend><div class="unit-card"><span>${icon('book')}<span class="unit-copy">1번 리스트<small>${words.length}단어</small></span></span></div></fieldset>
-      <fieldset><legend>학습 범위</legend><div class="scope-options">${[['all','전체 단어'],['wrong','틀린 단어'],['stars','북마크'],['hints','힌트 정답']].map(([key,label]) => `<label class="select-card scope-${key}"><input type="radio" name="scope" value="${key}" ${key === preferences.scope ? 'checked' : ''}><span>${icon(({all:'book',wrong:'repeat',stars:'star',hints:'bulb'})[key])}${label}</span></label>`).join('')}</div>
-        <div class="unit-heading"><h3>학습 구간</h3><div class="unit-heading-controls"><label class="mix-toggle"><span>믹스</span><input name="shuffle" type="checkbox" role="switch" ${preferences.shuffle ? 'checked' : ''}><span class="switch-ui" aria-hidden="true"></span></label><label class="interval-control" id="generated-range" ${preferences.manual ? 'hidden' : ''}><span>구간 간격</span><input name="size" type="number" aria-label="구간 간격" min="1" max="${words.length}" value="${preferences.size}"></label></div></div>
+    <section class="home-session home-status"><h2>현재 상태</h2>${homeMetrics()}</section>
+    <section class="home-session home-current"><h2>진행 중인 문제</h2>${currentRoundMarkup()}</section>
+    <section class="home-session range-settings"><h2>학습하기</h2><form id="setup-form" class="setup-form" novalidate>
+      <fieldset><legend>연습 방식</legend><div class="mode-options">${['recall','choice','type'].map(key => { const [label, description, iconName, tone] = studyModes[key]; return `<label class="select-card" data-tone="${tone}"><input type="radio" name="mode" value="${key}" ${key === mode ? 'checked' : ''}><span>${icon(iconName)}<strong class="ui-strong">${label}</strong><span class="sr-only">${description}</span></span></label>`; }).join('')}</div></fieldset>
+      <fieldset><legend>단어장</legend><div class="select-card unit-card word-list-card" data-tone="info"><span>${icon('book')}<span class="unit-copy"><strong class="ui-strong">1번 리스트</strong><small>${words.length}단어</small></span></span></div></fieldset>
+      <fieldset><legend>학습 범위</legend><div class="scope-options">${[['all','전체 단어'],['wrong','틀린 단어'],['stars','북마크'],['hints','힌트 정답']].map(([key,label]) => `<label class="select-card" data-tone="${scopeTones[key]}"><input type="radio" name="scope" value="${key}" ${key === preferences.scope ? 'checked' : ''}><span>${icon(({all:'book',wrong:'repeat',stars:'star',hints:'bulb'})[key])}<span>${label}</span></span></label>`).join('')}</div>
+        <div class="unit-heading"><h3>학습 구간</h3><div class="unit-heading-controls"><label class="mix-toggle"><span>믹스</span><input name="shuffle" type="checkbox" role="switch" ${preferences.shuffle ? 'checked' : ''}></label><label class="interval-control" id="generated-range" ${preferences.manual ? 'hidden' : ''}><span>구간 간격</span><input name="size" type="number" aria-label="구간 간격" min="1" max="${words.length}" value="${preferences.size}"></label></div></div>
         <div class="range-fields" id="manual-range" ${preferences.manual ? '' : 'hidden'}><label>시작 번호<input name="from" type="number" min="1" max="${words.length}" value="${preferences.from}"></label><label>끝 번호<input name="to" type="number" min="1" max="${words.length}" value="${preferences.to}"></label></div>
       </fieldset><p id="setup-error" class="error" role="alert"></p><div id="segment-list"></div>
     </form></section></div></section>`;
@@ -140,7 +153,7 @@ function renderSetup() {
       const status = segmentStatuses(key,mode,indices), draft = state.segmentDrafts[key];
       const done = indices.length > 0 && indices.every(i => status[i]);
       const hasRecord = !!draft || indices.some(i => status[i]);
-      return `<details class="segment-card" data-range="${from},${to}"><summary><span class="segment-heading">${p.manual ? '직접 설정' : `${n+1}구간`}</span><span class="segment-tags">${segmentTags(mode,indices,status)}</span><span class="segment-actions">${hasRecord ? `<button type="button" class="icon-button" data-segment-reset="${key}" aria-label="${n+1}구간 학습 기록 초기화" title="구간 초기화">${icon('repeat')}</button>` : ''}${indices.length && (!done || draft) ? `<button type="button" class="icon-button" data-segment-start="${key}" aria-label="${n+1}구간 ${draft ? '이어서' : '시작'}" title="${draft ? '이어서 풀기' : '학습 시작'}">${icon('next')}</button>` : ''}</span></summary><div class="segment-words">${indices.length ? indices.map(i => `<button type="button" class="word-flip" aria-pressed="false" data-word="${i}"><span lang="en">${escapeHtml(words[i].en)}</span><span class="word-meaning">${escapeHtml(words[i].ko)}</span></button>`).join('') : '<p class="empty">이 범위에 해당하는 단어가 없어요.</p>'}</div></details>`;
+      return `<details class="segment-card" data-range="${from},${to}"><summary><span class="segment-heading ui-strong">${p.manual ? '직접 설정' : `${n+1}구간`}</span><span class="segment-tags">${segmentTags(mode,indices,status)}</span><span class="segment-actions">${hasRecord ? `<button type="button" class="plain-button" data-segment-reset="${key}" aria-label="${n+1}구간 학습 기록 초기화" title="구간 초기화">${icon('repeat')}</button>` : ''}${indices.length && (!done || draft) ? `<button type="button" class="plain-button" data-segment-start="${key}" aria-label="${n+1}구간 ${draft ? '이어서' : '시작'}" title="${draft ? '이어서 풀기' : '학습 시작'}">${icon('next')}</button>` : ''}</span></summary><div class="segment-words">${indices.length ? indices.map(i => `<button type="button" class="button secondary word-flip" aria-pressed="false" data-word="${i}"><span lang="en">${escapeHtml(words[i].en)}</span><span class="word-meaning">${escapeHtml(words[i].ko)}</span></button>`).join('') : '<p class="empty">이 범위에 해당하는 단어가 없어요.</p>'}</div></details>`;
     }).join('')}`;
     $('#segment-list').querySelectorAll('[data-word]').forEach(button => button.onclick = () => button.setAttribute('aria-pressed', button.getAttribute('aria-pressed') !== 'true'));
     $('#segment-list').querySelectorAll('[data-segment-start]').forEach(button => button.onclick = event => {
@@ -168,7 +181,7 @@ function renderSetup() {
 
 function starMarkup(index) {
   const selected = Boolean(state.stars[index]);
-  return `<button type="button" class="icon-button star" data-star="${index}" aria-label="북마크" aria-pressed="${selected}">${icon('star')}</button>`;
+  return `<button type="button" class="icon-button star" data-tone="review" data-star="${index}" aria-label="북마크" aria-pressed="${selected}">${icon('star')}</button>`;
 }
 function bindStars(update) {
   app.querySelectorAll('[data-star]').forEach(button => {
@@ -211,10 +224,12 @@ function renderCollection() {
     if (key === 'bookmarks') matches = matches.filter(w => state.stars[w.index]);
     matches = matches.filter(w => w.en.toLowerCase().includes(query) || w.ko.includes(query));
     $(`[data-words="${key}"]`).innerHTML = matches.length ? matches.map(word => `
-      <details class="review-item ${key === 'bookmarks' ? 'saved-problem' : ''}">
+      <details class="review-item ${key === 'bookmarks' ? 'saved-problem saved-archive' : ''}">
         <summary>
           <span class="review-name">${icon(key === 'bookmarks' ? 'star' : review ? 'repeat' : 'book')} <span lang="en">${escapeHtml(word.en)}</span></span>
-          <span class="review-stage">${key === 'wrong' ? `오답 ${state.wrong[word.index]}회` : `${word.index + 1}번`}</span>
+          <span class="review-stage">${key === 'wrong'
+            ? chip(`오답 ${state.wrong[word.index]}회`, 'close', 'danger')
+            : chip(`${word.index + 1}번`, 'list', 'neutral')}</span>
         </summary>
         <div class="review-body">
           <p>${escapeHtml(word.ko)}</p>
@@ -329,16 +344,17 @@ function homeMetrics() {
     counts[cardNeedsReview(status) ? 'review' : status ? 'studied' : 'unused']++;
   });
   return `<dl class="metrics home-metrics">
-    <div class="metric"><dt>${icon('check')}학습한 카드</dt><dd><strong>${counts.studied}장</strong></dd></div>
-    <div class="metric"><dt>${icon('history')}오답 및 힌트 카드</dt><dd><strong>${counts.review}장</strong></dd></div>
-    <div class="metric"><dt>${icon('cards')}미학습 카드</dt><dd><strong>${counts.unused}장</strong></dd></div>
+    <div class="metric tone-score"><dt>${icon('check')}학습한 카드</dt><dd><strong>${counts.studied}장</strong></dd></div>
+    <div class="metric tone-review"><dt>${icon('history')}오답 및 힌트 카드</dt><dd><strong>${counts.review}장</strong></dd></div>
+    <div class="metric tone-count"><dt>${icon('cards')}미학습 카드</dt><dd><strong>${counts.unused}장</strong></dd></div>
   </dl>`;
 }
 function wordStatuses(index) {
   return `<div class="word-statuses">${['recall', 'choice', 'type'].map(key => {
     const status = state.modeProgress[key][index];
     const label = (key === 'recall' ? recallLabels : gradeLabels)[status] || '기록 없음';
-    return `<span class="context-chip chip word-mark count-${status || 'remaining'}">${icon(key === 'recall' ? 'cards' : key === 'choice' ? 'check' : 'keyboard')} ${studyModes[key][0]} · ${label}</span>`;
+    const [name, , glyph] = studyModes[key];
+    return chip(`${name} · ${label}`, glyph, outcomeTones[status] || 'neutral');
   }).join('')}</div>`;
 }
 function currentRoundMarkup() {
@@ -348,7 +364,12 @@ function currentRoundMarkup() {
   const i = draft.session[draft.position], label = studyModes[draft.mode]?.[0] || '학습';
   const parts = draft.key.split('|');
   const range = parts.length === 4 ? `${parts[2]}–${parts[3]}번` : `${Math.min(...draft.session)+1}–${Math.max(...draft.session)+1}번`;
-  return `<article class="saved-round"><dl class="range-list"><div><dt>리스트</dt><dd><span class="context-chip chip chip-list">${icon('book')} 1번 리스트</span></dd></div><div><dt>범위</dt><dd>${range}</dd></div><div><dt>연습 방식</dt><dd>${icon(studyModes[draft.mode]?.[2] || 'book')} ${label}</dd></div></dl><button class="button primary action-start wide" data-resume="${draft.key}">${icon('next')} 이어 풀기</button></article>`;
+  const [, , glyph, tone] = studyModes[draft.mode];
+  return `<article class="saved-round"><dl class="range-list">
+    <div class="metric"><dt>리스트</dt><dd>${chip('1번 리스트', 'book', 'info')}</dd></div>
+    <div class="metric"><dt>범위</dt><dd>${chip(range, 'list', 'neutral')}</dd></div>
+    <div class="metric"><dt>연습 방식</dt><dd>${chip(label, glyph, tone)}</dd></div>
+  </dl><button class="button primary action-start wide" data-resume="${escapeHtml(draft.key)}">${icon('next')} 이어 풀기</button></article>`;
 }
 function persistRound() {
   const draft = { mode, session, position, outcomes, question, updatedAt: Date.now() };
@@ -417,7 +438,7 @@ function statsMarkup() {
   return Object.entries(counts).map(([key, count]) => {
     const label = key === 'remaining' ? gradeLabels.remaining : labels[key];
     const glyph = mode === 'recall' ? ({correct:'difficulty-low',medium:'difficulty-medium',wrong:'difficulty-high',remaining:'history'}[key]) : ({correct:'check',seen:'check',hinted:'bulb',wrong:'close',remaining:'history'}[key]);
-    return `<span class="context-chip chip count-${key}" title="${label}">${icon(glyph)}<span class="sr-only">${label} </span>${count}</span>`;
+    return chip(count, glyph, outcomeTones[key], `${label} ${count}개`);
   }).join('');
 }
 function recordOutcome(outcome) {
@@ -438,7 +459,11 @@ function recordOutcome(outcome) {
   state.modeProgress[mode][index] = outcome;
   if (roundKey) { state.segmentProgress[roundKey] ??= {}; state.segmentProgress[roundKey][index] = outcome; }
   $('#session-stats').innerHTML = statsMarkup();
-  if ($('#combo')) $('#combo').innerHTML = icon('target') + ' ' + comboCount() + '콤보';
+  const combo = $('#combo');
+  if (combo) {
+    combo.innerHTML = icon('target') + ' ' + comboCount() + '콤보';
+    combo.dataset.tone = comboCount() ? 'success' : 'neutral';
+  }
   playSound(outcome);
   persistRound();
 }
@@ -447,16 +472,16 @@ function renderSession() {
   const index = session[position], word = words[index];
   app.innerHTML = `<section class="session-view">
     <header class="session-header"><div class="session-header-inner">
-      <button id="exit" class="icon-button exit-button" aria-label="연습 나가기" title="연습 나가기">${icon('close')}</button>
+      <button id="exit" class="plain-button exit-button" aria-label="연습 나가기" title="연습 나가기">${icon('close')}</button>
       <div class="session-context"><h1 tabindex="-1">${studyModes[mode][0]}</h1>
-        <div class="session-context-info"><div class="session-tags"><span class="context-chip chip chip-list">${icon('book')} 1번 리스트</span><div class="session-stats" id="session-stats" aria-live="polite">${statsMarkup()}</div><span class="context-chip combo" id="combo" title="연속 정답">${icon('target')} ${comboCount()}콤보</span></div></div></div>
-      <div class="session-tools"><button class="icon-button settings-button" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정">${icon('settings')}</button></div>
+        <div class="session-context-info"><div class="session-tags">${chip('1번 리스트', 'book', 'info')}<div class="session-stats" id="session-stats" aria-live="polite">${statsMarkup()}</div><span class="context-chip combo" id="combo" data-tone="${comboCount() ? 'success' : 'neutral'}" title="연속 정답">${icon('target')} ${comboCount()}콤보</span></div></div></div>
+      <div class="session-tools"><button class="plain-button settings-button" data-settings aria-label="화면 및 입력 설정" title="화면 및 입력 설정">${icon('settings')}</button></div>
     </div></header>
     <div class="session-status-dock" id="session-status-dock"></div>
     <div class="session-content"><div class="question-area">
-      <p class="question-label">${index + 1}번 단어</p>
+      <div class="question-label">${chip(`${index + 1}번 단어`, 'cards', 'neutral')}</div>
       <p class="prompt question"><span lang="en">${escapeHtml(word.en)}</span>${mode === 'recall' && question.revealed ? ` - ${escapeHtml(word.ko)}` : ''}</p>
-      <div id="interaction"></div>
+      <div id="interaction" class="vocabulary-answer"></div>
     </div></div>
   </section>`;
   const moveSessionTags = () => {
@@ -482,9 +507,9 @@ function renderCard(word, index) {
       <button class="button secondary action-skip" id="previous" ${position === 0 ? 'disabled' : ''}>${icon('chevron-left')} 이전</button>
       <button class="button primary" id="next">다음 문제 ${icon('next')}</button>` : question.revealed ? `
       <div class="recall-levels">
-        <button class="button recall-level" data-level="high" id="miss">${icon('difficulty-high')} <span>어려움</span></button>
-        <button class="button recall-level" data-level="medium" id="medium">${icon('difficulty-medium')} <span>보통</span></button>
-        <button class="button recall-level" data-level="low" id="know">${icon('difficulty-low')} <span>쉬움</span></button>
+        <button class="button recall-level" data-tone="danger" id="miss">${icon('difficulty-high')} <span class="ui-strong">어려움</span></button>
+        <button class="button recall-level" data-tone="review" id="medium">${icon('difficulty-medium')} <span class="ui-strong">보통</span></button>
+        <button class="button recall-level" data-tone="success" id="know">${icon('difficulty-low')} <span class="ui-strong">쉬움</span></button>
       </div>` : ''}
       ${starMarkup(index)}
     </div>`;
@@ -513,7 +538,7 @@ function renderChoice(word, index) {
     question.options = [word.ko, ...unique.slice(0,3)].sort(() => Math.random()-.5); persistRound();
   }
   const done = question.phase !== 'input';
-  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="button secondary choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">다음 문제 ${icon('next')}</button>${starMarkup(index)}</div>`;
+  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number ui-strong">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'is-wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">다음 문제 ${icon('next')}</button>${starMarkup(index)}</div>`;
   app.querySelectorAll('[data-choice]').forEach(button => button.onclick = () => { question.selected=Number(button.dataset.choice); question.phase='done'; recordOutcome(normalize(question.options[question.selected]) === normalize(word.ko) ? 'correct' : 'wrong'); renderChoice(word,index); bindStars(); $('#choice-next').focus(); });
   if (done) $('#choice-next').onclick = next;
 }
@@ -528,8 +553,8 @@ function renderType(word, index) {
       <div class="session-actions type-actions">
         <button class="button primary action-start" id="submit">${icon('check')} 정답 확인</button>
         ${starMarkup(index)}
-        <button type="button" class="icon-button hint-tool" id="hint-button" aria-label="힌트" aria-keyshortcuts="[" title="힌트 ([)">${icon('bulb')}</button>
-        <button type="button" class="icon-button answer-tool" id="show-answer" aria-label="정답 보기" aria-keyshortcuts="]" title="정답 보기 (])">${icon('eye')}</button>
+        <button type="button" class="icon-button hint-tool" data-tone="info" id="hint-button" aria-label="힌트" aria-keyshortcuts="[" title="힌트 ([)">${icon('bulb')}</button>
+        <button type="button" class="icon-button answer-tool" data-tone="violet" id="show-answer" aria-label="정답 보기" aria-keyshortcuts="]" title="정답 보기 (])">${icon('eye')}</button>
       </div>
     </form>`;
   const input = $('#answer'), feedback = $('#feedback'), submit = $('#submit');
@@ -574,11 +599,11 @@ function renderType(word, index) {
     $('#show-answer').disabled = finished || rewriting;
     if (finished) {
       submit.innerHTML = '<span>다음 문제</span>' + icon('next');
-      submit.classList.remove('start');
+      submit.classList.remove('action-start');
       submit.setAttribute('aria-keyshortcuts', 'Space');
     } else {
       submit.innerHTML = icon('check') + ' 정답 확인';
-      submit.classList.add('start');
+      submit.classList.add('action-start');
       submit.removeAttribute('aria-keyshortcuts');
     }
     if (phase === 'input') { drawHint(); return; }
@@ -591,7 +616,7 @@ function renderType(word, index) {
     const face = phase === 'accepted' ? labels[phase] :
       rewriting ? `<strong>${escapeHtml(word.ko)}</strong><p>정답을 보고 다시 써 보세요.</p>` :
         `${labels[phase]} · ${escapeHtml(word.ko)}`;
-    feedback.innerHTML = `<div class="verdict ${kind}">${icon(kind === 'wrong' ? 'close' : 'check')}<div>${face}</div></div>`;
+    feedback.innerHTML = `<div class="verdict is-${kind}">${icon(kind === 'wrong' ? 'close' : 'check')}<div>${face}</div></div>`;
     if (phase !== 'shown' && phase !== 'wrong') return;
     feedback.insertAdjacentHTML('beforeend', `<div class="feedback-actions">
       ${phase === 'wrong' ? '<button type="button" class="button secondary" id="accept">인정 답안으로 추가</button>' : ''}
@@ -660,7 +685,9 @@ document.addEventListener('keydown', event => {
 }, true);
 
 function renderComplete() {
-  app.innerHTML = `<section class="page">${heading('학습 완료', `${studyModes[mode][0]} · ${session.length}개 단어`)}
+  app.innerHTML = `<section class="setup-view">${heading('학습 완료')}
+    <div class="complete-stats">${chip(studyModes[mode][0], studyModes[mode][2], studyModes[mode][3])}
+      ${chip(`${session.length}개 단어`, 'cards', 'neutral')}</div>
     <div class="complete-stats">${statsMarkup()}</div>
     <div class="complete-actions">
       <button class="button secondary" id="back-home">학습 범위 선택</button>

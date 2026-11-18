@@ -11,7 +11,7 @@
   <div id="app"></div>
   <dialog class="preferences-dialog" id="preferences" aria-labelledby="preferences-title">
     <header class="preferences-header"><h2 id="preferences-title">설정</h2>
-      <form method="dialog"><button class="icon-button" id="close-settings" aria-label="닫기"></button></form>
+      <form method="dialog"><button class="plain-button preferences-close" id="close-settings" aria-label="닫기"></button></form>
     </header>
     <section class="preferences-section" aria-labelledby="settings-screen">
       <h3 id="settings-screen">화면 및 테마</h3>
@@ -26,14 +26,14 @@
     </section>
     <section class="preferences-section" aria-labelledby="settings-input">
       <h3 id="settings-input">입력</h3>
-      <label class="mix-toggle settings-toggle"><span>세벌식 390</span><input id="ime" type="checkbox" role="switch" aria-describedby="ime-help"><span class="switch-ui" aria-hidden="true"></span></label>
+      <label class="mix-toggle settings-toggle"><span>세벌식 390</span><input id="ime" type="checkbox" role="switch" aria-describedby="ime-help"></label>
       <p id="ime-help" class="help">세벌식 390 사용 시 물리 키보드를 영문 상태로 두세요.</p>
     </section>
     <section class="preferences-section" aria-labelledby="settings-problem"><h3 id="settings-problem">문제 설정</h3>
-      <label class="mix-toggle settings-toggle"><span>범위 수동 설정</span><input id="manual-setting" type="checkbox" role="switch"><span class="switch-ui" aria-hidden="true"></span></label>
+      <label class="mix-toggle settings-toggle"><span>범위 수동 설정</span><input id="manual-setting" type="checkbox" role="switch"></label>
     </section>
     <section class="preferences-section" aria-labelledby="settings-sound"><h3 id="settings-sound">음향 및 소리</h3>
-      <label class="mix-toggle settings-toggle"><span>효과음</span><input id="sound-enabled" type="checkbox" role="switch"><span class="switch-ui" aria-hidden="true"></span></label>
+      <label class="mix-toggle settings-toggle"><span>효과음</span><input id="sound-enabled" type="checkbox" role="switch"></label>
       <div class="volume-setting"><label for="sound-volume">효과음 음량</label><output id="sound-volume-value" for="sound-volume">70%</output><span class="range-track"><input id="sound-volume" type="range" min="0" max="100" step="5"></span></div>
     </section>
     <section class="preferences-section" aria-labelledby="settings-support"><h3 id="settings-support">사용자 지원</h3>
@@ -42,13 +42,13 @@
     </section>
   </dialog>
   <dialog id="help-dialog" class="preferences-dialog" aria-labelledby="help-title">
-    <header class="preferences-header"><h2 id="help-title">도움말</h2><form method="dialog"><button class="icon-button" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
+    <header class="preferences-header"><h2 id="help-title">도움말</h2><form method="dialog"><button class="plain-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
     <h3>학습하기</h3><p>단어장과 학습 방식을 선택하고 구간 간격 또는 수동 범위를 정해 연습합니다.</p>
     <h3>단축키</h3><p>[는 힌트, ]는 정답 보기, 역슬래시 또는 원화 키는 별표입니다. 채점 후 스페이스로 다음 문제를 엽니다.</p>
     <h3>학습 기록</h3><p>기록에서 복습과 보관한 단어를 확인합니다. 진행 중인 학습은 같은 브라우저에서 이어 풀 수 있습니다.</p>
   </dialog>
   <dialog id="about-dialog" class="preferences-dialog" aria-labelledby="about-title">
-    <header class="preferences-header"><h2 id="about-title">소개</h2><form method="dialog"><button class="icon-button" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
+    <header class="preferences-header"><h2 id="about-title">소개</h2><form method="dialog"><button class="plain-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><span data-icon="close"></span></button></form></header>
     <p>풀림 영어는 단어를 보고 떠올리고 직접 입력하며 복습할 수 있는 학습 도구입니다.</p>
   </dialog>
   <dialog id="reset-dialog" aria-labelledby="reset-title">

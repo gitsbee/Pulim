@@ -340,3 +340,60 @@ test('one study document, shared dark theme and synchronized practice records', 
     await second.close();
   }
 });
+
+test('English restores the vocabulary layout and uses Forge control roles on desktop and mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('./#/english');
+  const english = page.locator('.study-english');
+  const gridColumns = (selector: string) => english.locator(selector).first().evaluate(element =>
+    getComputedStyle(element).gridTemplateColumns.split(' ').length);
+  await expect(english.getByRole('heading', { name: '오늘의 학습' })).toBeVisible();
+  expect(await gridColumns('.scope-options')).toBe(4);
+  const colors = await english.locator('.mode-options .select-card > span').evaluateAll(elements =>
+    elements.map(element => getComputedStyle(element).getPropertyValue('--rest-edge').trim()));
+  expect(new Set(colors).size).toBe(3);
+  await expect(english.locator('.mode-options .ui-strong').first()).toHaveCSS('font-weight', '700');
+  await expect(english.locator('.home-metrics dt').first()).toHaveCSS('font-weight', '400');
+
+  const segment = english.locator('.segment-card').first();
+  const action = segment.getByRole('button', { name: '1구간 시작', exact: true });
+  await expect(action).toHaveCSS('border-top-width', '0px');
+  await expect(action).toHaveCSS('box-shadow', 'none');
+  await expect(segment.locator('.segment-tags .icon').first()).toHaveCSS('width', '18px');
+  await expect(action.locator('.icon')).toHaveCSS('width', '24px');
+  const tagColors = await segment.locator('.segment-tags .context-chip').evaluateAll(items =>
+    items.map(item => getComputedStyle(item).backgroundColor));
+  expect(new Set(tagColors).size).toBe(4);
+  await segment.locator('summary').click();
+  await expect.poll(() => gridColumns('.segment-words')).toBeGreaterThan(1);
+  const card = segment.locator('.word-flip').first();
+  await expect(card.locator('.word-meaning')).toBeHidden();
+  await card.click();
+  await expect(card.locator('.word-meaning')).toBeVisible();
+  await page.screenshot({ path: 'test-results/pulim-english-layout-desktop.png' });
+
+  await page.setViewportSize({ width: 320, height: 720 });
+  expect(await gridColumns('.scope-options')).toBe(2);
+  expect(await gridColumns('.segment-words')).toBe(1);
+  await english.locator('.mode-options input[value="choice"] + span').click();
+  await action.click();
+  const choice = english.locator('.choice-option').first();
+  await expect(choice).toHaveCSS('display', 'grid');
+  await choice.click();
+  await expect(english.locator('.choice-correct')).toBeVisible();
+  await expect(english.locator('.choice-correct')).toHaveCSS('opacity', '1');
+  await english.getByRole('button', { name: '연습 나가기', exact: true }).click();
+  await expect(english.locator('.saved-round .context-chip')).toHaveCount(3);
+  await english.locator('.mode-options input[value="type"] + span').click();
+  await action.click();
+  const submit = english.getByRole('button', { name: '정답 확인', exact: true });
+  await expect(submit).toHaveCSS('border-top-width', '2px');
+  expect(await submit.evaluate(element => getComputedStyle(element).boxShadow)).not.toBe('none');
+  const actionPositions = await english.locator('.type-actions > button').evaluateAll(buttons =>
+    buttons.map(button => Math.round(button.getBoundingClientRect().top)));
+  expect(new Set(actionPositions).size).toBe(1);
+  await english.getByRole('button', { name: '정답 보기', exact: true }).click();
+  await expect(english.locator('.verdict.is-wrong')).toBeVisible();
+  await page.screenshot({ path: 'test-results/pulim-english-layout-mobile.png' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

@@ -8,7 +8,7 @@ export default function PostMenu({ children, label, iconOnly = false, icon = "mo
     return () => document.removeEventListener('pointerdown', close);
   }, []);
   return <details className="post-menu" ref={ref} onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); ref.current!.open = false; ref.current?.querySelector('summary')?.focus(); } }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node)) event.currentTarget.open = false; }}>
-    <summary role="button" aria-label={label || "게시물 메뉴"} title={label || "게시물 메뉴"} className="icon-button"><Icon name={icon} />{label && !iconOnly && <span>{label}</span>}</summary>
+    <summary role="button" aria-label={label || "게시물 메뉴"} title={label || "게시물 메뉴"} className="plain-button"><Icon name={icon} />{label && !iconOnly && <span>{label}</span>}</summary>
     <div className="post-menu-options" aria-label="게시물 작업" onClick={event => { if ((event.target as Element).closest('button')) { ref.current!.open = false; ref.current?.querySelector('summary')?.focus(); } }}>{children}</div>
   </details>;
 }

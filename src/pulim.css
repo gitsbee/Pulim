@@ -52,6 +52,7 @@
 }
 .section-tabs a[aria-current], .filter-tabs [aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
 .section-tabs a:hover:not([aria-current]), .filter-tabs button:hover:not([aria-pressed="true"]), .tags button:hover { background: var(--control-wash); }
+.tags button.context-chip { min-height: 32px; padding: 5px 9px; }
 .profile-shortcuts { margin-bottom: 18px; }
 .muted, .post-time, .handle, .field-counter, .connection, .feed-scope { font-size: .875rem; color: var(--secondary); }
 .feed-scope { text-align: end; }
@@ -60,7 +61,7 @@
 .application-main :where(label:not(.select-card)), .pulim-dialog :where(label:not(.select-card)) { display: block; margin-bottom: 5px; }
 .application-main :where(input:not([type=radio],[type=checkbox]), textarea),
 .pulim-dialog :where(input:not([type=radio],[type=checkbox]), textarea),
-.study-english :where(input[type=text], input[type=number], input[type=search]) {
+.study-english :where(input[type=number], input[type=search]) {
   width: 100%; min-width: 0; min-height: 49px; padding: 8px 12px;
   background: var(--panel); border: var(--border-width) solid var(--line); border-radius: var(--round);
 }
@@ -90,7 +91,6 @@ textarea { vertical-align: top; resize: vertical; }
 .reaction-button[aria-pressed] svg { fill: none; }
 .reaction-button[aria-pressed="true"] svg { fill: currentColor; }
 .reaction-button:disabled { opacity: .5; }
-.badge { white-space: nowrap; padding: 2px 8px; border-radius: 6px; background: var(--control-wash); font-size: .875rem; }
 .post-menu { position: relative; flex: none; }
 .post-menu > summary { list-style: none; cursor: pointer; }
 .post-menu > summary::-webkit-details-marker { display: none; }
@@ -119,48 +119,69 @@ textarea { vertical-align: top; resize: vertical; }
 .application-main footer { display: flex; justify-content: space-between; border-top: 1px solid var(--divider); margin-top: 28px; padding-block: 14px; color: var(--secondary); font-size: .875rem; }
 @media (max-width: 500px) { .subject-grid { grid-template-columns: 1fr; } }
 
-/* Word ranges and answer choices use Forge cards, buttons, chips and dialogs. */
-.study-english #segment-list, .study-english .segment-words, .study-english .word-statuses { display: grid; gap: 12px; }
-.study-english :is(.scope-options, .range-fields, .recall-levels) { display: grid; gap: 9px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.study-english .recall-levels { grid-template-columns: repeat(3,minmax(0,1fr)); width: 100%; }
-.study-english .unit-heading-controls, .study-english .segment-tags, .study-english .segment-actions,
-.study-english .session-tags, .study-english .session-stats, .study-english .complete-actions,
-.study-english .feedback-actions, .study-english .support-links { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
-.study-english .unit-copy small { display: block; }
-.study-english .unit-card > span, .study-english .segment-card,
-.study-english .word-flip { background: var(--panel); border: var(--border-width) solid var(--line); border-radius: var(--round); padding: 10px 12px; }
-.study-english .unit-card > span, .study-english .word-flip { display: flex; align-items: center; gap: 8px; }
-.study-english .segment-card summary { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; cursor: pointer; }
+/* Extra layout for the original vocabulary screens. Control faces come from Forge. */
+.study-english .home-overview { grid-template-columns: minmax(0, 1fr); }
+.study-english .word-list-card { cursor: default; }
+.study-english .scope-options, .study-english .range-fields { display: grid; gap: 9px; }
+.study-english .scope-options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.study-english .scope-options .select-card > span { justify-content: center; min-height: 49px; }
+.study-english .range-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 4px 0 9px; }
+.study-english .range-fields label { display: grid; gap: 4px; align-content: start; }
+.study-english .unit-heading { margin: 16px 0 12px; }
+.study-english .unit-heading-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.study-english .interval-control { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.study-english .interval-control input { width: 72px; min-height: 44px; }
+.study-english .word-list-card > span { --rest-edge: var(--role-color); --press-fill: var(--role-color); box-shadow: none; }
+.study-english .unit-copy { display: grid; gap: 3px; }
+.study-english .unit-copy small { font-size: 16px; color: var(--secondary); }
+.study-english .saved-round { display: grid; gap: 12px; }
+.study-english .saved-round .range-list dd { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.study-english :is(.wide, .review-start, .search) { width: 100%; }
+.study-english :is(.review-start, .feedback-actions) { margin-top: 9px; }
+.study-english .search { margin-bottom: 14px; }
+.study-english :is(.error, .help):empty, .study-english .session-actions:empty { display: none; }
+.study-english .help { font-size: 16px; margin-top: 8px; color: var(--secondary); }
+.study-english .secondary-copy { color: var(--secondary); }
+.study-english #segment-list { display: grid; gap: 9px; }
+.study-english .segment-card { border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); }
+.study-english .segment-card > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; list-style: none; }
+.study-english .segment-card > summary::-webkit-details-marker { display: none; }
+.study-english :is(.segment-tags, .segment-actions, .session-tags, .session-stats, .complete-stats, .word-statuses) {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+}
 .study-english .segment-actions { margin-inline-start: auto; }
-.study-english .segment-words { margin-top: 10px; }
-.study-english .word-flip { width: 100%; text-align: start; justify-content: space-between; }
-.study-english .word-flip:not([aria-pressed="true"]) .word-meaning { visibility: hidden; }
-.study-english .interval-control { display: flex; align-items: center; gap: 7px; }
-.study-english .interval-control input { width: 76px; }
-.study-english .question-label, .study-english .help, .study-english .secondary-copy { color: var(--secondary); }
-.study-english .session-content .question { margin-block: 12px 18px; }
-.study-english .session-actions, .study-english .word-card-footer { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
-.study-english .session-actions .answer-face { flex: 1 0 min(100%, 10em); }
-.study-english .session-actions .icon-button { box-sizing: border-box; min-height: 51px; }
-.study-english .session-tags { justify-content: center; }
-.study-english .choice-option { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 9px; width: 100%; text-align: start; justify-content: start; }
-.study-english .choice-option .choice-number { text-align: center; }
-.study-english .choice-option.choice-correct { color: var(--status-good); border-color: currentColor; }
-.study-english .choice-option.choice-wrong { color: var(--status-bad); border-color: currentColor; }
-.study-english .verdict.wrong { background: var(--palette-red); color: var(--palette-white); }
-.study-english .input-error { margin-top: 5px; }
-@media (max-width: 420px) {
-  .study-english .recall-levels .button { padding-inline: 4px; }
-  .study-english .recall-levels .icon { display: none; }
-  .study-english .interval-control input { width: 67px; }
+.study-english .segment-tags .context-chip { padding: 4px 6px; }
+.study-english .segment-words { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; padding: 0 12px 12px; }
+.study-english .word-flip { display: grid; align-content: center; justify-content: stretch; justify-items: start; min-height: 68px; text-align: start; overflow-wrap: anywhere; }
+.study-english .word-meaning { display: none; }
+.study-english .word-flip[aria-pressed="true"] .word-meaning { display: block; }
+.study-english .word-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+.study-english .session-tags { justify-content: flex-start; }
+.study-english .session-content { width: min(calc(100% - 42px), 704px); }
+.study-english .question-label { margin-bottom: 6px; }
+.study-english .vocabulary-answer { margin-top: 24px; }
+.study-english .answer-face { width: 100%; min-height: 54px; }
+.study-english .session-actions { align-items: stretch; }
+.study-english .session-actions :is(.star, .hint-tool, .answer-tool) { width: 51px; min-height: 51px; flex: 0 0 51px; padding: 0; }
+.study-english .star[aria-pressed="true"] .icon { fill: currentColor; }
+.study-english .recall-levels { display: grid; flex: 1; min-width: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.study-english .recall-levels .button { min-width: 0; padding-inline: 6px; }
+.study-english .choice-list .choice-option { width: 100%; text-align: start; }
+.study-english .verdict { margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+.study-english .complete-stats { margin-bottom: 16px; }
+.study-english :is(.complete-actions, .feedback-actions, .support-links) { display: flex; flex-wrap: wrap; gap: 9px; }
+.study-english [data-icon] { display: inline-flex; }
+@media (max-width: 620px) {
+  .study-english .session-content { width: calc(100% - 32px); padding-top: 18px; }
+  .study-english .mode-options .select-card > span { padding-inline: 5px; gap: 4px; white-space: nowrap; }
 }
-
-.study-english .mode-options .select-card > span { white-space: nowrap; }
-@media (max-width: 420px) {
-  .study-english .mode-options .select-card > span { padding-inline: 5px; gap: 4px; }
-  .study-english .mode-options .icon { width: 18px; height: 18px; }
+@media (max-width: 425px) {
+  .study-english .scope-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .study-english .segment-words { grid-template-columns: minmax(0, 1fr); }
+  .study-english .mode-options .icon, .study-english .recall-levels .icon { width: var(--icon-small); height: var(--icon-small); }
+  .study-english .mode-options .ui-strong, .study-english .recall-levels .button { font-size: 14px; }
+  .study-english .recall-levels { gap: 5px; }
+  .study-english .recall-levels .button { flex-direction: column; gap: 2px; }
+  .study-english .type-actions :is(.star, .hint-tool, .answer-tool) { width: 44px; flex-basis: 44px; }
+  .study-english .type-actions #submit { padding-inline: 5px; font-size: 16px; }
 }
-.study-english :where(.mode-options input + span) { --press-ink: var(--palette-white); }
-.study-english :where(.mode-options input[value="recall"] + span) { --press-fill: var(--mode-a); }
-.study-english :where(.mode-options input[value="choice"] + span) { --press-fill: var(--mode-b); }
-.study-english :where(.mode-options input[value="type"] + span) { --press-fill: var(--mode-c); }
