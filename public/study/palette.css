@@ -1,0 +1,126 @@
+/* Shared Problem Forge palette and controls for 풀림. */
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  letter-spacing: normal;
+  line-height: 1.55;
+  --ink: #161616;
+  --secondary: #494949;
+  --control-line: #555555;
+  --control-ink: #282828;
+  --control-wash: #ededed;
+  --surface: #f8f8f8;
+  --panel: #ffffff;
+  --primary: #242424;
+  --primary-hover: #3d3d3d;
+  --on-primary: #ffffff;
+  --depth: #a5a5a5;
+  --border-width: 2px;
+  --icon-size: 24px;
+  --press-edge-face: 86.666667%;
+  --press-depth-face: 73.333333%;
+  --icon-small: 18px;
+  --palette-red: #942339;
+  --palette-orange: #894522;
+  --palette-yellow: #b99038;
+  --palette-green: #22644f;
+  --palette-blue: #315f91;
+  --palette-indigo: #435596;
+  --palette-violet: #6b4b84;
+  --palette-black: #000;
+  --palette-charcoal: #202020;
+  --palette-silver: #dedede;
+  --palette-white: #fff;
+  --button-step: 2px;
+  --primary-depth: #121212;
+  --focus: #245db0;
+  --formula-fill: #eeeeee;
+  --danger: #912338;
+  --danger-line: #a32a37;
+  --success: #11522b;
+  --success-fill: #dff4e6;
+  --danger-fill: #fce8ec;
+  --pen-ink: #171717;
+  --plot-line: #626262;
+  --plot-grid: #d5d5d5;
+  --plot-ink: #232323;
+  --plot-fill: #ededed;
+  --streak: #753c0d;
+  --streak-fill: #ffead3;
+  --line: #777777;
+  --section-fill: #efefef;
+  --divider: #d1d1d1;
+  --score: #365c89;
+  --round: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #ffffff;
+  --secondary: #c7c7c7;
+  --control-line: #a5a5a5;
+  --control-ink: #eeeeee;
+  --control-wash: #303030;
+  --surface: #000000;
+  --panel: #000000;
+  --line: #8f8f8f;
+  --section-fill: #222222;
+  --divider: #4a4a4a;
+  --score: #b1cbed;
+  --primary: #e8e8e8;
+  --primary-hover: #cccccc;
+  --depth: #505050;
+  --primary-depth: #9b9b9b;
+  --focus: #9ec8ff;
+  --formula-fill: #2a2a2a;
+  --danger: #ffc2ce;
+  --danger-line: #f08ca0;
+  --success: #a5ebbe;
+  --success-fill: #213c30;
+  --danger-fill: #472a36;
+  --pen-ink: #ffffff;
+  --plot-line: #b7b7b7;
+  --plot-grid: #505050;
+  --plot-ink: #eeeeee;
+  --plot-fill: #333333;
+  --streak: #ffd39b;
+  --streak-fill: #463022;
+  --on-primary: #181818;
+}
+:root {
+  --palette-pink: #a65170;
+  --palette-lime: #71872f;
+  --palette-gold: #8a661c;
+  --palette-yellow: var(--palette-gold);
+}
+:root {
+  --status-good: var(--palette-green);
+  --status-bad: var(--palette-red);
+  --status-review: var(--palette-gold);
+  --status-info: var(--palette-blue);
+  --status-streak: var(--palette-orange);
+  --success: var(--status-good);
+  --danger: var(--status-bad);
+  --danger-line: var(--status-bad);
+  --success-fill: color-mix(in srgb, var(--palette-green) 18%, var(--panel));
+  --danger-fill: color-mix(in srgb, var(--palette-red) 18%, var(--panel));
+  --score: var(--status-info);
+  --streak: var(--status-streak);
+}
+:root[data-theme="dark"] {
+  --status-good: hsl(from var(--palette-green) h s calc(100 - l));
+  --status-bad: hsl(from var(--palette-red) h s calc(100 - l));
+  --status-review: hsl(from var(--palette-gold) h s calc(100 - l));
+  --status-info: hsl(from var(--palette-blue) h s calc(100 - l));
+  --status-streak: hsl(from var(--palette-orange) h s calc(100 - l));
+}
+:root[data-theme="dark"] .daily-signal.signal-correct { background: var(--status-good); border-color: var(--status-good); }
+:focus-visible { outline: var(--border-width) solid var(--focus); outline-offset: 4px; }
+.icon { width: var(--icon-size); height: var(--icon-size); flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.button { min-height: 51px; border-radius: var(--round); padding: 8px 17px; font-size: 18px; line-height: 1.3; font-weight: 800; display: inline-flex; justify-content: center; align-items: center; gap: 9px; border: var(--border-width) solid transparent; }
+.button.primary { background: var(--primary); color: var(--on-primary); }
+.button.primary:hover { background: var(--primary-hover); }
+.button.secondary { background: var(--panel); color: var(--ink); border-color: var(--line); }
+.button.secondary:hover, .icon-button:hover:not(:disabled) { background: var(--control-wash); }

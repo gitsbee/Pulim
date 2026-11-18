@@ -308,3 +308,40 @@ test('original comments disappear after deletion; quote comments remain independ
   await assertSucceeds(getDocs(collection(anon, 'posts/repost_reader_first/comments')));
   await assertSucceeds(makeComment('other', 'repost_reader_first', 'independent'));
 });
+
+test('learning records stay private, and daily rankings require three same-day results', async () => {
+  const day = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format();
+  const player = writer();
+  const stranger = environment.authenticatedContext('stranger').firestore();
+  const publicDb = environment.unauthenticatedContext().firestore();
+  const privateRecord = doc(player, 'users/writer/learning/math-test');
+  const attempt = {
+    subject: 'math', label: '함수', mode: '연습', result: 'correct',
+    occurredAt: Date.now(), createdAt: serverTimestamp(),
+  };
+  const answer = i => doc(player, `users/writer/learningDays/${day}/subjects/math/answers/${i}`);
+  const scorePath = `pulleemDays/${day}/subjects/math/scores/writer`;
+  const score = doc(player, scorePath);
+  const daily = correct => ({ correct, createdAt: serverTimestamp() });
+  const ranked = value => ({ score: value, updatedAt: serverTimestamp() });
+
+  await assertSucceeds(setDoc(privateRecord, attempt));
+  await assertFails(getDoc(doc(stranger, privateRecord.path)));
+  await assertFails(setDoc(doc(stranger, privateRecord.path), attempt));
+  await assertFails(updateDoc(privateRecord, { result: 'wrong' }));
+  await assertFails(setDoc(doc(player, 'users/writer/learningDays/2020-01-01/subjects/math/answers/0'), daily(true)));
+  await assertFails(setDoc(answer(3), daily(true)));
+  await assertSucceeds(setDoc(answer(0), daily(true)));
+  await assertFails(getDoc(doc(publicDb, answer(0).path)));
+  await assertFails(updateDoc(answer(0), { correct: false }));
+  await environment.withSecurityRulesDisabled(context =>
+    setDoc(doc(context.firestore(), 'profiles/writer'), { handle: 'writer', name: '학습자' }));
+  await assertFails(setDoc(score, ranked(1)));
+  await assertSucceeds(setDoc(answer(1), daily(false)));
+  await assertSucceeds(setDoc(answer(2), daily(true)));
+  await assertFails(setDoc(score, ranked(3)));
+  await assertSucceeds(setDoc(score, ranked(2)));
+  await assertSucceeds(getDoc(doc(publicDb, scorePath)));
+  await assertFails(deleteDoc(doc(stranger, scorePath)));
+  await assertSucceeds(deleteDoc(score));
+});

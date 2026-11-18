@@ -26,15 +26,15 @@ export function useNavigation() {
   }, []);
   let hash = '';
   try { hash = decodeURIComponent(state.hash); } catch { /* Invalid paths resolve to the feed. */ }
+  const study = /^#\/(math|english)(\/practice)?$/.exec(hash);
   return {
+    hub: !hash || hash === '#/home', wall: hash === '#/wall',
+    subject: (study?.[1] || null) as 'math' | 'english' | null,
+    practice: Boolean(study?.[2]),
+    records: hash === '#/records', ranking: (hash === '#/ranking/math' ? 'math' : hash === '#/ranking/english' ? 'english' : null) as 'math' | 'english' | null,
     about: state.pathname.replace(/\/$/, '').endsWith('/About'), me: hash === '#/me',
     search: hash === '#/search', explore: hash === '#/explore', settings: hash === '#/settings', activity: hash === '#/activity', compose: hash === '#/compose',
     profileHandle: /^#\/profile\/([a-z][a-z0-9_]{2,19})$/.exec(hash)?.[1] || null,
     postId: /^#\/posts\/([^/]+)$/.exec(hash)?.[1] || null,
   };
-}
-export function useDesktop() {
-  const [desktop, setDesktop] = useState(() => matchMedia('(min-width: 960px)').matches);
-  useEffect(() => { const media = matchMedia('(min-width: 960px)'); const changed = () => setDesktop(media.matches); media.addEventListener('change', changed); return () => media.removeEventListener('change', changed); }, []);
-  return desktop;
 }

@@ -1,9 +1,11 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import { dailyQuestions, koreanDay } from '../../src/learning/daily';
+
 const password = 'test-password-2026';
 async function signup(page: Page, handle: string) {
   const email = `${handle}-${Date.now()}@example.com`;
   await page.goto('./');
-  await page.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '마이페이지', exact: true }).click();
+  await page.getByRole('link', { name: '로그인', exact: true }).click();
   await page.getByRole('button', { name: '회원가입', exact: true }).click();
   await expect(page.getByLabel('닉네임', { exact: true })).toHaveCount(0);
   await page.getByLabel('이메일', { exact: true }).fill(email);
@@ -17,11 +19,19 @@ async function signup(page: Page, handle: string) {
   await page.getByRole('button', { name: '가입 완료', exact: true }).click();
   await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { name: '프로필 편집', exact: true })).toBeVisible();
-  await page.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '피드', exact: true }).click();
+  await openWall(page);
   return email;
 }
+async function openWall(page: Page) {
+  await page.getByRole('link', { name: '풀림', exact: true }).click();
+  await page.getByRole('link', { name: '담벼락', exact: true }).click();
+}
+async function openProfile(page: Page) {
+  await page.getByRole('button', { name: '계정 메뉴' }).click();
+  await page.getByRole('button', { name: '프로필', exact: true }).click();
+}
 async function post(page: Page, body: string) {
-  await page.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '게시물 추가', exact: true }).click();
+  await page.getByRole('button', { name: '새 글 쓰기', exact: true }).click();
   const composer = page.getByRole('dialog', { name: '새 글 쓰기', exact: true });
   await composer.getByLabel('게시할 글', { exact: true }).fill(body);
   await composer.getByRole('button', { name: '게시하기', exact: true }).click();
@@ -60,8 +70,8 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     const original = author.getByRole('article', { name: 'writer의 글', exact: true });
     await expect(original.getByText('@writer', { exact: true })).toBeVisible();
     expect(await original.locator('.post-body').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeCloseTo(18.6667, 1);
-    expect(await author.getByRole('navigation', { name: '주 메뉴' }).getByRole('button').allTextContents()).toEqual(['', '', '', '', '']);
-    await expect(author.getByRole('button', { name: '더보기', exact: true })).toHaveText('');
+    expect(await author.getByRole('navigation', { name: '서비스' }).getByRole('link').allTextContents()).toEqual(['', '', '']);
+    await expect(author.getByRole('button', { name: '계정 메뉴', exact: true })).toHaveText('');
     await author.screenshot({ path: 'test-results/feed-desktop.png', fullPage: true });
     await signup(reader, 'reader');
     const foreign = reader.getByRole('article', { name: 'writer의 글', exact: true });
@@ -73,7 +83,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await people.getByRole('link').filter({ hasText: '@reader' }).click();
     await expect(author.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
     await author.getByRole('button', { name: '이전 화면으로', exact: true }).click();
-    await expect(author.getByRole('heading', { name: '피드', exact: true, level: 1 })).toBeVisible();
+    await expect(author.getByRole('heading', { name: '담벼락', exact: true, level: 1 })).toBeVisible();
 
     await quote(reader, foreign);
     const shared = reader.getByRole('article', { name: 'reader의 리포스트', exact: true });
@@ -94,26 +104,27 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     expect(bounds.right).toBeLessThanOrEqual(24); expect(bounds.bottom).toBeLessThanOrEqual(24);
     await reader.keyboard.press('Escape');
 
-    await reader.getByRole('button', { name: '더보기', exact: true }).click();
-    await reader.getByRole('button', { name: '내 활동', exact: true }).click();
+    await openProfile(reader);
+    await reader.getByRole('link', { name: '내 활동', exact: true }).click();
     await expect(reader.getByRole('heading', { name: '내 활동', exact: true })).toBeVisible();
     await reader.getByRole('button', { name: '좋아요', exact: true }).click();
     await expect(reader.getByRole('article', { name: 'writer의 글', exact: true })).toHaveCount(1);
-    await reader.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '탐색', exact: true }).click();
+    await openWall(reader);
+    await reader.getByRole('link', { name: '탐색', exact: true }).click();
     await expect(reader.getByRole('heading', { name: '탐색', exact: true })).toBeVisible();
     await reader.locator('.discovery .tags button').filter({ hasText: '#일상' }).click();
     await expect(reader.getByRole('searchbox', { name: '검색어' })).toHaveValue('#일상');
     await expect(reader.getByRole('dialog')).toHaveCount(0);
     await reader.getByRole('searchbox', { name: '검색어' }).fill('@writer');
     await expect(foreign).toBeVisible();
-    await reader.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '피드', exact: true }).click();
+    await openWall(reader);
 
     await menu(original, '수정');
     await original.getByLabel('글 수정', { exact: true }).fill('수정한 이야기 #기록');
     await original.getByRole('button', { name: '저장', exact: true }).click();
     await expect(foreign.getByText('수정한 이야기 #기록', { exact: true })).toBeVisible();
-    await reader.getByRole('button', { name: '더보기', exact: true }).click();
-    await reader.getByRole('button', { name: '내 활동', exact: true }).click();
+    await openProfile(reader);
+    await reader.getByRole('link', { name: '내 활동', exact: true }).click();
     await reader.getByRole('button', { name: '좋아요', exact: true }).click();
     await expect(reader.getByText('수정한 이야기 #기록', { exact: true })).toBeVisible();
     await original.getByRole('button', { name: '게시물 메뉴', exact: true }).click();
@@ -121,7 +132,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await original.getByRole('button', { name: '삭제', exact: true }).click();
     await expect(original).toHaveCount(0);
     await expect(reader.getByText('수정한 이야기 #기록', { exact: true })).toHaveCount(0);
-    await reader.getByRole('navigation', { name: '주 메뉴' }).getByRole('button', { name: '피드', exact: true }).click();
+    await openWall(reader);
     await shared.getByRole('link', { name: '원 포스트 보기', exact: true }).click();
     await expect(detail.getByText('삭제되었거나 찾을 수 없는 게시물입니다.')).toBeVisible();
   } finally { await first.close(); await second.close(); }
@@ -130,22 +141,23 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
 test('mobile two-step signup, email-only login, back navigation and persistent dark mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const email = await signup(page, 'phone');
-  const nav = page.getByRole('navigation', { name: '주 메뉴' });
-  await expect(nav.getByRole('button')).toHaveCount(5);
-  expect(await nav.getByRole('button').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['피드', '탐색', '게시물 추가', '검색', '마이페이지']);
+  const nav = page.getByRole('navigation', { name: '서비스' });
+  await expect(nav.getByRole('link')).toHaveCount(3);
+  expect(await nav.getByRole('link').evaluateAll(items => items.map(item => item.getAttribute('aria-label')))).toEqual(['풀림', '수학', '영어']);
   await post(page, '모바일 글 #테스트');
-  await nav.getByRole('button', { name: '마이페이지', exact: true }).click();
+  await openProfile(page);
   await expect(page.getByRole('heading', { name: '프로필', exact: true, level: 1 })).toBeVisible();
   await page.getByRole('button', { name: '이전 화면으로', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '피드', exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '마이페이지', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '담벼락', exact: true })).toBeVisible();
+  await openProfile(page);
   await page.getByRole('button', { name: '로그아웃', exact: true }).click();
-  await nav.getByRole('button', { name: '탐색', exact: true }).click();
-  await nav.getByRole('button', { name: '마이페이지', exact: true }).click();
+  await openWall(page);
+  await page.getByRole('link', { name: '탐색', exact: true }).click();
+  await page.getByRole('link', { name: '로그인', exact: true }).click();
   await expect(page.getByRole('button', { name: '닫기', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: '이전 화면으로', exact: true }).click();
   await expect(page.getByRole('heading', { name: '탐색', exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '마이페이지', exact: true }).click();
+  await page.getByRole('link', { name: '로그인', exact: true }).click();
   await page.getByLabel('이메일', { exact: true }).fill('@phone');
   expect(await page.getByLabel('이메일', { exact: true }).evaluate(el => (el as HTMLInputElement).checkValidity())).toBeFalsy();
   await page.getByLabel('이메일', { exact: true }).fill(email);
@@ -166,11 +178,12 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  expect(await nav.getByRole('button').allTextContents()).toEqual(['', '', '', '', '']);
+  expect(await nav.getByRole('link').allTextContents()).toEqual(['', '', '']);
   expect(await page.locator('html').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
   expect(await page.locator('html').evaluate(el => getComputedStyle(el).color)).toBe('rgb(255, 255, 255)');
-  expect(await page.locator('.bottom-navigation').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
-  await nav.getByRole('button', { name: '검색', exact: true }).click();
+  expect(await page.locator('.pulleem-header').evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
+  await openWall(page);
+  await page.getByRole('link', { name: '검색', exact: true }).click();
   await expect(page.getByRole('searchbox', { name: '검색어' })).toBeVisible();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.getByRole('searchbox', { name: '검색어' }).fill('@phone');
@@ -179,7 +192,7 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   expect(await page.locator('.post-body').first().evaluate(el => getComputedStyle(el).color)).toBe('rgb(255, 255, 255)');
   expect(await page.locator('.post').first().evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(0, 0, 0)');
   await page.screenshot({ path: 'test-results/search-dark-mobile.png', fullPage: true });
-  await nav.getByRole('button', { name: '피드', exact: true }).click();
+  await openWall(page);
   await page.screenshot({ path: 'test-results/feed-dark-mobile.png', fullPage: true });
 });
 
@@ -226,7 +239,7 @@ test('quote text and independent comment threads survive original deletion safel
     await readerDetail.getByRole('region', { name: '댓글', exact: true }).getByLabel('댓글 내용', { exact: true }).fill('리포스트만의 댓글');
     await readerDetail.getByRole('button', { name: '댓글 등록', exact: true }).click();
     await expect(original.getByRole('button', { name: '댓글 2', exact: true })).toBeVisible();
-    await anon.goto('./');
+    await anon.goto('./#/wall');
     await anon.getByRole('article', { name: 'comment_writer의 글', exact: true }).getByRole('button', { name: '댓글 2', exact: true }).click();
     const anonDetail = anon.getByRole('dialog', { name: '포스트 보기', exact: true });
     await expect(anonDetail.getByText('남겨 둘 원문 댓글', { exact: true })).toBeVisible();
@@ -245,4 +258,72 @@ test('quote text and independent comment threads survive original deletion safel
     expect(await reader.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     await reader.screenshot({ path: 'test-results/repost-comments-mobile.png', fullPage: true });
   } finally { await ownerContext.close(); await readerContext.close(); await anonContext.close(); }
+});
+
+
+test('shared daily sets, practice records across devices, and opt-in online rankings', async ({ browser }) => {
+  const korea = await browser.newContext({ timezoneId: 'Asia/Seoul' });
+  const overseas = await browser.newContext({ timezoneId: 'America/Los_Angeles', viewport: { width: 390, height: 844 } });
+  const author = await korea.newPage();
+  const otherDevice = await overseas.newPage();
+  try {
+    const email = await signup(author, 'study_user');
+    await author.getByRole('link', { name: '수학', exact: true }).click();
+    await otherDevice.goto('./#/math');
+    const day = koreanDay();
+    const questions = dailyQuestions(day, 'math');
+    await expect(author.locator('#daily-question')).toHaveText(questions[0].prompt);
+    await expect(otherDevice.locator('#daily-question')).toHaveText(questions[0].prompt);
+    await author.screenshot({ path: 'test-results/pulleem-math.png' });
+    for (const [index, question] of questions.entries()) {
+      await expect(author.locator('#daily-question')).toHaveText(question.prompt);
+      await author.getByLabel('답안', { exact: true }).fill(index === 1 ? '0' : question.answer);
+      await author.getByRole('button', { name: '답안 제출' }).click();
+    }
+    await expect(author.getByRole('status')).toContainText('정답 2 / 3');
+    await author.getByRole('button', { name: '랭킹에 점수 공개' }).click();
+    await expect(author.getByRole('button', { name: '랭킹 공개 취소' })).toBeVisible();
+    await otherDevice.goto('./#/ranking/math');
+    await expect(otherDevice.getByText('@study_user', { exact: true })).toBeVisible();
+    await expect(otherDevice.getByText('2 / 3', { exact: true })).toBeVisible();
+
+    await author.getByRole('link', { name: '연습', exact: true }).click();
+    const math = author.frameLocator('iframe[title="수학 연습"]');
+    await math.getByRole('button', { name: '이 범위 연습' }).click();
+    await expect(math.getByRole('button', { name: '정답 확인' })).toBeVisible();
+    const mathLabel = await math.locator('#session-heading').innerText();
+    const options = math.locator('#answer-fields .choice-option');
+    if (await options.count()) await options.first().click();
+    else for (const field of await math.locator('#answer-fields .answer-editor').all()) {
+      const placeholder = await field.getAttribute('data-placeholder');
+      const sample = placeholder?.includes('참') ? '참' : placeholder?.includes('x <=') ? 'x <= 1'
+        : placeholder?.includes('(1, 2)') ? '(1, 2)' : '1';
+      await field.fill(sample);
+    }
+    await math.getByRole('button', { name: '정답 확인' }).click();
+
+    await author.getByRole('link', { name: '영어', exact: true }).click();
+    await expect(author.locator('#daily-question')).toHaveText(dailyQuestions(day, 'english')[0].prompt);
+    await author.getByRole('link', { name: '연습', exact: true }).click();
+    const english = author.frameLocator('iframe[title="영어 연습"]');
+    await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
+    await english.getByRole('button', { name: '정답 확인', exact: true }).click();
+    await english.getByRole('button', { name: '쉬움', exact: true }).click();
+
+    await otherDevice.getByRole('link', { name: '로그인', exact: true }).click();
+    await otherDevice.getByLabel('이메일', { exact: true }).fill(email);
+    await otherDevice.getByLabel('비밀번호', { exact: true }).fill(password);
+    await otherDevice.getByRole('button', { name: '로그인', exact: true }).click();
+    await expect(otherDevice.getByRole('heading', { name: '프로필', level: 1 })).toBeVisible();
+    await otherDevice.getByRole('link', { name: '내 기록', exact: true }).first().click();
+    await expect(otherDevice.getByText(questions[0].prompt, { exact: true })).toBeVisible();
+    await expect(otherDevice.getByText('as part of', { exact: true })).toBeVisible();
+    await expect(otherDevice.getByText(mathLabel, { exact: true })).toBeVisible();
+    await otherDevice.getByRole('link', { name: '수학', exact: true }).click();
+    await expect(otherDevice.getByRole('status')).toContainText('정답 2 / 3');
+    expect(await otherDevice.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    await otherDevice.screenshot({ path: 'test-results/pulleem-mobile.png' });
+    await otherDevice.getByRole('button', { name: '랭킹 공개 취소' }).click();
+    await expect(otherDevice.getByRole('button', { name: '랭킹에 점수 공개' })).toBeVisible();
+  } finally { await korea.close(); await overseas.close(); }
 });

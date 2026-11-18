@@ -1,6 +1,53 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function learningOwner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function learningSubject(subject) { return subject in ['math', 'english']; }
+    function learningToday(day) {
+      let seoul = request.time + duration.value(9, 'h');
+      let parts = day.split('-');
+      return day.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && int(parts[0]) == seoul.year() && int(parts[1]) == seoul.month() && int(parts[2]) == seoul.day();
+    }
+    function dailyAnswer(uid, day, subject, index) {
+      return /databases/$(database)/documents/users/$(uid)/learningDays/$(day)/subjects/$(subject)/answers/$(index);
+    }
+    function dailyPoint(uid, day, subject, index) {
+      return get(dailyAnswer(uid, day, subject, index)).data.correct == true ? 1 : 0;
+    }
+    match /users/{uid}/learning/{attemptId} {
+      allow read: if learningOwner(uid);
+      allow create: if learningOwner(uid)
+        && request.resource.data.keys().hasAll(['subject', 'label', 'mode', 'result', 'occurredAt', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['subject', 'label', 'mode', 'result', 'occurredAt', 'createdAt'])
+        && learningSubject(request.resource.data.subject)
+        && request.resource.data.label is string && request.resource.data.label.size() >= 1 && request.resource.data.label.size() <= 160
+        && request.resource.data.mode is string && request.resource.data.mode.size() >= 1 && request.resource.data.mode.size() <= 24
+        && request.resource.data.result in ['correct', 'wrong', 'seen', 'hinted']
+        && request.resource.data.occurredAt is int && request.resource.data.occurredAt > 0
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+    match /users/{uid}/learningDays/{day}/subjects/{subject}/answers/{index} {
+      allow read: if learningOwner(uid);
+      allow create: if learningOwner(uid) && learningSubject(subject) && learningToday(day) && index in ['0', '1', '2']
+        && request.resource.data.keys().hasAll(['correct', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['correct', 'createdAt'])
+        && request.resource.data.correct is bool && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+    match /pulleemDays/{day}/subjects/{subject}/scores/{uid} {
+      allow get: if true;
+      allow list: if request.query.limit <= 25;
+      allow create, update: if learningOwner(uid) && learningSubject(subject) && learningToday(day)
+        && exists(/databases/$(database)/documents/profiles/$(uid))
+        && request.resource.data.keys().hasAll(['score', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['score', 'updatedAt'])
+        && request.resource.data.score is int && request.resource.data.updatedAt == request.time
+        && request.resource.data.score == dailyPoint(uid, day, subject, '0')
+          + dailyPoint(uid, day, subject, '1') + dailyPoint(uid, day, subject, '2');
+      allow delete: if learningOwner(uid);
+    }
     // Retired login-service records, if any, remain inaccessible to clients.
     match /loginAttempts/{id} { allow read, write: if false; }
     match /users/{uid}/activity/{activityId} {

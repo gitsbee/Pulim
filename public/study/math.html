@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="공통수학 2 단원별 문제를 풀고 필기할 수 있는 학습 앱">
+  <title>풀림 수학 · 수학 연습</title>
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNiAzNiI+PHJlY3Qgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iOSIgZmlsbD0iI2Q5ZmE4OCIvPjxwYXRoIGQ9Ik04IDEyLjUgMTggN2wxMCA1LjVMMTggMTggOCAxMi41Wm0wIDUuNSAxMCA1LjVMMjggMThNOCAyMy41IDE4IDI5bDEwLTUuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMjIxYjM0IiBzdHJva2Utd2lkdGg9IjEuNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+Cg==" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="stylesheet" href="./palette.css">
+  <link rel="stylesheet" href="./math.css">
+</head>
+<body>
+  <p class="study-loading" role="status">연습 화면을 불러오는 중…</p>
+  <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4-9 4-9-4ZM3 12l9 4 9-4M3 17l9 4 9-4"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z"/></symbol>
+    <symbol id="i-resume" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-foundation" viewBox="0 0 24 24"><path d="M4 18h16M6 15V9h4v6M14 15V5h4v10"/></symbol>
+    <symbol id="i-application" viewBox="0 0 24 24"><path d="M4 18 9 13l3 3 8-10M16 6h4v4"/></symbol>
+    <symbol id="i-challenge" viewBox="0 0 24 24"><path d="m12 3 2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-difficulty-low" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+    <symbol id="i-difficulty-medium" viewBox="0 0 24 24"><path d="M6 9h12m-12 6h12"/></symbol>
+    <symbol id="i-difficulty-high" viewBox="0 0 24 24"><path d="M6 6h12m-12 6h12m-12 6h12"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-4m5 4V8m5 8V4"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m14 5 5 5M4 20l4.5-1 11-11a2.8 2.8 0 0 0-4-4L4.7 15zM4 20h16"/></symbol>
+    <symbol id="i-erase" viewBox="0 0 24 24"><path d="m9 19-5-5a2 2 0 0 1 0-3l7-7a2 2 0 0 1 3 0l6 6a2 2 0 0 1 0 3l-6 6zm-3-9 9 9m-5 0h11"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 5-4 5 4 5m-4-5h10a5 5 0 0 1 0 10"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 6h16M9 6V3h6v3m3 0-1 14H7L6 6m4 4v6m4-6v6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><path d="M3 4h18v4H3zM5 8v12h14V8M9 12h6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M4 17v3h16v-3"/></symbol>
+    <symbol id="i-skip" viewBox="0 0 24 24"><path d="m5 6 9 6-9 6zm13 0v12"/></symbol>
+    <symbol id="i-poly" viewBox="0 0 24 24"><path d="m4 17 8-10m0 10L4 7m11 0c0-4 6-4 5-1-.5 1.5-4 3-5 5h5"/></symbol>
+    <symbol id="i-quad" viewBox="0 0 24 24"><path d="M4 8c3 15 13 15 16 0M3 13h18"/></symbol>
+    <symbol id="i-geo" viewBox="0 0 24 24"><path d="M4 18h16M6 21V4m2 12L19 5m-3 0h3v3"/></symbol>
+    <symbol id="i-set" viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/></symbol>
+    <symbol id="i-prop" viewBox="0 0 24 24"><path d="M3 8h13M3 15h13m-4-12 8 9-8 9"/></symbol>
+    <symbol id="i-line" viewBox="0 0 24 24"><path d="M3 18 19 5m-4 0h4v4M5 7h4M7 5v4"/></symbol>
+    <symbol id="i-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 12h8"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M4 16h16m-4-4 4 4-4 4M20 8H4m4-4L4 8l4 4"/></symbol>
+    <symbol id="i-function" viewBox="0 0 24 24"><path d="M5 20V4m-2 13h18M7 15c4-1 3-9 7-9h5"/></symbol>
+    <symbol id="i-rational" viewBox="0 0 24 24"><path d="M3 12h18M12 3v18M4 14c4 0 6 2 6 6m4-16c0 4 2 6 6 6"/></symbol>
+    <symbol id="i-radical" viewBox="0 0 24 24"><path d="m3 14 3-1 3 6 5-14h7m-4 6 4 5m0-5-4 5"/></symbol>
+    <symbol id="i-new" viewBox="0 0 24 24"><path d="M12 2v6m0 8v6M2 12h6m8 0h6m-6-4-4 8-4-4 8-4Z"/></symbol>
+    <symbol id="i-balance" viewBox="0 0 24 24"><path d="M12 4v15M6 20h12M4 7h16M6 7l-3 7h6L6 7Zm12 0-3 7h6l-3-7Z"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M5 8a8 8 0 1 1-1 7m1-12v5h5"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3m-4 4 4-4 4 4M6 11H4v9h16v-9h-2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M5 3v18m7-18v18m7-18v18"/><path d="M2 8h6m1 8h6m1-6h6"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M13 3c1 5-1 6 2 9l2-3c5 6 1 12-5 12s-9-6-4-11c0 3 1 4 2 4 0-5 2-7 3-11Z"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M4 8h4V4m12 4h-4V4M8 20v-4H4m12 4v-4h4"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V4m-6 6 6-6 6 6"/></symbol>
+  </svg>
+  <header class="app-header" id="app-header">
+    <div class="header-inner">
+      <a class="brand" href="#practice"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-logo"/></svg>풀림 수학</a>
+      <nav aria-label="수학 연습 메뉴">
+        <a id="practice-nav" href="#practice" aria-label="연습" aria-current="page"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-book"/></svg><span>연습</span></a>
+        <a id="history-nav" href="#history" aria-label="기록"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-history"/></svg><span>기록</span></a>
+        <a id="inspection-nav" href="#inspection" aria-label="점검"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-search"/></svg><span>점검</span></a>
+        <button type="button" class="icon-button settings-button" data-open-preferences aria-label="화면과 소리 설정" title="화면과 소리 설정"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="practice-view" class="setup-view" aria-labelledby="setup-heading">
+      <header class="page-intro">
+        <h1 id="setup-heading" tabindex="-1">수학 연습</h1>
+      </header>
+      <div class="home-overview">
+        <section class="home-session home-status" aria-labelledby="home-status-title">
+          <h2 id="home-status-title">현재 상태</h2>
+          <dl id="home-activity" class="metrics" aria-label="오늘의 학습 현황"></dl>
+        </section>
+        <section class="home-session home-current" aria-labelledby="home-current-title">
+          <h2 id="home-current-title">진행 중인 문제</h2>
+          <dl id="last-range" class="range-list" aria-label="진행 중인 문제의 학습 범위"></dl>
+          <p id="home-current-empty" hidden>진행 중인 문제가 없습니다.</p>
+          <button type="button" id="home-start" class="button primary action-start">이어 풀기</button>
+        </section>
+        <section class="home-session home-daily" aria-labelledby="home-daily-title">
+          <h2 id="home-daily-title">오늘의 학습</h2>
+          <div id="daily-preview" class="daily-preview"></div>
+          <button type="button" id="quick-practice" class="button secondary"></button>
+        </section>
+      </div>
+      <section id="range-settings" class="range-settings home-session" aria-labelledby="study-title">
+        <h2 id="study-title">학습하기</h2>
+      <form id="setup-form" class="setup-form">
+        <fieldset id="mode-section">
+          <legend>연습 방식</legend>
+          <div class="mode-options">
+            <label class="select-card"><input type="radio" name="level" value="A"><span><svg class="icon" aria-hidden="true"><use href="#i-foundation"/></svg><strong>A 기본</strong></span></label>
+            <label class="select-card"><input type="radio" name="level" value="B" checked><span><svg class="icon" aria-hidden="true"><use href="#i-application"/></svg><strong>B 유형</strong></span></label>
+            <label class="select-card" id="challenge-mode"><input type="radio" name="level" value="C"><span><svg class="icon" aria-hidden="true"><use href="#i-challenge"/></svg><strong>C 발전</strong></span></label>
+          </div>
+        </fieldset>
+        <section aria-labelledby="unit-heading">
+          <div class="unit-heading">
+            <h3 id="unit-heading">단원</h3>
+            <div class="unit-heading-controls"><label class="mix-toggle" for="mix-enabled"><span>믹스</span><input id="mix-enabled" type="checkbox" role="switch"></label>
+            <select name="course" id="course-select" aria-label="과목"></select></div>
+          </div>
+          <div id="unit-options" class="unit-options" role="group" aria-labelledby="unit-heading"></div>
+          <p id="course-empty" class="course-empty" role="status" hidden></p>
+        </section>
+        <fieldset id="strategy-section">
+          <legend>중심 추천 유형</legend>
+          <div id="strategy-options" class="strategy-options"></div>
+        </fieldset>
+        <fieldset id="custom-type-section" hidden>
+          <legend>직접 연습할 유형</legend>
+          <div class="custom-type-actions">
+            <p id="custom-type-count" role="status"></p>
+            <button type="button" id="custom-select-all" class="button secondary">전체 선택</button>
+            <button type="button" id="custom-clear" class="button secondary">선택 해제</button>
+          </div>
+          <label class="type-search" for="custom-search">유형 검색 <input type="search" id="custom-search" placeholder="예  진리집합"></label>
+          <div id="custom-type-options" class="custom-type-options"></div>
+          <p id="custom-type-help" class="input-help">유형을 하나 이상 선택하세요. 고른 유형 안에서 질문과 수치는 계속 달라집니다.</p>
+        </fieldset>
+        <div id="unit-progress" class="unit-progress" hidden>
+          <label id="unit-progress-label" for="unit-progress-meter"></label>
+          <progress id="unit-progress-meter"></progress>
+        </div>
+        <button type="submit" id="generate" class="button primary start-button action-start">연습 시작 <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-next"/></svg></button>
+      </form>
+      </section>
+      <details class="curriculum-panel">
+        <summary>교육과정과 단원별 범위</summary>
+        <div id="curriculum"></div>
+        <p><a href="https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=141&amp;boardSeq=93458&amp;lev=0&amp;m=0404" target="_blank" rel="noopener">교육부 고시 제2022-33호 (새 탭)</a></p>
+      </details>
+    </section>
+
+    <section id="session-view" class="session-view" aria-labelledby="session-heading" hidden>
+      <header class="session-header" id="session-header">
+        <div class="session-header-inner">
+          <a class="icon-button exit-button" id="exit-practice" href="#practice" aria-label="연습 나가기" title="연습 나가기"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></a>
+          <div class="session-context">
+            <h1 id="session-heading" tabindex="-1"></h1>
+            <div id="daily-navigation" class="daily-navigation" aria-label="오늘의 문제 이동" hidden><div id="daily-signals" class="daily-signals"></div></div>
+            <div id="session-context-info" class="session-context-info"><div id="problem-meta" class="problem-meta"></div>
+              <div class="session-status">
+                <span id="problem-index"></span>
+                <span id="streak-badge" class="streak-badge"><svg class="icon" aria-hidden="true"><use href="#i-target"/></svg><span id="streak-count" role="status"></span></span>
+              </div>
+            </div>
+          </div>
+          <div class="session-tools">
+
+            <button type="button" class="icon-button settings-button" data-open-preferences aria-label="화면과 소리 설정" title="화면과 소리 설정"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button>
+          </div>
+        </div>
+      </header>
+      <div id="session-status-dock" class="session-status-dock"></div>
+      <div id="session-content" class="session-content">
+        <div class="question-area">
+          <article id="problem-card" class="problem-card" tabindex="-1" aria-label="추천 문제">
+            <div id="problem-body"></div>
+          </article>
+          <div class="response-area">
+            <form id="answer-form" autocomplete="off" novalidate>
+              <div id="answer-fields"></div>
+              <p id="answer-help" class="input-help" hidden></p>
+              <p id="answer-error" class="input-error" role="alert" hidden></p>
+            </form>
+            <div id="feedback" class="feedback" hidden></div>
+            <div id="session-actions" class="session-actions">
+              <button type="submit" form="answer-form" id="check-answer" class="button primary action-start"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>정답 확인</button>
+              <button type="button" id="next-problem" class="button primary" hidden><span>다음 문제</span> <svg class="icon" aria-hidden="true" focusable="false"><use href="#i-next"/></svg></button>
+              <button type="button" id="share-problem" class="button secondary share-button action-share" aria-label="문제 공유" title="문제 공유"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-share"/></svg><span>공유</span></button>
+              <button type="button" id="skip-problem" class="button secondary action-save" title="보관" aria-label="보관"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-archive"/></svg><span>보관</span></button>
+              <button type="button" id="discard-problem" class="button secondary action-skip" title="건너뛰기" aria-label="건너뛰기"><svg class="icon" aria-hidden="true"><use href="#i-skip"/></svg><span>건너뛰기</span></button>
+            </div>
+            <p id="share-status" class="share-status" role="status" hidden></p>
+          </div>
+        </div>
+        <div id="pad-dock">
+          <section id="scratchpad" class="scratchpad" aria-label="풀이 여백">
+            <div id="pad-tools" class="pad-tools" role="group" aria-label="필기 도구">
+              <button type="button" id="tool-pen" class="icon-button" aria-label="펜" aria-pressed="true" title="펜"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-pen"/></svg></button>
+              <button type="button" id="tool-eraser" class="icon-button" aria-label="지우개" aria-pressed="false" title="지우개"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-erase"/></svg></button>
+              <button type="button" id="pad-undo" class="icon-button" aria-label="되돌리기" title="되돌리기" disabled><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-undo"/></svg></button>
+              <button type="button" id="pad-clear" class="icon-button" aria-label="모두 지우기" title="모두 지우기" disabled><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-trash"/></svg></button>
+
+              <button type="button" id="pad-expand" class="icon-button" aria-label="필기 전체 화면" title="필기 전체 화면" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-expand"/></svg></button>
+            </div>
+            <p id="paper-help" class="sr-only">여백의 아래쪽까지 쓰면 풀이 공간이 자동으로 늘어납니다.</p>
+            <canvas id="ink" aria-label="문제 아래 풀이 여백" aria-describedby="paper-help"></canvas>
+          </section>
+        </div>
+      </div>
+      <button type="button" id="pad-return" class="icon-button floating-return" aria-label="문제로 돌아가기" title="문제로 돌아가기" hidden><svg class="icon" aria-hidden="true"><use href="#i-up"/></svg></button>
+      <dialog id="pad-fullscreen" aria-label="필기 전체 화면"></dialog>
+      <dialog id="share-dialog" aria-labelledby="share-title">
+        <h2 id="share-title">문제와 풀이 공유</h2>
+        <div class="share-options">
+          <button type="button" id="share-question" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-share"/></svg>문제만 공유</button>
+          <button type="button" id="share-solution" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-share"/></svg>문제와 풀이 공유</button>
+        </div>
+        <label for="share-text" id="share-text-label" hidden>공유할 내용</label>
+        <textarea id="share-text" rows="8" readonly hidden></textarea>
+        <form method="dialog" class="dialog-actions"><button class="button secondary" value="close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>닫기</button></form>
+      </dialog>
+    </section>
+
+    <section id="inspection-view" class="setup-view inspection-view" aria-labelledby="inspection-heading" hidden>
+      <header class="page-intro"><h1 id="inspection-heading" tabindex="-1">출제 점검</h1><p>평면좌표와 직선의 방정식</p></header>
+      <form id="inspection-form" class="inspection-controls">
+        <label>출제 범위<select id="inspection-type"></select></label>
+        <label>답 경로<select id="inspection-path"></select></label>
+        <label>표현 환경<select id="inspection-environment"><option value="">자동</option><option value="geometry">좌표·도형</option><option value="expression">실수·식</option><option value="logic">조건·명제</option></select></label>
+        <label>답안 형식<select id="inspection-format"><option value="">자동</option><option value="written">서답형</option><option value="choice">선택형</option></select></label>
+        <label>연결 난도<select id="inspection-difficulty"><option value="">자동</option><option value="high">상</option><option value="medium">중</option><option value="low">하</option></select></label>
+        <label>생성 번호<input id="inspection-seed" type="number" min="0" max="4294967295" step="1" required></label>
+        <button class="button" type="submit">생성</button>
+        <button class="button secondary" id="inspection-random" type="button">새 번호로 생성</button>
+      </form>
+      <p id="inspection-status" role="status"></p>
+      <div id="inspection-result"></div>
+    </section>
+
+    <section id="history-view" class="history-view" aria-labelledby="history-heading" hidden>
+      <header class="page-intro">
+        <h1 id="history-heading" tabindex="-1">학습 기록</h1>
+        <p id="storage-note" role="status" hidden></p>
+      </header>
+      <section class="history-overview-card history-status" aria-labelledby="history-summary-title"><h2 id="history-summary-title">현재 기록</h2><dl id="history-summary" class="metrics history-summary" aria-label="성적 요약"></dl></section>
+
+      <details class="review-panel history-group" open>
+        <summary id="review-heading">복습할 문제</summary>
+        <div id="review-list"></div>
+        <button type="button" id="review-more" class="button secondary list-more" hidden>더 보기</button>
+      </details>
+      <details class="review-panel parked-panel history-group" open>
+        <summary id="parked-heading">보관한 문제</summary>
+        <div id="parked-list"></div>
+        <button type="button" id="parked-more" class="button secondary list-more" hidden>더 보기</button>
+      </details>
+      <section aria-labelledby="type-stats-title" class="history-section">
+        <h2 id="type-stats-title">유형별 성적</h2>
+        <div class="type-search-controls">
+          <label for="type-search">유형 검색<input id="type-search" type="search" placeholder="유형 이름 입력" autocomplete="off"></label>
+          <label for="type-unit">단원 선택<select id="type-unit"><option value="">전체 단원</option></select></label>
+        </div>
+        <p id="type-search-status" class="type-search-status" aria-live="polite"></p>
+        <div id="type-stats"></div>
+      </section>
+      <details class="history-section history-group" open>
+        <summary id="recent-title">풀이 기록</summary>
+        <div class="history-filters">
+          <label for="history-filter">결과 <select id="history-filter"><option value="all">전체</option><option value="wrong">오답</option><option value="first">일반 풀이</option><option value="review">복습 풀이</option></select></label>
+          <label for="history-unit">단원 <select id="history-unit"><option value="">전체 단원</option></select></label>
+        </div>
+        <div id="recent-attempts"></div>
+        <button type="button" id="history-more" class="button secondary list-more" hidden>더 보기</button>
+      </details>
+      <details class="record-settings history-group">
+        <summary>내 정보 관리</summary>
+        <div class="home-actions">
+          <button type="button" id="export-records" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>기록 내보내기</button>
+          <button type="button" id="import-records" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>기록 가져오기</button>
+          <button type="button" id="reset-records" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>기록 초기화하기</button>
+          <input id="backup-file" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p id="backup-status" role="status"></p>
+      </details>
+    </section>
+  </main>
+  <dialog id="daily-protected-dialog" class="confirm-dialog" aria-labelledby="daily-protected-title"><h2 id="daily-protected-title">오늘의 문제 기록</h2><p>오늘의 문제는 기록을 삭제하거나 최초 결과를 수정할 수 없습니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>확인</button></form></dialog>
+  <dialog id="item-confirm-dialog" class="confirm-dialog" aria-labelledby="item-confirm-title"><h2 id="item-confirm-title"></h2><p id="item-confirm-message"></p><div class="home-actions"><button type="button" id="item-cancel" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="item-confirm" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>확인</span></button></div></dialog>
+  <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">학습 기록을 초기화할까요?</h2><p>풀이 기록, 필기와 보관 문제가 삭제됩니다. 오늘의 도전 결과는 유지됩니다.</p><div class="home-actions"><button type="button" id="cancel-reset" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="confirm-reset" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>기록 초기화</button></div></dialog>
+  <dialog id="fullscreen-error-dialog" class="confirm-dialog" aria-labelledby="fullscreen-error-title"><h2 id="fullscreen-error-title">전체화면을 사용할 수 없습니다</h2><form method="dialog" class="home-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>확인</button></form></dialog>
+  <dialog id="preferences-dialog" class="preferences-dialog" aria-labelledby="preferences-title">
+    <header class="preferences-header"><h2 id="preferences-title">설정</h2><form method="dialog"><button class="icon-button preferences-close" aria-label="닫기"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></form></header>
+    <section class="preferences-section" aria-labelledby="settings-screen"><h3 id="settings-screen">화면 및 테마</h3>
+    <fieldset>
+      <legend class="sr-only">화면 테마</legend>
+      <div class="theme-options">
+        <label class="select-card"><input name="theme" value="system" type="radio"><span>시스템</span></label>
+        <label class="select-card"><input name="theme" value="light" type="radio"><span>라이트</span></label>
+        <label class="select-card"><input name="theme" value="dark" type="radio"><span>다크</span></label>
+        <label class="select-card"><input name="theme" value="paper" type="radio"><span>종이</span></label>
+      </div>
+    </fieldset>
+    <label class="mix-toggle settings-toggle"><span>전체화면</span><input id="fullscreen-enabled" type="checkbox" role="switch" aria-describedby="fullscreen-status"></label>
+    <p id="fullscreen-status" role="status" hidden></p>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-input"><h3 id="settings-input">입력</h3>
+    <label class="mix-toggle settings-toggle"><span>펜 전용</span><input id="pen-only" type="checkbox" role="switch"></label>
+    <div class="volume-setting"><label for="pen-sensitivity">펜 압력 감도</label><output id="pen-sensitivity-value" for="pen-sensitivity">85%</output><span class="range-track"><input id="pen-sensitivity" type="range" min="0" max="100" step="5" value="85"></span><p class="sensitivity-help">감도가 높으면 가벼운 압력에도 선이 굵게 표시됩니다.</p></div>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-problem"><h3 id="settings-problem">문제 설정</h3>
+    <label class="mix-toggle settings-toggle"><span>확장 문제 포함</span><input id="plus-enabled" type="checkbox" role="switch"></label>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-sound"><h3 id="settings-sound">음향 및 소리</h3>
+    <label class="mix-toggle settings-toggle"><span>효과음</span><input id="sound-enabled" type="checkbox" role="switch"></label>
+    <div class="volume-setting"><label for="sound-volume">효과음 음량</label><output id="sound-volume-value" for="sound-volume">70%</output><span class="range-track"><input id="sound-volume" type="range" min="0" max="100" step="5" value="70"></span></div>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-support"><h3 id="settings-support">사용자 지원</h3>
+    <div class="support-links">
+      <button type="button" id="open-help" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>도움말</button>
+      <button type="button" id="open-about" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-logo"/></svg>소개</button>
+    </div>
+    </section>
+  </dialog>
+  <dialog id="help-dialog" class="preferences-dialog" aria-labelledby="help-title">
+    <header class="preferences-header"><h2 id="help-title">도움말</h2><form method="dialog"><button class="icon-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></form></header>
+    <div class="support-content">
+      <h3>연습 시작하기</h3>
+      <p>연습 화면에서 학습하기에서 과목과 단원을 고르세요. 믹스를 켜면 여러 단원을 함께 선택할 수 있습니다. A는 개념을 직접 연습하고, B는 조건과 개념을 연결해 푸는 유형 연습입니다.</p>
+      <p>중심 추천 유형에서 신규, 균형, 오답을 선택할 수 있습니다. 직접 설정 아이콘을 누르면 원하는 유형을 검색하고 여러 개 선택해 반복할 수 있습니다. 설정에서 확장 문제 포함 여부도 바꿀 수 있습니다.</p>
+      <h3>오늘의 문제</h3>
+      <p>오늘의 문제를 열면 정해진 세 문제를 풀 수 있습니다. 원형 표시를 눌러 문제를 옮기며, 원형 표시로 미풀이·정답·오답·복습 상태를 확인하세요. 완료한 뒤에는 오늘의 문제를 다시 복습할 수 있습니다.</p>
+      <h3>답안과 풀이 여백</h3>
+      <p>답을 선택하거나 입력한 뒤 정답 확인을 누르세요. 풀이 여백에는 펜과 지우개를 사용할 수 있고, 되돌리기와 모두 지우기도 가능합니다. 여백의 아래쪽까지 쓰면 공간이 늘어납니다.</p>
+      <p>펜 전용을 켜면 펜으로 쓰고 손가락으로 화면을 스크롤할 수 있습니다. 설정에서 펜 압력 감도를 조절할 수 있으며, 필기 도구의 전체 화면 버튼으로 여백을 넓힐 수 있습니다.</p>
+      <h3>공유, 보관, 건너뛰기</h3>
+      <p>공유는 문제와 풀이를 다른 곳에 전달합니다. 보관은 나중에 이어 풀 문제로 저장하고, 건너뛰기는 현재 문제를 넘깁니다. 보관한 문제는 기록에서 이어 풀 수 있습니다.</p>
+      <h3>복습과 기록 관리</h3>
+      <p>기록 화면에서 복습할 문제, 보관한 문제와 풀이 기록을 펼쳐 볼 수 있습니다. 각 문제를 다시 풀거나 비슷한 유형의 새 문제를 풀고, 필요하지 않은 항목은 휴지통으로 삭제할 수 있습니다. 유형별 성적은 유형 이름이나 단원으로 찾아볼 수 있습니다.</p>
+      <p>학습 기록과 필기는 이 브라우저에 저장됩니다. 다른 기기에서 사용하거나 기록을 보관하려면 기록 관리에서 내보내기와 가져오기를 이용하세요. 브라우저 데이터를 지우기 전에 백업해 두는 것이 좋습니다.</p>
+      <h3>화면과 소리</h3>
+      <p>설정에서 밝은 화면, 어두운 화면 또는 시스템 설정을 선택하고, 효과음과 음량을 조절할 수 있습니다.</p>
+    </div>
+  </dialog>
+  <dialog id="about-dialog" class="preferences-dialog" aria-labelledby="about-title">
+    <header class="preferences-header"><h2 id="about-title">소개</h2><form method="dialog"><button class="icon-button preferences-close" value="settings" aria-label="설정으로 돌아가기"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></form></header>
+    <div class="support-content">
+      <p>풀림 수학은 수학의 개념과 유형을 연습하고, 풀이 결과를 바탕으로 다시 학습할 수 있는 문제 생성 학습 사이트입니다.</p>
+      <h3>문제를 만드는 방식</h3>
+      <p>문제 유형과 질문할 답의 구조를 바탕으로 조건과 계수를 구성합니다. 같은 유형에서도 질문하는 값, 표현과 답안 형식이 달라질 수 있도록 설계했습니다.</p>
+      <h3>학습과 복습</h3>
+      <p>A 기본으로 개념을 익히고 B 유형에서 개념을 연결할 수 있습니다. 단원과 중심 추천 유형을 고르거나 원하는 유형을 직접 선택해 연습하세요. 오늘의 문제와 기록 화면의 복습·보관 기능으로 학습을 이어갈 수 있습니다.</p>
+      <h3>학습 기록</h3>
+      <p>정답 여부와 풀이 결과를 바탕으로 유형별 성적과 복습할 문제를 보여 줍니다. 기록과 필기는 사용 중인 브라우저에 저장되므로, 기기를 옮기거나 데이터를 정리하기 전에는 기록 관리에서 백업 파일을 내보내세요.</p>
+      <p>공통수학 2를 중심으로 범위를 확장하고 있으며, 제공되는 문제 유형과 내용은 계속 보완됩니다.</p>
+    </div>
+  </dialog>
+  <noscript><p>문제를 풀려면 자바스크립트를 켜 주세요.</p></noscript>
+
+<script src="./bridge.js" data-subject="math"></script>
+</body>
+</html>

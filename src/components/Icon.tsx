@@ -1,5 +1,11 @@
 import type { CSSProperties } from 'react';
 const paths = {
+  pulleem: <><path d="m3 7 9-4 9 4-9 4-9-4Zm0 5 9 4 9-4M3 17l9 4 9-4" /></>,
+  math: <path d="M19 4H5l7 8-7 8h14" />,
+  english: <path d="m3 19 6-14 6 14m-10-4h8m3-4h5m-1 0v8m0-5c-6-2-6 6 0 4" />,
+  records: <path d="M4 20h16M7 16v-4m5 4V8m5 8V4" />,
+  trophy: <><path d="M8 3h8v7a4 4 0 0 1-8 0V3Zm0 2H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v5m-4 2h8" /></>,
+
   comment: <path d="M5 3h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-6 4V5a2 2 0 0 1 2-2Z" />,
   back: <path d="m14 5-7 7 7 7M7 12h14" />,
   home: <><path d="m3 11 9-8 9 8M5 10v11h5v-7h4v7h5V10" /></>,
