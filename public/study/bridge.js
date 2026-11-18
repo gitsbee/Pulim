@@ -26,18 +26,11 @@
     if (event.source !== parent || event.origin !== target || parent === window) return;
     const info = event.data;
     if (info?.type !== 'pulleem:study' || !/^[A-Za-z0-9_-]{1,128}$/.test(info.account)) return;
-    const theme = info.theme === 'dark' ? 'dark' : 'light';
-    document.documentElement.dataset.theme = theme;
-    if (started) {
-      window.studyBridge.theme = theme;
-      document.dispatchEvent(new Event('forge-themechange'));
-      return;
-    }
+    if (started) return;
     started = true;
     const namespace = 'pulleem:' + info.account + ':' + subject;
     window.studyBridge = {
       namespace,
-      theme,
       vocabulary: info.vocabulary,
       local: scopedStorage(localStorage, namespace),
       session: scopedStorage(sessionStorage, namespace),

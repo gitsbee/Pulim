@@ -1,7 +1,94 @@
-
 /* Problem Forge shared UI: theme tokens, type, icons, controls, and record cards. */
-
-
+:root {
+  color-scheme: light;
+  font-family: "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 17px;
+  letter-spacing: normal;
+  line-height: 1.55;
+  --ink: #161616;
+  --secondary: #494949;
+  --control-line: #555555;
+  --control-ink: #282828;
+  --control-wash: #ededed;
+  --surface: #f8f8f8;
+  --panel: #ffffff;
+  --primary: #242424;
+  --primary-hover: #3d3d3d;
+  --on-primary: #ffffff;
+  --depth: #a5a5a5;
+  --border-width: 2px;
+  --icon-size: 24px;
+  --press-edge-face: 86.666667%;
+  --press-depth-face: 73.333333%;
+  --icon-small: 18px;
+  --palette-red: #942339;
+  --palette-orange: #894522;
+  --palette-yellow: #b99038;
+  --palette-green: #22644f;
+  --palette-blue: #315f91;
+  --palette-indigo: #435596;
+  --palette-violet: #6b4b84;
+  --palette-black: #000;
+  --palette-charcoal: #202020;
+  --palette-silver: #dedede;
+  --palette-white: #fff;
+  --button-step: 2px;
+  --primary-depth: #121212;
+  --focus: #245db0;
+  --formula-fill: #eeeeee;
+  --danger: #912338;
+  --danger-line: #a32a37;
+  --success: #11522b;
+  --success-fill: #dff4e6;
+  --danger-fill: #fce8ec;
+  --pen-ink: #171717;
+  --plot-line: #626262;
+  --plot-grid: #d5d5d5;
+  --plot-ink: #232323;
+  --plot-fill: #ededed;
+  --streak: #753c0d;
+  --streak-fill: #ffead3;
+  --line: #777777;
+  --section-fill: #efefef;
+  --divider: #d1d1d1;
+  --score: #365c89;
+  --round: 10px;
+  background: var(--surface);
+  color: var(--ink);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #f4f4f4;
+  --secondary: #c7c7c7;
+  --control-line: #a5a5a5;
+  --control-ink: #eeeeee;
+  --control-wash: #303030;
+  --surface: #151515;
+  --panel: #202020;
+  --line: #8f8f8f;
+  --section-fill: #222222;
+  --divider: #4a4a4a;
+  --score: #b1cbed;
+  --primary: #e8e8e8;
+  --primary-hover: #cccccc;
+  --depth: #505050;
+  --primary-depth: #9b9b9b;
+  --focus: #9ec8ff;
+  --formula-fill: #2a2a2a;
+  --danger: #ffc2ce;
+  --danger-line: #f08ca0;
+  --success: #a5ebbe;
+  --success-fill: #213c30;
+  --danger-fill: #472a36;
+  --pen-ink: #ffffff;
+  --plot-line: #b7b7b7;
+  --plot-grid: #505050;
+  --plot-ink: #eeeeee;
+  --plot-fill: #333333;
+  --streak: #ffd39b;
+  --streak-fill: #463022;
+  --on-primary: #181818;
+}
 :root[data-theme="paper"] {
   color-scheme: light;
   font-family: "Noto Serif KR", "Noto Serif CJK KR", serif;
@@ -28,8 +115,23 @@
   --plot-fill: #eee5d3;
 }
 
-
-
+:root {
+  --palette-gold: #8a661c;
+  --palette-yellow: var(--palette-gold);
+  --start-fill: #226440;
+  --start-edge: #16452c;
+  --status-good: var(--palette-green);
+  --status-bad: var(--palette-red);
+  --status-review: var(--palette-gold);
+  --status-info: var(--palette-blue);
+}
+:root[data-theme="dark"] {
+  --start-edge: #51936c;
+  --status-good: hsl(from var(--palette-green) h s calc(100 - l));
+  --status-bad: hsl(from var(--palette-red) h s calc(100 - l));
+  --status-review: hsl(from var(--palette-gold) h s calc(100 - l));
+  --status-info: hsl(from var(--palette-blue) h s calc(100 - l));
+}
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; min-width: 290px; }
@@ -443,14 +545,3 @@ h1,h2,h3,h4,legend,.brand,.button,.context-chip,.segment-heading,.history-group 
 @media(max-width:425px) { .type-actions :is(.star,.hint-tool,.answer-tool) { width:49px; flex-basis:49px; } .mode-options .icon,.recall-level .icon { width:var(--icon-size); height:var(--icon-size); } }
 @media(prefers-reduced-motion:reduce) { .mix-toggle .switch-ui::before,.mix-toggle .switch-ui::after { transition:none; } }
 .choice-list .choice-text { width:auto; height:auto; background:transparent; border-radius:0; }
-
-/* The shell is the only brand and theme control. */
-.header-inner > .brand, .preferences-section .theme-options,
-.home-daily, #personal-ranking { display: none !important; }
-.header-inner { justify-content: flex-end; min-height: 50px; }
-.setup-view, .history-view { margin-top: 18px; }
-.session-view { min-height: 100dvh; }
-
-.study-loading { margin: 20px auto; width: min(calc(100% - 32px), 740px); }
-body:not(.study-ready) > :is(header, main), body.study-ready > .study-loading { display: none; }
-section[aria-labelledby="settings-screen"] { display: none; }

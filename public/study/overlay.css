@@ -1,0 +1,37 @@
+/* Pulim occupies the original brand and trailing account slots. */
+.header-inner > .brand { display: none; }
+.header-inner > nav { margin-inline-start: auto; }
+#pulim-services, #pulim-profile { flex: none; }
+#pulim-services nav { display: flex; gap: 3px; }
+#pulim-services .service-link,
+#pulim-profile .study-profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px;
+  gap: 6px;
+  border-radius: 9px;
+}
+#pulim-services .service-link[aria-current] { background: var(--primary); color: var(--on-primary); }
+#pulim-profile .study-profile:hover { background: var(--control-wash); }
+.study-profile-name { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.study-loading { margin: 20px auto; width: min(calc(100% - 32px), 740px); }
+body:not(.study-ready) > :is(header, main), body.study-ready > .study-loading { display: none; }
+@media (max-width: 620px) {
+  .header-inner { width: calc(100% - 12px); gap: 4px; }
+  .header-inner > nav { gap: 2px; }
+  .header-inner > nav > :is(a, button),
+  #pulim-services .service-link, #pulim-profile .study-profile {
+    min-width: 34px;
+    width: 34px;
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+  .header-inner > nav > :is(a, button) > span, .study-profile-name { display: none; }
+}
+@media (max-width: 320px) {
+  .header-inner > nav > :is(a, button),
+  #pulim-services .service-link, #pulim-profile .study-profile { min-width: 32px; width: 32px; }
+}

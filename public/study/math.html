@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <link rel="stylesheet" href="./palette.css">
   <link rel="stylesheet" href="./math.css">
+  <link rel="stylesheet" href="./overlay.css">
 </head>
 <body>
   <p class="study-loading" role="status">연습 화면을 불러오는 중…</p>
@@ -67,6 +67,7 @@
   </svg>
   <header class="app-header" id="app-header">
     <div class="header-inner">
+      <div id="pulim-services"></div>
       <a class="brand" href="#practice"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-logo"/></svg>풀림 수학</a>
       <nav aria-label="수학 연습 메뉴">
         <a id="practice-nav" href="#practice" aria-label="연습" aria-current="page"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-book"/></svg><span>연습</span></a>
@@ -74,13 +75,14 @@
         <a id="inspection-nav" href="#inspection" aria-label="점검"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-search"/></svg><span>점검</span></a>
         <button type="button" class="icon-button settings-button" data-open-preferences aria-label="화면과 소리 설정" title="화면과 소리 설정"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></button>
       </nav>
+      <div id="pulim-profile"></div>
     </div>
   </header>
 
   <main>
     <section id="practice-view" class="setup-view" aria-labelledby="setup-heading">
       <header class="page-intro">
-        <h1 id="setup-heading" tabindex="-1">수학 연습</h1>
+        <h1 id="setup-heading" tabindex="-1">오늘의 학습</h1>
       </header>
       <div class="home-overview">
         <section class="home-session home-status" aria-labelledby="home-status-title">
@@ -243,6 +245,7 @@
       </header>
       <section class="history-overview-card history-status" aria-labelledby="history-summary-title"><h2 id="history-summary-title">현재 기록</h2><dl id="history-summary" class="metrics history-summary" aria-label="성적 요약"></dl></section>
 
+      <section id="personal-ranking" class="ranking-section history-overview-card" aria-labelledby="ranking-title"></section>
       <details class="review-panel history-group" open>
         <summary id="review-heading">복습할 문제</summary>
         <div id="review-list"></div>

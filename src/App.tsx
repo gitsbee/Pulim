@@ -17,7 +17,6 @@ import About from './components/About';
 import Icon from './components/Icon';
 import Modal from './components/Modal';
 import Header from './learning/Header';
-import DailyChallenge from './learning/DailyChallenge';
 import StudyFrame from './learning/StudyFrame';
 import { LearningRecords, Leaderboard } from './learning/LearningRecords';
 import { koreanDay, subjects } from './learning/daily';
@@ -86,39 +85,34 @@ export default function App() {
   const topTags = [...tags].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const composer = actor && own.profile ? <Composer key={actor.uid} user={actor} onBusy={setPosting} alwaysExpanded /> : null;
   const card = (post: typeof feed.posts[number], key?: string) => <PostCard key={key || post.id} post={post} user={user} onLogin={profile} onTag={tagSearch} />;
+  if (route.subject) {
+    return authLoading ? <p className="study-status" role="status">계정 확인 중…</p> :
+      <StudyFrame key={route.subject + ':' + (account || 'guest')} subject={route.subject} account={account || 'guest'}
+        name={own.profile?.name || user?.displayName || undefined} onAttempt={record} />;
+  }
+
   return <>
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus(); }}>본문으로 건너뛰기</a>
-    <Header service={route.subject || 'pulleem'} user={user} name={own.profile?.name || user?.displayName || undefined} loggedOut={logout} />
-    <main id="main" tabIndex={-1} className={`application-main${route.practice ? ' study-main' : ''}`}>
+    <Header service="pulleem" user={user} name={own.profile?.name || user?.displayName || undefined} loggedOut={logout} />
+    <main id="main" tabIndex={-1} className="application-main">
       {error && <p className="error" role="alert">{error}</p>}
       {sync && <div className="connection sync-status" role="status">{sync} <button onClick={upload}>동기화 다시 시도</button></div>}
       {(route.hub || listing) && !route.activity && <nav className="section-tabs" aria-label="풀림 메뉴">
-        <a href={base} aria-current={route.hub ? 'page' : undefined}>오늘의 문제</a>
+        <a href={base} aria-current={route.hub ? 'page' : undefined}>홈</a>
         <a href={base + '#/wall'} aria-current={listing ? 'page' : undefined}>담벼락</a>
       </nav>}
       {route.hub ? <>
         <PageHeading title="풀림" />
-        <p className="hub-intro">같은 문제를 풀고, 풀이와 질문을 담벼락에서 나눠요.</p>
+        <p className="hub-intro">수학·영어를 연습하고 담벼락에서 풀이와 질문을 나눠요.</p>
         <div className="subject-grid">
           {(['math', 'english'] as const).map(subject => <section className="panel subject-card" key={subject}>
             <div className={'subject-mark ' + subject}><Icon name={subject} /></div>
             <h2>{subjects[subject]}</h2>
             <p>{subject === 'math' ? '공통수학의 개념을 문제로 연습해요.' : '단어와 표현을 익히고 오답을 복습해요.'}</p>
-            <a className="button primary" href={base + '#/' + subject}>오늘의 문제</a>
-            <a className="button secondary" href={base + '#/' + subject + '/practice'}>연습하기</a>
+            <a className="button primary" href={base + '#/' + subject}>학습하기</a>
           </section>)}
         </div>
         <a className="button secondary" href={base + '#/ranking/math'}><Icon name="trophy" />온라인 랭킹</a>
-      </> : route.subject ? <>
-        <nav className="section-tabs subject-tabs" aria-label={subjects[route.subject] + ' 메뉴'}>
-          <a href={base + '#/' + route.subject} aria-current={!route.practice ? 'page' : undefined}>오늘의 문제</a>
-          <a href={base + '#/' + route.subject + '/practice'} aria-current={route.practice ? 'page' : undefined}>연습</a>
-          <a href={base + '#/ranking/' + route.subject}>온라인 랭킹</a>
-        </nav>
-        {authLoading ? <p role="status">계정 확인 중…</p> : route.practice ?
-          <StudyFrame key={route.subject + ':' + (account || 'guest')} subject={route.subject} account={account || 'guest'} theme={theme} onAttempt={record} /> :
-          <DailyChallenge key={route.subject + day + (account || '')} day={day} subject={route.subject} uid={account}
-            canPublish={Boolean(own.profile)} onLogin={profile} onRanking={() => navigate(base + '#/ranking/' + route.subject)} />}
       </> : route.records || route.ranking ? <>
         <PageHeading title={route.records ? '내 기록' : '온라인 랭킹'} back />
         <nav className="section-tabs" aria-label="기록 메뉴">
@@ -142,7 +136,7 @@ export default function App() {
         {route.explore ? <section className="discovery"><p className="muted">불러온 글에서 반응이 많은 순으로 만나보세요.</p><div className="tags">{topTags.map(([tag, count]) => <button key={tag} onClick={() => tagSearch(tag)}>#{tag}<span className="tag-count">{count}</span></button>)}</div></section> : <div className="feed-toolbar"><div className="filter-tabs" aria-label="목록 필터"><button aria-pressed={!mine} onClick={() => setMine(false)}>모든 글</button><button aria-pressed={mine} disabled={!user} onClick={() => setMine(true)}>내 글</button></div><span className="muted">최신순</span></div>}
         {!auth || !db ? <section className="panel"><h2>연결을 준비하고 있어요.</h2></section> : <>{feed.cached && <p className="connection" role="status">서버 연결 확인 중</p>}{feed.error ? <section className="panel"><p className="error" role="alert">{feed.error}</p><button onClick={feed.retry}>다시 불러오기</button></section> : <>{feed.loading && <p role="status">불러오는 중…</p>}<div className="posts">{visible.map(post => card(post))}</div>{!feed.loading && visible.length === 0 && <section className="panel empty"><h2>{feed.cached ? '서버 연결을 기다리고 있어요.' : route.search || mine ? '조건에 맞는 글이 없어요.' : '첫 번째 글을 남겨보세요.'}</h2></section>}{feed.more && <button className="load-more quiet-button" disabled={feed.loading || feed.cached} onClick={feed.loadMore}>이전 글 50개 더 불러오기</button>}<p className="feed-scope muted">불러온 글 {feed.posts.filter(post => !post.deleted).length}개</p></>}</>}
       </>}
-      {!route.practice && <footer><span>© {new Date().getFullYear()} 풀림</span><a href={`${base}About/`}>소개</a></footer>}
+      <footer><span>© {new Date().getFullYear()} 풀림</span><a href={`${base}About/`}>소개</a></footer>
     </main>
     {route.compose && composer && <Modal title="새 글 쓰기" onClose={() => { if (!posting) goBack(); }}>{composer}</Modal>}
     {route.postId && <PostDetail key={route.postId} id={route.postId} user={user} onClose={goBack} onLogin={profile} onTag={tagSearch} />}

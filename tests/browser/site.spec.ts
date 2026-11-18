@@ -1,5 +1,4 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
-import { dailyQuestions, koreanDay } from '../../src/learning/daily';
 
 const password = 'test-password-2026';
 async function signup(page: Page, handle: string) {
@@ -261,69 +260,48 @@ test('quote text and independent comment threads survive original deletion safel
 });
 
 
-test('shared daily sets, practice records across devices, and opt-in online rankings', async ({ browser }) => {
-  const korea = await browser.newContext({ timezoneId: 'Asia/Seoul' });
-  const overseas = await browser.newContext({ timezoneId: 'America/Los_Angeles', viewport: { width: 390, height: 844 } });
-  const author = await korea.newPage();
-  const otherDevice = await overseas.newPage();
+test('native study headers, original daily math, and synchronized practice records', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 320, height: 720 } });
+  const second = await browser.newContext();
+  const author = await context.newPage();
+  const other = await second.newPage();
   try {
     const email = await signup(author, 'study_user');
     await author.getByRole('link', { name: '수학', exact: true }).click();
-    await otherDevice.goto('./#/math');
-    const day = koreanDay();
-    const questions = dailyQuestions(day, 'math');
-    await expect(author.locator('#daily-question')).toHaveText(questions[0].prompt);
-    await expect(otherDevice.locator('#daily-question')).toHaveText(questions[0].prompt);
-    await author.screenshot({ path: 'test-results/pulleem-math.png' });
-    for (const [index, question] of questions.entries()) {
-      await expect(author.locator('#daily-question')).toHaveText(question.prompt);
-      await author.getByLabel('답안', { exact: true }).fill(index === 1 ? '0' : question.answer);
-      await author.getByRole('button', { name: '답안 제출' }).click();
-    }
-    await expect(author.getByRole('status')).toContainText('정답 2 / 3');
-    await author.getByRole('button', { name: '랭킹에 점수 공개' }).click();
-    await expect(author.getByRole('button', { name: '랭킹 공개 취소' })).toBeVisible();
-    await otherDevice.goto('./#/ranking/math');
-    await expect(otherDevice.getByText('@study_user', { exact: true })).toBeVisible();
-    await expect(otherDevice.getByText('2 / 3', { exact: true })).toBeVisible();
-
-    await author.getByRole('link', { name: '연습', exact: true }).click();
     const math = author.frameLocator('iframe[title="수학 연습"]');
-    await math.getByRole('button', { name: '이 범위 연습' }).click();
+    const start = math.locator('#quick-practice');
+    await expect(start).toHaveText(/오늘의 문제/);
+    await expect(author.locator('.pulleem-header')).toHaveCount(0);
+    await expect(math.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
+    await expect(math.getByRole('button', { name: '화면과 소리 설정' })).toHaveCount(1);
+    await expect(math.getByRole('navigation', { name: '서비스' }).getByRole('link')).toHaveCount(3);
+    await expect(math.getByRole('link', { name: '프로필' })).toBeVisible();
+    expect(await math.locator('body').evaluate(body => body.scrollWidth <= window.innerWidth)).toBe(true);
+    await start.click();
+    await expect(math.locator('#daily-navigation')).toBeVisible();
+    await expect(math.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
     await expect(math.getByRole('button', { name: '정답 확인' })).toBeVisible();
-    const mathLabel = await math.locator('#session-heading').innerText();
-    const options = math.locator('#answer-fields .choice-option');
-    if (await options.count()) await options.first().click();
-    else for (const field of await math.locator('#answer-fields .answer-editor').all()) {
-      const placeholder = await field.getAttribute('data-placeholder');
-      const sample = placeholder?.includes('참') ? '참' : placeholder?.includes('x <=') ? 'x <= 1'
-        : placeholder?.includes('(1, 2)') ? '(1, 2)' : '1';
-      await field.fill(sample);
-    }
-    await math.getByRole('button', { name: '정답 확인' }).click();
+    await math.getByRole('link', { name: '연습 나가기' }).click();
+    await math.getByRole('navigation', { name: '서비스' }).getByRole('link', { name: '영어' }).click();
 
-    await author.getByRole('link', { name: '영어', exact: true }).click();
-    await expect(author.locator('#daily-question')).toHaveText(dailyQuestions(day, 'english')[0].prompt);
-    await author.getByRole('link', { name: '연습', exact: true }).click();
     const english = author.frameLocator('iframe[title="영어 연습"]');
+    await expect(english.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
+    await expect(english.getByRole('button', { name: '화면 및 입력 설정' })).toHaveCount(1);
+    expect(await english.locator('body').evaluate(body => body.scrollWidth <= window.innerWidth)).toBe(true);
     await english.getByRole('button', { name: '1구간 시작', exact: true }).click();
+    await expect(english.locator('header.app-header:visible, header.session-header:visible')).toHaveCount(1);
     await english.getByRole('button', { name: '정답 확인', exact: true }).click();
     await english.getByRole('button', { name: '쉬움', exact: true }).click();
 
-    await otherDevice.getByRole('link', { name: '로그인', exact: true }).click();
-    await otherDevice.getByLabel('이메일', { exact: true }).fill(email);
-    await otherDevice.getByLabel('비밀번호', { exact: true }).fill(password);
-    await otherDevice.getByRole('button', { name: '로그인', exact: true }).click();
-    await expect(otherDevice.getByRole('heading', { name: '프로필', level: 1 })).toBeVisible();
-    await otherDevice.getByRole('link', { name: '내 기록', exact: true }).first().click();
-    await expect(otherDevice.getByText(questions[0].prompt, { exact: true })).toBeVisible();
-    await expect(otherDevice.getByText('as part of', { exact: true })).toBeVisible();
-    await expect(otherDevice.getByText(mathLabel, { exact: true })).toBeVisible();
-    await otherDevice.getByRole('link', { name: '수학', exact: true }).click();
-    await expect(otherDevice.getByRole('status')).toContainText('정답 2 / 3');
-    expect(await otherDevice.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
-    await otherDevice.screenshot({ path: 'test-results/pulleem-mobile.png' });
-    await otherDevice.getByRole('button', { name: '랭킹 공개 취소' }).click();
-    await expect(otherDevice.getByRole('button', { name: '랭킹에 점수 공개' })).toBeVisible();
-  } finally { await korea.close(); await overseas.close(); }
+    await other.goto('./#/me');
+    await other.getByLabel('이메일', { exact: true }).fill(email);
+    await other.getByLabel('비밀번호', { exact: true }).fill(password);
+    await other.getByRole('button', { name: '로그인', exact: true }).click();
+    await expect(other.getByRole('heading', { name: '프로필', level: 1 })).toBeVisible();
+    await other.getByRole('link', { name: '내 기록', exact: true }).first().click();
+    await expect(other.getByText('as part of', { exact: true })).toBeVisible();
+  } finally {
+    await context.close();
+    await second.close();
+  }
 });

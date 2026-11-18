@@ -31,7 +31,7 @@
 
   function applyTheme() {
     const dark = theme === "dark" || (theme === "system" && system.matches);
-    root.dataset.theme = window.studyBridge.theme ?? (dark ? "dark" : "light");
+    root.dataset.theme = theme === "paper" ? "paper" : dark ? "dark" : "light";
     document.querySelector('meta[name="theme-color"]').content = theme === "paper" ? "#f3eedf" : dark ? "#151922" : "#f6f8fb";
     document.dispatchEvent(new Event("forge-themechange"));
   }
@@ -14390,7 +14390,7 @@
 
     const attempts = listAttempts();
     const today = learning.day();
-    const plan = learning.read("daily:"+today);
+    const plan = learning.read("daily:"+today) ?? (canPractice ? ensureDailyPlan(settings) : null);
     const completed = plan ? plan.items.filter(item=>memory.has(item.id)).length : 0;
     const ongoing = draft && (!draft.record || draft.dailyDay || draft.reviewOf);
     const unit = ongoing ? TYPES[typeFor(draft.problem)].unit : null;
@@ -14826,6 +14826,10 @@
         ${cardActions(p,record.id,"attempt")}</div></details>`;
     }).join("") || '<p class="empty">선택한 범위에 풀이 기록이 없습니다.</p>';
     $("history-more").hidden=filtered.length<=historyLimit;
+    const rank=learning.activity(all,typeFor).ranking.slice(0,10);
+    $("personal-ranking").innerHTML='<h2 id="ranking-title">내 하루 랭킹</h2>'+(rank.length
+      ? '<ol class="personal-ranking">'+rank.map(entry=>{ const place=rank.findIndex(item=>item.points===entry.points)+1; const medal=place<=3?` medal-${place}`:''; return `<li class="ranking-entry${medal}"><span class="ranking-place">${place}위</span><time datetime="${esc(entry.date)}">${esc(entry.date)}</time><strong>${entry.points}점</strong></li>`; }).join("")+'</ol>'
+      : '<p>점수를 얻으면 여기에 표시됩니다.</p>')+'<p class="ranking-note">유형별 첫 정답 10점, 같은 오답의 복습 정답은 하루 5점입니다.</p>';
 
 
   }

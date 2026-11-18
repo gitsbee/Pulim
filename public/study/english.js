@@ -113,7 +113,7 @@ function segmentTags(kind, indices, status) {
 }
 function renderSetup() {
   if (!['recall','choice','type'].includes(mode)) mode = 'recall';
-  app.innerHTML = `<section class="setup-view">${heading('영어 연습')}<div class="home-overview">
+  app.innerHTML = `<section class="setup-view">${heading('오늘의 학습')}<div class="home-overview">
     <section class="home-session"><h2>현재 상태</h2>${homeMetrics()}</section>
     <section class="home-session"><h2>진행 중인 문제</h2>${currentRoundMarkup()}</section>
     <section class="home-session"><h2>학습하기</h2><form id="setup-form" class="setup-form" novalidate>
@@ -239,7 +239,7 @@ function renderCollection() {
 const systemTheme = matchMedia('(prefers-color-scheme: dark)');
 function applyTheme() {
   const theme = state.theme === 'system' ? (systemTheme.matches ? 'dark' : 'light') : state.theme;
-  document.documentElement.dataset.theme = window.studyBridge.theme ?? theme;
+  document.documentElement.dataset.theme = theme;
   $('meta[name="theme-color"]').content = theme === 'dark' ? '#151515' : theme === 'paper' ? '#eee8d9' : '#f8f8f8';
 }
 applyTheme();

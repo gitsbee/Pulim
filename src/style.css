@@ -326,22 +326,7 @@ a { color: var(--c-link); }
   border: 2px solid currentColor; border-radius: var(--round); color: var(--status-info);
 }
 .subject-mark.english { color: var(--status-good); }
-.study-card-heading { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
-.study-card-heading time { font-size: .78em; color: var(--secondary); }
-.daily-panel, .record-panel { border: 2px solid var(--divider); border-radius: var(--round); }
-.daily-form h3 { margin-block: .4rem 1.1rem; }
-.daily-form > label { display: block; }
-.daily-choices { border: 0; display: grid; gap: 8px; padding: 0; margin: 0 0 1rem; min-width: 0; }
-.daily-choices label {
-  display: flex; gap: 10px; align-items: center; padding: 8px 12px;
-  border: 2px solid var(--line); border-radius: var(--round); min-height: 47px; cursor: pointer;
-}
-.daily-choices label:has(input:checked) { border-color: var(--focus); background: var(--control-wash); }
-.daily-choices input { width: auto; margin: 0; accent-color: var(--focus); }
-.daily-feedback { padding-inline-start: 0; margin-block: 16px; list-style: none; }
-.daily-feedback details { border-top: 1px solid var(--divider); padding-block: 8px; }
-.daily-feedback summary { cursor: pointer; }
-.daily-feedback p { margin: 6px 0; }
+.record-panel { border: 2px solid var(--divider); border-radius: var(--round); }
 .correct-result { color: var(--status-good); }
 .wrong-result { color: var(--status-bad); }
 .learning-list { list-style: none; padding: 0; }
@@ -350,9 +335,6 @@ a { color: var(--c-link); }
 .learning-list p { margin: 0; }
 .learning-list strong { overflow-wrap: anywhere; }
 .wall-actions { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-.study-main { max-width: 100%; padding: 0; }
-.study-main .subject-tabs { width: min(calc(100% - 28px), 740px); margin: 8px auto 5px; }
-.study-frame { width: 100%; height: calc(100dvh - 125px); min-height: 300px; display: block; border: 0; }
 .sync-status { padding-inline: 12px; }
 :root[data-theme="dark"] .pulleem-header .icon { color: #83b46b; }
 :root[data-theme="dark"] .service-link[aria-current] .icon { color: var(--on-primary); }
@@ -362,5 +344,38 @@ a { color: var(--c-link); }
   .pulleem-header-inner { width: calc(100% - 20px); gap: 4px; min-height: 60px; }
   .header-tools .icon-button { width: 36px; }
   .subject-grid { grid-template-columns: 1fr; }
-  .daily-panel, .record-panel { padding: 16px; }
+  .record-panel { padding: 16px; }
 }
+
+/* Problem Forge surfaces and tactile controls for the Pulim pages. */
+.pulleem-header-inner {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+.account-entry { justify-self: end; }
+.account-entry .post-menu-options { inset: calc(100% + 6px) 0 auto auto; }
+.application-main { max-width: 776px; padding-inline: 18px; }
+.page-heading h1 { font-size: clamp(29px, 5.6vw, 39px); line-height: 1.28; }
+.panel, dialog {
+  background: var(--section-fill);
+  border: 2px solid var(--divider);
+  border-radius: var(--round);
+}
+:root[data-theme="dark"] .panel { background: var(--panel); }
+button, .button {
+  border-radius: var(--round);
+  min-height: 44px;
+}
+:where(.application-main, dialog) :is(button, .button):not(.icon-button, .reaction-button, .identity-link, .quiet-button, .danger):not(.filter-tabs *, .tags *, .search-field *, .post-menu-options *) {
+  --edge: var(--control-line);
+  border: 2px solid var(--edge);
+  box-shadow: 0 var(--button-step) 0 var(--edge);
+}
+:where(.application-main, dialog) .primary {
+  --edge: var(--primary-depth);
+}
+:where(.application-main, dialog) :is(button, .button):active:not(:disabled) {
+  box-shadow: none;
+}
+input, textarea { border: 2px solid var(--line); border-radius: var(--round); }
+.study-frame { width: 100%; height: 100dvh; min-height: 0; display: block; border: 0; }
+.study-status { padding: 18px; }

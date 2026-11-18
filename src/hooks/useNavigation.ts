@@ -30,7 +30,6 @@ export function useNavigation() {
   return {
     hub: !hash || hash === '#/home', wall: hash === '#/wall',
     subject: (study?.[1] || null) as 'math' | 'english' | null,
-    practice: Boolean(study?.[2]),
     records: hash === '#/records', ranking: (hash === '#/ranking/math' ? 'math' : hash === '#/ranking/english' ? 'english' : null) as 'math' | 'english' | null,
     about: state.pathname.replace(/\/$/, '').endsWith('/About'), me: hash === '#/me',
     search: hash === '#/search', explore: hash === '#/explore', settings: hash === '#/settings', activity: hash === '#/activity', compose: hash === '#/compose',
