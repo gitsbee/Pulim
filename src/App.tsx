@@ -107,7 +107,7 @@ export default function App() {
     <a className="skip-link" href="#main" onClick={event => { event.preventDefault(); document.getElementById('main')?.focus(); }}>본문으로 건너뛰기</a>
     <Header subject={route.subject} user={user} name={own.profile?.name || user?.displayName || undefined} loggedOut={logout}
       pulimTab={route.support ? undefined : route.hub ? 'home' : route.search ? 'search' : listing && !route.activity ? 'wall' : undefined}
-      records={route.records || Boolean(route.ranking)} onSettings={() => setSettingsOpen(true)}
+      onSettings={() => setSettingsOpen(true)}
       view={studyView && studyView.subject === route.subject ? studyView.view : undefined}
       onStudyAction={name => {
         if (route.subject) setStudyAction({ subject: route.subject, name, id: Date.now() });

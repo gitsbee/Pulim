@@ -359,7 +359,8 @@ test('one study document, shared dark theme and synchronized practice records', 
     await other.getByLabel('비밀번호', { exact: true }).fill(password);
     await other.getByRole('button', { name: '로그인', exact: true }).click();
     await expect(other.getByRole('heading', { name: '프로필', level: 1 })).toBeVisible();
-    await other.getByRole('link', { name: '내 기록', exact: true }).first().click();
+    await other.getByRole('button', { name: '계정 메뉴' }).click();
+    await other.getByRole('button', { name: '내 기록', exact: true }).click();
     await expect(other.getByText('as part of', { exact: true })).toBeVisible();
   } finally {
     unblockMath();

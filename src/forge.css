@@ -401,7 +401,7 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 .metric dt span, .metric dd, .attempt-summary > strong { overflow-wrap: anywhere; word-break: keep-all; }
 .metric dd, .answer-comparison dd { margin: 0; }
 .metric dd strong { font-variant-numeric: tabular-nums; }
-.metric dd > span { display: block; color: var(--secondary); font-size: 1rem; }
+.metric dd > span:not(.context-chip) { display: block; color: var(--secondary); font-size: 1rem; }
 .range-list .metric, .answer-comparison > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
@@ -707,7 +707,7 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 /* Matching, full-width actions for every saved problem card. */
 .card-actions { display: flex; flex-wrap: nowrap; align-items: stretch; gap: 8px; }
 .card-actions > .button:not(.card-remove) { flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }
-.card-actions .card-remove { flex: 0 0 48px; width: 48px; padding: 8px; color: var(--danger); border-color: var(--danger-line); }
+.card-actions .card-remove { flex: 0 0 46px; width: 48px; padding: 8px; color: var(--danger); border-color: var(--danger-line); }
 @media (max-width: 360px) {
   .card-actions { gap: 5px; }
   .card-actions > .button { font-size: 14px; gap: 4px; }
@@ -738,26 +738,26 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 .daily-preview-problem .math-block { margin-block: 8px; padding: 8px 10px; }
 /* Compact switch with a rectangular thumb and a generous touch target. */
 .mix-toggle input, .mix-toggle input:checked {
-  width: 48px; height: 44px; border: 0; background: transparent;
+  width: 46px; height: 44px; border: 0; background: transparent;
   border-radius: var(--round); overflow: visible;
 }
 .mix-toggle input::after {
-  content: ""; position: absolute; inset: 3px 0; border: var(--border-width) solid var(--line);
+  content: ""; position: absolute; inset: 6px 0; border: var(--border-width) solid var(--line);
   border-radius: var(--round); background: var(--control-wash); transition: background .15s, border-color .15s;
 }
 .mix-toggle input:checked::after { background: #226440; border-color: #226440; }
 .mix-toggle input::before {
-  z-index: 1; box-sizing: border-box; top: 6px; left: 4px; width: 24px; height: 29px;
+  z-index: 1; box-sizing: border-box; top: 0; left: 0; width: 28px; height: 44px;
   border: var(--border-width) solid var(--line); border-radius: var(--round);
   background: var(--panel); box-shadow: 0 var(--button-step) 0 var(--line);
   transition: transform .15s, border-color .15s, box-shadow .15s;
 }
 .mix-toggle input:checked::before {
-  transform: translateX(16px); background: var(--panel); border-color: #2d9561;
+  transform: translateX(18px); background: var(--panel); border-color: #2d9561;
   box-shadow: 0 var(--button-step) 0 var(--line);
 }
 .settings-toggle { display: flex; justify-content: space-between; min-height: 52px; gap: 16px; font-size: 17px; }
-.settings-toggle input { flex: 0 0 48px; }
+.settings-toggle input { flex: 0 0 46px; }
 .mix-toggle input:focus-visible { outline: var(--border-width) solid var(--focus); outline-offset: 4px; }
 #course-select { min-height: 44px; border-radius: var(--round); }
 
@@ -847,9 +847,9 @@ h1, h2, h3, h4, legend, .history-group > summary, .record-settings > summary, .r
 .range-track::before { content: ""; position: absolute; left: 14px; right: 14px; height: 32px; box-sizing: border-box; border: var(--border-width) solid var(--line); border-radius: var(--round); background: linear-gradient(to right, #226440 0 var(--range-progress, 0%), var(--control-wash) var(--range-progress, 0%) 100%); pointer-events: none; }
 .volume-setting .range-track input[type="range"] { position: relative; width: 100%; height: 44px; min-height: 44px; margin: 0; background: transparent; cursor: pointer; }
 .volume-setting .range-track input[type="range"]::-webkit-slider-runnable-track { height: 44px; border: 0; background: transparent; }
-.volume-setting .range-track input[type="range"]::-webkit-slider-thumb { appearance: none; box-sizing: border-box; width: 28px; height: 27px; margin-top: 7px; border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); box-shadow: 0 var(--button-step) 0 var(--line); }
+.volume-setting .range-track input[type="range"]::-webkit-slider-thumb { appearance: none; box-sizing: border-box; width: 28px; height: 44px; margin-top: 0; border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); box-shadow: 0 var(--button-step) 0 var(--line); }
 .volume-setting .range-track input[type="range"]::-moz-range-track { height: 44px; border: 0; background: transparent; }
-.volume-setting .range-track input[type="range"]::-moz-range-thumb { box-sizing: border-box; width: 28px; height: 27px; transform: translateY(-1px); border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); box-shadow: 0 var(--button-step) 0 var(--line); }
+.volume-setting .range-track input[type="range"]::-moz-range-thumb { box-sizing: border-box; width: 28px; height: 44px; border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); box-shadow: 0 var(--button-step) 0 var(--line); }
 
 /* Align the range with its label and color the filled edge. */
 .range-track::before { left: 0; right: 0; border-color: transparent; background: linear-gradient(to right, #2d9561 0 var(--range-progress, 14px), var(--line) var(--range-progress, 14px) 100%) border-box; }

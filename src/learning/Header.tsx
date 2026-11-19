@@ -17,14 +17,13 @@ const tools = [
   { key: 'inspection', label: '점검', icon: 'search' },
 ] as const;
 
-export default function Header({ user, name, loggedOut, subject, view, pulimTab, records, onSettings, onStudyAction }: {
+export default function Header({ user, name, loggedOut, subject, view, pulimTab, onSettings, onStudyAction }: {
   user: User | null;
   name?: string;
   loggedOut: () => void;
   subject: Subject | null;
   view?: StudyView;
   pulimTab?: 'home' | 'wall' | 'search';
-  records: boolean;
   onSettings: () => void;
   onStudyAction: (action: StudyAction) => void;
 }) {
@@ -54,8 +53,6 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
             aria-current={pulimTab === 'wall' ? 'page' : undefined}><Icon name="post" /><span>담벼락</span></a>
           <a className="plain-button nav-tab" href={base + '#/search'} aria-label="검색" title="검색"
             aria-current={pulimTab === 'search' ? 'page' : undefined}><Icon name="search" /><span>검색</span></a>
-          <a className="plain-button nav-tab" href={base + '#/records'} aria-label="내 기록" title="내 기록"
-            aria-current={records ? 'page' : undefined}><Icon name="records" /><span>기록</span></a>
         </>}
         <button type="button" className="plain-button settings-button" aria-label="설정" title="설정"
           onClick={subject ? () => onStudyAction('settings') : onSettings}><Icon name="settings" /></button>

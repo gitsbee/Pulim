@@ -107,6 +107,7 @@ export function fillSettings(root: HTMLElement) {
 export function alignSettings(root: HTMLElement) {
   const dialog = root.closest('dialog');
   const ranges = [...root.querySelectorAll<HTMLInputElement>('.range-track input')];
+  const switches = [...root.querySelectorAll<HTMLInputElement>('.mix-toggle input')];
   function refresh() {
     const scale = window.devicePixelRatio || 1;
     if (dialog?.open && window.innerWidth > 620) {
@@ -119,6 +120,12 @@ export function alignSettings(root: HTMLElement) {
       dialog?.style.removeProperty('translate');
     }
     ranges.forEach(updateRange);
+    switches.forEach(input => {
+      input.style.removeProperty('translate');
+      const { x, y, width, height } = input.getBoundingClientRect();
+      if (!width || !height) return;
+      input.style.translate = `${(Math.round(x * scale) / scale - x).toFixed(4)}px ${(Math.round(y * scale) / scale - y).toFixed(4)}px`;
+    });
   }
   function updateRange(input: HTMLInputElement) {
     const { width } = input.getBoundingClientRect();
@@ -133,11 +140,12 @@ export function alignSettings(root: HTMLElement) {
   const abort = new AbortController();
   ranges.forEach(input => input.addEventListener('input', () => updateRange(input), { signal: abort.signal }));
   const sizes = new ResizeObserver(refresh);
-  ranges.forEach(input => sizes.observe(input));
+  [...ranges, ...switches].forEach(input => sizes.observe(input));
   if (dialog) sizes.observe(dialog);
   const visibility = new MutationObserver(refresh);
   if (dialog) visibility.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+  visibility.observe(root, { subtree: true, attributes: true, attributeFilter: ['hidden'] });
   window.addEventListener('resize', refresh, { signal: abort.signal });
   refresh();
-  return () => { abort.abort(); sizes.disconnect(); visibility.disconnect(); };
+  return () => { abort.abort(); sizes.disconnect(); visibility.disconnect(); switches.forEach(input => input.style.removeProperty('translate')); };
 }
