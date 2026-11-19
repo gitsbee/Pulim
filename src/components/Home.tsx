@@ -13,13 +13,13 @@ export default function Home() {
         <h1>풀림</h1>
         <p className="home-headline">오늘 배운 것을<br />오늘 한 문제로.</p>
         <p>수학은 손으로 풀고, 영어는 기억에서 꺼내 보세요. 틀린 문제에서 다음 연습을 시작할 수 있어요.</p>
-        <div className="actions">
-          <a className="button primary action-start" href={base + '#/math'}><Icon name="book" />오늘의 학습</a>
-          <a className="button secondary" href={base + '#/wall'}><Icon name="post" />담벼락 보기</a>
-        </div>
       </div>
       <div className="home-symbols" aria-hidden="true">
         <span><Icon name="math" /></span><span><Icon name="english" /></span>
+      </div>
+      <div className="actions">
+        <a className="button primary action-start" href={base + '#/math'}><Icon name="book" />오늘의 학습</a>
+        <a className="button secondary" href={base + '#/wall'}><Icon name="post" />담벼락 보기</a>
       </div>
     </section>
     <section className="home-section" aria-labelledby="home-study">

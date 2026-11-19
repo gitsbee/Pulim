@@ -457,6 +457,17 @@ test('one header, two control styles and shared support at mobile width', async 
   await expect(settings.getByRole('switch', { name: '전체화면' })).toBeVisible();
   await expect(units.getByRole('tab').allTextContents()).resolves.toEqual(['화면', '입력', '소리', '지원', '풀림']);
   await units.getByRole('tab', { name: '소리', exact: true }).click();
+  const volume = settings.getByRole('slider', { name: '효과음 음량' });
+  const progress = () => volume.evaluate(el => ({
+    fill: parseFloat(getComputedStyle(el.parentElement!).getPropertyValue('--range-progress')),
+    width: el.getBoundingClientRect().width,
+  }));
+  await volume.focus();
+  await page.keyboard.press('End');
+  const end = await progress();
+  expect(Math.abs(end.fill - (end.width - 14))).toBeLessThanOrEqual(1);
+  await page.keyboard.press('Home');
+  expect((await progress()).fill).toBe(14);
   await settings.getByRole('switch', { name: '효과음' }).uncheck();
   await units.getByRole('tab', { name: '풀림', exact: true }).click();
   await expect(settings.getByRole('link', { name: '로그인', exact: true })).toBeVisible();
@@ -483,16 +494,20 @@ test('one header, two control styles and shared support at mobile width', async 
   for (const [subject, engine, setting] of [['수학', 'math', '펜 전용'], ['영어', 'english', '세벌식 390']]) {
     await header.getByRole('link', { name: subject, exact: true }).click();
     await expect(page.locator('.study-' + engine)).toBeVisible();
+    if (engine === 'english') {
+      const gaps = await page.locator('.study-english .home-overview > .home-session').evaluateAll(cards =>
+        cards.slice(1).map((card, index) => card.getBoundingClientRect().top - cards[index].getBoundingClientRect().bottom));
+      expect(gaps).toEqual([18, 18]);
+    }
     await header.getByRole('button', { name: '기록', exact: true }).click();
-    await page.getByRole('button', { name: '온라인 랭킹', exact: true }).click();
-    const ranking = page.getByRole('dialog', { name: subject + ' 온라인 랭킹' });
-    await expect(ranking).toBeVisible();
-    await ranking.getByRole('button', { name: '닫기', exact: true }).click();
-    await expect(page.getByRole('button', { name: '온라인 랭킹', exact: true })).toBeFocused();
+    const ranking = page.locator('[data-ranking]');
+    await expect(ranking.getByRole('heading', { name: subject + ' 온라인 랭킹' })).toBeVisible();
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await gear.click();
     await expect(settings.getByRole('switch', { name: '전체화면' })).toBeVisible();
     await units.getByRole('tab', { name: '소리', exact: true }).click();
     await expect(settings.getByRole('switch', { name: '효과음' })).not.toBeChecked();
+    await expect(volume).toHaveValue('0');
     await units.getByRole('tab', { name: '입력', exact: true }).click();
     await expect(settings.getByRole('switch', { name: setting, exact: true })).toBeVisible();
     await units.getByRole('tab', { name: '지원', exact: true }).click();

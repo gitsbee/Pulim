@@ -157,7 +157,7 @@ textarea { vertical-align: top; resize: vertical; }
 .study-english .choice-list .choice-option { width: 100%; text-align: start; }
 .study-english .verdict { margin-top: 12px; display: flex; align-items: center; gap: 8px; }
 .study-english .complete-stats { margin-bottom: 16px; }
-.study-english :is(.complete-actions, .feedback-actions, .support-links) { display: flex; flex-wrap: wrap; gap: 9px; }
+.study-english :is(.complete-actions, .feedback-actions) { display: flex; flex-wrap: wrap; gap: 9px; }
 .study-english [data-icon] { display: inline-flex; }
 @media (max-width: 620px) {
   .study-english .session-content { width: calc(100% - 32px); padding-top: 18px; }
@@ -190,7 +190,6 @@ textarea { vertical-align: top; resize: vertical; }
 .profile-form-action { width: 100%; }
 .profile-editor [data-tone="info"] { margin-top: 10px; }
 .activity-label { display: flex; align-items: center; gap: 10px; color: var(--secondary); margin: 16px 0 8px; }
-.ranking-entry-point { margin-bottom: 16px; }
 
 .home-hero {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(130px, .42fr); gap: 24px;
@@ -199,7 +198,8 @@ textarea { vertical-align: top; resize: vertical; }
 }
 .home-hero h1 { font-size: 1.1rem; margin-bottom: 12px; }
 .home-headline { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 700; line-height: 1.22; }
-.home-hero-copy > p + p { margin: 18px 0 22px; color: var(--secondary); }
+.home-hero-copy > p + p { margin-top: 18px; color: var(--secondary); }
+.home-hero > .actions { grid-column: 1 / -1; }
 .home-symbols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .home-symbols > span {
   display: grid; place-items: center; aspect-ratio: 1; border-radius: var(--round);
@@ -220,3 +220,21 @@ textarea { vertical-align: top; resize: vertical; }
   .home-hero, .home-tools { grid-template-columns: minmax(0, 1fr); }
   .home-symbols { display: none; }
 }
+
+.study-english .home-overview > .home-session { margin-block: 0; }
+.study-english .home-overview > .home-current { grid-column: auto; }
+.study-engine [data-ranking] > .record-panel { margin-block: 0 18px; }
+
+.home-hero .actions, .wall-actions, .account .actions,
+.profile-editor .actions, .application-main .panel .actions, .pulim-dialog .actions,
+.support-links, .study-english :is(.complete-actions, .feedback-actions) {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); align-items: stretch;
+}
+:is(.home-hero, .account, .profile-editor, .panel, .pulim-dialog) .actions > .button,
+.wall-actions > .button, .support-links > .button,
+.study-english :is(.saved-round > .button, .complete-actions > .button, .feedback-actions > .button, #back-home) {
+  width: 100%; min-width: 0;
+}
+.profile-editor .profile-form-action { width: 100%; }
+
+.account form > .button, .home-tools .plain-button { width: 100%; }

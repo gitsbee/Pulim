@@ -75,3 +75,69 @@ export function groupStudySettings(root: HTMLElement, service: Subject | 'pulim'
     group.remove();
   };
 }
+
+const modes = { system: '시스템', light: '라이트', dark: '다크', paper: '종이' };
+
+const closeIcon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>';
+export const settingsHeader = `<header class="preferences-header"><h2 id="preferences-title">설정</h2>
+  <form method="dialog"><button class="plain-button preferences-close" aria-label="닫기">${closeIcon}</button></form></header>`;
+
+export function fillSettings(root: HTMLElement) {
+  const input = root.querySelector('[aria-labelledby="settings-input"]')!;
+  const service = root.querySelector('[aria-labelledby="settings-service"]')!;
+  input.insertAdjacentHTML('beforebegin', `
+    <section class="preferences-section" aria-labelledby="settings-screen"><h3 id="settings-screen">화면 및 테마</h3>
+      <fieldset><legend class="sr-only">화면 테마</legend><div class="theme-options">
+        ${Object.entries(modes).map(([value, label]) => `<label class="select-card"><input type="radio" name="theme" value="${value}"><span>${label}</span></label>`).join('')}
+      </div></fieldset>
+    </section>`);
+  service.insertAdjacentHTML('beforebegin', `
+    <section class="preferences-section" aria-labelledby="settings-sound"><h3 id="settings-sound">음향 및 소리</h3>
+      <label class="mix-toggle settings-toggle"><span>효과음</span><input id="sound-enabled" type="checkbox" role="switch"></label>
+      <div class="volume-setting"><label for="sound-volume">효과음 음량</label><output id="sound-volume-value" for="sound-volume">70%</output>
+        <span class="range-track"><input id="sound-volume" type="range" min="0" max="100" step="5" value="70"></span>
+      </div>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-support"><h3 id="settings-support">사용자 지원</h3>
+      <div class="support-links"><button type="button" class="button secondary" data-support="help"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z"/></svg>도움말</button>
+      <button type="button" class="button secondary" data-support="about"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7v.1"/></svg>소개</button></div>
+    </section>`);
+}
+
+export function alignSettings(root: HTMLElement) {
+  const dialog = root.closest('dialog');
+  const ranges = [...root.querySelectorAll<HTMLInputElement>('.range-track input')];
+  function refresh() {
+    const scale = window.devicePixelRatio || 1;
+    if (dialog?.open && window.innerWidth > 620) {
+      dialog.style.width = `${Math.round(Math.min(window.innerWidth - 28, 520) * scale) / scale}px`;
+      dialog.style.removeProperty('translate');
+      const { left, top } = dialog.getBoundingClientRect();
+      dialog.style.translate = `${Math.round(left * scale) / scale - left}px ${Math.round(top * scale) / scale - top}px`;
+    } else {
+      dialog?.style.removeProperty('width');
+      dialog?.style.removeProperty('translate');
+    }
+    ranges.forEach(updateRange);
+  }
+  function updateRange(input: HTMLInputElement) {
+    const { width } = input.getBoundingClientRect();
+    if (!width) return;
+    const track = input.parentElement!;
+    const fraction = (input.valueAsNumber - Number(input.min)) / (Number(input.max) - Number(input.min));
+    const scale = window.devicePixelRatio || 1;
+    const progress = 14 + Math.max(0, width - 28) * fraction;
+    track.style.setProperty('--range-progress', `${Math.round(progress * scale) / scale}px`);
+    track.classList.toggle('has-value', fraction > 0);
+  }
+  const abort = new AbortController();
+  ranges.forEach(input => input.addEventListener('input', () => updateRange(input), { signal: abort.signal }));
+  const sizes = new ResizeObserver(refresh);
+  ranges.forEach(input => sizes.observe(input));
+  if (dialog) sizes.observe(dialog);
+  const visibility = new MutationObserver(refresh);
+  if (dialog) visibility.observe(dialog, { attributes: true, attributeFilter: ['open'] });
+  window.addEventListener('resize', refresh, { signal: abort.signal });
+  refresh();
+  return () => { abort.abort(); sizes.disconnect(); visibility.disconnect(); };
+}

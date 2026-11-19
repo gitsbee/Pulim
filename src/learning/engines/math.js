@@ -77,43 +77,10 @@ export default function mountMath(runtime) {
 
   document.addEventListener("DOMContentLoaded", () => {
     const dialog = document.getElementById("preferences-dialog");
-    // Snap the desktop dialog itself to the device-pixel grid, including at browser zoom.
-    const snapDialog = (panel) => {
-      if (!panel.open || window.innerWidth <= 620) {
-        panel.style.removeProperty("width");
-        panel.style.removeProperty("translate");
-        return;
-      }
-      const scale = window.devicePixelRatio || 1;
-      const width = `${Math.round(Math.min(window.innerWidth - 28, 520) * scale) / scale}px`;
-      if (panel.style.width !== width) panel.style.width = width;
-      panel.style.removeProperty("translate");
-      const rect = panel.getBoundingClientRect();
-      const x = Math.round(rect.left * scale) / scale - rect.left;
-      const y = Math.round(rect.top * scale) / scale - rect.top;
-      panel.style.translate = `${x}px ${y}px`;
-    };
-    for (const panel of document.querySelectorAll(".preferences-dialog")) {
-      const refresh = () => requestAnimationFrame(() => snapDialog(panel));
-      new MutationObserver(refresh).observe(panel, { attributes: true, attributeFilter: ["open"] });
-      new ResizeObserver(refresh).observe(panel);
-      window.addEventListener("resize", refresh);
-    }
     const soundInput = document.getElementById("sound-enabled");
     const plusInput=document.getElementById("plus-enabled");
     plusInput.checked=plus;
     plusInput.addEventListener("change",()=>{plus=plusInput.checked;store("math-forge:plus",plus?"on":"off");document.dispatchEvent(new Event("forge-pluschange"));});
-    for (const input of document.querySelectorAll(".range-track input")) {
-      const updateTrack = () => {
-        const fraction = (Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min));
-        const track = input.parentElement;
-        track.style.setProperty("--range-progress", `${14 + Math.max(0, input.clientWidth - 28) * fraction}px`);
-        track.classList.toggle("has-value", fraction > 0);
-      };
-      input.addEventListener("input", updateTrack);
-      new ResizeObserver(updateTrack).observe(input);
-      updateTrack();
-    }
     const volumeInput = document.getElementById("sound-volume");
     const volumeValue = document.getElementById("sound-volume-value");
     volumeInput.value = String(Math.round(volumeLevel * 100));

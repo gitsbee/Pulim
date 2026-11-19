@@ -34,7 +34,6 @@ export default function App() {
   const [registrationPending, setRegistrationPending] = useState(false);
   const [posting, setPosting] = useState(false); const [error, setError] = useState('');
   const [search, setSearch] = useState(''); const [mine, setMine] = useState(false);
-  const [rankingOpen, setRankingOpen] = useState<Subject | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [support, setSupport] = useState<{ kind: SupportKind; service: Service } | null>(null);
   const [activityKind, setActivityKind] = useState<ActivityKind | 'all'>('all');
@@ -51,7 +50,7 @@ export default function App() {
   const listing = !route.hub && !route.subject && !route.records && !route.ranking
     && !route.support && !route.me && !route.profileHandle && !route.settings;
   useEffect(() => {
-    const closeOverlays = () => { setSettingsOpen(false); setSupport(null); setRankingOpen(null); };
+    const closeOverlays = () => { setSettingsOpen(false); setSupport(null); };
     window.addEventListener('popstate', closeOverlays);
     return () => window.removeEventListener('popstate', closeOverlays);
   }, []);
@@ -121,7 +120,7 @@ export default function App() {
       </section> : route.subject ? <StudyScreen key={route.subject + ':' + (account || 'guest')}
         subject={route.subject} account={account || 'guest'} theme={theme} setTheme={setTheme} onAttempt={record}
         action={studyAction?.subject === route.subject ? studyAction : null}
-        onRanking={setRankingOpen}
+        day={day}
         onSupport={(kind, service) => setSupport({ kind, service })}
         onView={view => setStudyView({ subject: route.subject!, view })} /> : route.hub ? <Home /> : route.records || route.ranking ? <>
         <PageHeading title={route.records ? '내 기록' : '온라인 랭킹'} back />
@@ -145,9 +144,6 @@ export default function App() {
     {route.compose && composer && <Modal title="새 글 쓰기" onClose={() => { if (!posting) goBack(); }}>{composer}</Modal>}
     {route.postId && <PostDetail key={route.postId} id={route.postId} user={user} onClose={goBack} onLogin={profile} onTag={tagSearch} />}
     {settingsOpen && !route.settings && <Modal title="설정" onClose={() => setSettingsOpen(false)} preferences>{settings}</Modal>}
-    {rankingOpen && <Modal title={subjects[rankingOpen] + ' 온라인 랭킹'} onClose={() => setRankingOpen(null)}>
-      <Leaderboard key={rankingOpen + day} day={day} subject={rankingOpen} uid={account} />
-    </Modal>}
     {support && <Modal title={supportTitles[support.kind]} onClose={() => setSupport(null)} preferences>
       <Support key={support.kind + support.service} kind={support.kind} initialService={support.service} />
     </Modal>}

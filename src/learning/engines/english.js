@@ -207,7 +207,7 @@ function renderCollection() {
   ] : [['overview', '단어장']];
   app.innerHTML = `<section class="history-view">
     ${heading(review ? '학습 기록' : '단어장', review ? '' : `1번 리스트 · ${words.length}단어`)}
-    ${review ? `<button type="button" class="button secondary ranking-entry-point" data-ranking>${icon('history')} 온라인 랭킹</button>` : ''}
+    ${review ? '<div data-ranking></div>' : ''}
     <input id="search" class="search" placeholder="영어 또는 뜻 검색" aria-label="단어 검색" type="search">
     ${groups.map(([key, title]) => review ? `<details class="history-group" open>
       <summary>${title}</summary><div data-words="${key}"></div>
@@ -263,7 +263,6 @@ for (const [viewName, iconName] of [['home','book'],['wrong','history']]) {
   button.innerHTML = icon(iconName) + '<span>' + button.textContent + '</span>';
 }
 $('#home-settings').innerHTML = icon('settings');
-$('#close-settings').innerHTML = icon('close');
 document.querySelectorAll('[data-icon]').forEach(slot => { slot.innerHTML = icon(slot.dataset.icon); });
 const settingsDialog = $('#preferences');
 let returnFocus;
@@ -287,17 +286,10 @@ settingsDialog.querySelectorAll('[name="theme"]').forEach(button => {
 $('#sound-enabled').checked = state.sound;
 $('#sound-volume').value = state.volume;
 $('#sound-volume-value').textContent = state.volume + '%';
-function updateVolumeTrack() {
-  const track = $('#sound-volume').closest('.range-track');
-  track.style.setProperty('--range-progress', `${14 + Math.max(0, $('#sound-volume').clientWidth - 28) * state.volume / 100}px`);
-  track.classList.toggle('has-value', state.volume > 0);
-}
-updateVolumeTrack();
-new ResizeObserver(updateVolumeTrack).observe($('#sound-volume'));
 $('#manual-setting').checked = preferences.manual;
 $('#manual-setting').onchange = event => { preferences.manual = event.target.checked; state.range = preferences; save(); if (view === 'home') renderSetup(); };
 $('#sound-enabled').onchange = event => { state.sound = event.target.checked; saveStudySound({ enabled: state.sound, volume: state.volume }); };
-$('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; updateVolumeTrack(); saveStudySound({ enabled: state.sound, volume: state.volume }); };
+$('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; saveStudySound({ enabled: state.sound, volume: state.volume }); };
 $('#ime').checked = state.ime;
 $('#ime').onchange = event => { state.ime = event.target.checked; save(); h3Reset(); };
 
@@ -745,20 +737,4 @@ Promise.resolve(window.studyBridge.vocabulary).then(entries => {
   app.innerHTML = '<p class="page">단어 목록을 불러오지 못했어요. 새로고침해 주세요.</p>';
 });
 
-// Align modal edges to physical pixels, including browser zoom, as in 문제공방.
-const snapDialog = panel => {
-  if (!panel.open || window.innerWidth <= 620) { panel.style.removeProperty('width'); panel.style.removeProperty('translate'); return; }
-  const scale = window.devicePixelRatio || 1;
-  const width = `${Math.round(Math.min(window.innerWidth - 28, 520) * scale) / scale}px`;
-  if (panel.style.width !== width) panel.style.width = width;
-  panel.style.removeProperty('translate');
-  const rect = panel.getBoundingClientRect();
-  panel.style.translate = `${Math.round(rect.left * scale) / scale - rect.left}px ${Math.round(rect.top * scale) / scale - rect.top}px`;
-};
-for (const panel of document.querySelectorAll('.preferences-dialog')) {
-  const refresh = () => requestAnimationFrame(() => snapDialog(panel));
-  new MutationObserver(refresh).observe(panel, {attributes:true, attributeFilter:['open']});
-  new ResizeObserver(refresh).observe(panel);
-  window.addEventListener('resize', refresh);
-}
 }
