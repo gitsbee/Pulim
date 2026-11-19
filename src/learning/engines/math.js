@@ -1,3 +1,4 @@
+import { readStudySound, saveStudySound } from "../soundSettings";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
@@ -24,6 +25,10 @@ export default function mountMath(runtime) {
     const storedVolume = window.studyBridge.local.getItem(volumeKey);
     if (storedVolume !== null && Number.isFinite(Number(storedVolume))) volumeLevel = Math.max(0,Math.min(1,Number(storedVolume)));
   } catch { /* Preferences can still be changed for the current page. */ }
+
+  const sharedSound = readStudySound({ enabled: sound, volume: volumeLevel * 100 });
+  sound = sharedSound.enabled;
+  volumeLevel = sharedSound.volume / 100;
 
   function store(key, value) {
     try { window.studyBridge.local.setItem(key, value); } catch { /* Keep the current choice. */ }
@@ -94,30 +99,6 @@ export default function mountMath(runtime) {
       new ResizeObserver(refresh).observe(panel);
       window.addEventListener("resize", refresh);
     }
-    const fullscreenInput = document.getElementById("fullscreen-enabled");
-    const fullscreenStatus = document.getElementById("fullscreen-status");
-    const syncFullscreen = () => { fullscreenInput.checked = Boolean(document.fullscreenElement); };
-    document.addEventListener("fullscreenchange", syncFullscreen);
-    fullscreenInput.addEventListener("change", async () => {
-      fullscreenInput.disabled = true;
-      fullscreenStatus.hidden = true;
-      try {
-        if (fullscreenInput.checked && !document.fullscreenElement) {
-          if (!document.documentElement.requestFullscreen) throw new Error("Fullscreen unavailable");
-          await document.documentElement.requestFullscreen();
-        } else if (!fullscreenInput.checked && document.fullscreenElement) {
-          await document.exitFullscreen();
-        }
-      } catch {
-        dialog.close();
-        document.getElementById("fullscreen-error-dialog").showModal();
-      } finally {
-        fullscreenInput.disabled = false;
-        syncFullscreen();
-      }
-    });
-    syncFullscreen();
-    document.getElementById("fullscreen-error-dialog").addEventListener("close", () => { dialog.showModal(); fullscreenInput.focus(); });
     const soundInput = document.getElementById("sound-enabled");
     const plusInput=document.getElementById("plus-enabled");
     plusInput.checked=plus;
@@ -141,7 +122,7 @@ export default function mountMath(runtime) {
     volumeInput.addEventListener("input", () => {
       volumeLevel = Number(volumeInput.value) / 100;
       volumeValue.value = volumeInput.value + "%";
-      store(volumeKey,String(volumeLevel));
+      saveStudySound({ enabled: sound, volume: volumeLevel * 100 });
       if (volumeLevel === 0) stopAudio();
     });
     volumeInput.addEventListener("change", () => play("tap"));
@@ -149,10 +130,9 @@ export default function mountMath(runtime) {
       button.addEventListener("click", () => {
         dialog.querySelector(`input[name="theme"][value="${runtime.getTheme()}"]`).checked = true;
         soundInput.checked = sound;
-        syncFullscreen();
         dialog.showModal();
         dialog.scrollTop = 0;
-        dialog.querySelector('.settings-units [aria-pressed="true"]')?.focus();
+        dialog.querySelector('.settings-units [aria-selected="true"]')?.focus();
       });
     }
     document.addEventListener("change", event => {
@@ -160,7 +140,7 @@ export default function mountMath(runtime) {
       if (input.name === "theme") runtime.setTheme(input.value);
       if (input === soundInput) {
         sound = input.checked;
-        store(soundKey,sound ? "on" : "off");
+        saveStudySound({ enabled: sound, volume: volumeLevel * 100 });
         if (!sound) stopAudio();
       }
       if (input.matches("input[type=radio], input[type=checkbox], #course-select")) play("tap");
@@ -14799,11 +14779,6 @@ export default function mountMath(runtime) {
         ${cardActions(p,record.id,"attempt")}</div></details>`;
     }).join("") || '<p class="empty">선택한 범위에 풀이 기록이 없습니다.</p>';
     $("history-more").hidden=filtered.length<=historyLimit;
-    const rank=learning.activity(all,typeFor).ranking.slice(0,10);
-    $("personal-ranking").innerHTML='<h2 id="ranking-title">내 하루 랭킹</h2>'+(rank.length
-      ? '<ol class="personal-ranking">'+rank.map(entry=>{ const place=rank.findIndex(item=>item.points===entry.points)+1; const medal=place<=3?` medal-${place}`:''; return `<li class="ranking-entry${medal}"><span class="ranking-place">${place}위</span><time datetime="${esc(entry.date)}">${esc(entry.date)}</time><strong>${entry.points}점</strong></li>`; }).join("")+'</ol>'
-      : '<p>점수를 얻으면 여기에 표시됩니다.</p>')+'<p class="ranking-note">유형별 첫 정답 10점, 같은 오답의 복습 정답은 하루 5점입니다.</p>';
-
 
   }
 

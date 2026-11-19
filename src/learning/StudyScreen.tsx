@@ -19,19 +19,20 @@ export function warmStudy(subject: Subject) {
   void (subject === 'math' ? loadMath() : loadEnglish()).catch(() => {});
 }
 
-export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onView, onSupport, action }: {
+export default function StudyScreen({ subject, account, theme, setTheme, onAttempt, onView, onSupport, onRanking, action }: {
   subject: Subject;
   account: string;
   theme: Theme;
   setTheme: (theme: Theme) => void;
   onAttempt: (attempt: Attempt) => void;
   onView: (view: StudyView) => void;
+  onRanking: (subject: Subject) => void;
   onSupport: (kind: SupportKind, subject: Subject) => void;
   action: { name: StudyAction; id: number } | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useRef({ theme, setTheme, onAttempt, onView, onSupport });
-  live.current = { theme, setTheme, onAttempt, onView, onSupport };
+  const live = useRef({ theme, setTheme, onAttempt, onView, onSupport, onRanking });
+  live.current = { theme, setTheme, onAttempt, onView, onSupport, onRanking };
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [retry, setRetry] = useState(0);
   const lastAction = useRef(0);
@@ -40,9 +41,11 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
     const root = ref.current!;
     let mounted = true;
     let runtime: ReturnType<typeof createStudyRuntime> | undefined;
+    let disposeSettings: (() => void) | undefined;
     const openSupport = (event: MouseEvent) => {
       const kind = (event.target as Element).closest<HTMLElement>('[data-support]')?.dataset.support;
       if (kind === 'help' || kind === 'about') live.current.onSupport(kind, subject);
+      if ((event.target as Element).closest('[data-ranking]')) live.current.onRanking(subject);
     };
     root.addEventListener('click', openSupport);
 
@@ -51,7 +54,7 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
         const [engine, markup, words] = await (subject === 'math' ? loadMath() : loadEnglish());
         if (!mounted) return;
         root.innerHTML = markup.default;
-        groupStudySettings(root.querySelector<HTMLDialogElement>('.preferences-dialog')!);
+        disposeSettings = groupStudySettings(root.querySelector<HTMLDialogElement>('.preferences-dialog')!, subject);
         runtime = createStudyRuntime(root, {
           account, subject, vocabulary: words?.default,
           report(payload: unknown) {
@@ -69,6 +72,8 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
       } catch (error) {
         if (!mounted) return;
         console.error('Study initialization failed', error);
+        disposeSettings?.();
+        disposeSettings = undefined;
         runtime?.destroy();
         root.replaceChildren();
         setStatus('error');
@@ -78,6 +83,7 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
     void load();
     return () => {
       mounted = false;
+      disposeSettings?.();
       root.removeEventListener('click', openSupport);
       runtime?.destroy();
       root.replaceChildren();

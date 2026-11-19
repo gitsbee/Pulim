@@ -327,9 +327,6 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 .history-filters select, .type-search input { min-height: 44px; }
 .type-search input { border: var(--border-width) solid var(--line); border-radius: var(--round); background: var(--panel); padding-inline: 12px; }
 #history-more { margin-top: 12px; }
-.personal-ranking { padding-inline-start: 30px; }
-.personal-ranking li { padding: 3px 0; }
-.personal-ranking strong { margin-inline-start: 15px; }
 .record-settings .home-actions { margin-top: 12px; }
 .saved-ink canvas { display: block; max-width: 100%; height: auto; background: var(--panel); border-radius: 8px; margin-block: 8px; }
 .type-search { display: grid; gap: 5px; margin-bottom: 14px; }
@@ -775,17 +772,6 @@ html { scroll-padding-top: 96px; scroll-padding-bottom: 16px; }
 /* Personal bests and record controls. */
 .ranking-section { margin-top: 26px; }
 .ranking-section h2 { font-size: 22px; margin: 0 0 12px; }
-.personal-ranking { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.personal-ranking .ranking-entry { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--round); background: var(--formula-fill); color: var(--ink); }
-.personal-ranking .ranking-entry strong { margin: 0; font-variant-numeric: tabular-nums; }
-.ranking-place { font-weight: 800; }
-.personal-ranking .medal-1 { background: #f9e9b4; color: #4d3907; }
-.personal-ranking .medal-2 { background: #e3e8ed; color: #293744; }
-.personal-ranking .medal-3 { background: #f2ddcb; color: #633c20; }
-:root[data-theme="dark"] .personal-ranking .medal-1 { background: #51441f; color: #ffedb3; }
-:root[data-theme="dark"] .personal-ranking .medal-2 { background: #38434c; color: #e4eef6; }
-:root[data-theme="dark"] .personal-ranking .medal-3 { background: #513a2b; color: #ffe2c8; }
-.ranking-note { color: var(--secondary); margin: 10px 0 0; }
 .record-settings .home-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
 .record-settings .home-actions .button { min-width: 0; width: 100%; white-space: normal; }
 @media (max-width: 560px) { .record-settings .home-actions { grid-template-columns: 1fr; } }
@@ -824,7 +810,7 @@ h1, h2, h3, h4, legend, .history-group > summary, .record-settings > summary, .r
 :root[data-theme="dark"] .daily-signal.is-current.signal-correct, :root[data-theme="dark"] .daily-signal.is-current.signal-wrong, :root[data-theme="dark"] .daily-signal.is-current.signal-reviewed { border-color: #fff; box-shadow: 0 0 0 2px #fff; }
 .context-chip, .history-tags .context-chip, .session-context .context-chip, .session-status-dock .context-chip { min-height: 32px; font-size: 14px; padding: 5px 9px; gap: 6px; }
 .context-chip .icon { flex: none; }
-.metrics dd strong, .ranking-entry strong { font-weight: 700 !important; }
+.metrics dd strong { font-weight: 700 !important; }
 .session-actions { display: flex; gap: 8px; }
 .session-actions .primary { flex: 1 1 auto; min-width: 0; }
 .session-actions #share-problem, .session-actions #skip-problem, .session-actions #discard-problem { flex: 0 0 51px; width: 51px; min-width: 51px; height: 51px; padding: 8px; }
@@ -892,7 +878,7 @@ h1, h2, h3, h4, legend, .history-group > summary, .record-settings > summary, .r
 .range-track::after { content: none; }
 .preferences-dialog { overscroll-behavior: contain; scrollbar-width: none; }
 .preferences-dialog::-webkit-scrollbar { display: none; }
-body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { overflow: hidden; }
+body:has(.preferences-dialog[open]) { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .range-track { transition: none; } }
 
 /* Shared green controls across both themes. */
@@ -1305,7 +1291,6 @@ body:has(.preferences-dialog[open]), body:has(#fullscreen-error-dialog[open]) { 
   border-radius: var(--border-width); background: currentColor;
 }
 .settings-units { margin-bottom: 18px; }
-.settings-units > .button { min-width: 0; }
 
 :where([data-tone="success"]) { --role-color: var(--palette-green); }
 :where([data-tone="danger"]) { --role-color: var(--palette-red); }

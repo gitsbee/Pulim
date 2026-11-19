@@ -23,7 +23,7 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
   loggedOut: () => void;
   subject: Subject | null;
   view?: StudyView;
-  pulimTab?: 'home' | 'wall';
+  pulimTab?: 'home' | 'wall' | 'search';
   records: boolean;
   onSettings: () => void;
   onStudyAction: (action: StudyAction) => void;
@@ -48,8 +48,12 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
             aria-current={(view?.tab || 'practice') === item.key ? 'page' : undefined}
             onClick={() => onStudyAction(item.key)}><Icon name={item.icon} /><span>{item.label}</span></button>
         ) : <>
-          <a className="plain-button nav-tab pulim-tab" href={base} aria-current={pulimTab === 'home' ? 'page' : undefined}>홈</a>
-          <a className="plain-button nav-tab pulim-tab" href={base + '#/wall'} aria-current={pulimTab === 'wall' ? 'page' : undefined}>담벼락</a>
+          <a className="plain-button nav-tab" href={base} aria-label="홈" title="홈"
+            aria-current={pulimTab === 'home' ? 'page' : undefined}><Icon name="home" /><span>홈</span></a>
+          <a className="plain-button nav-tab" href={base + '#/wall'} aria-label="담벼락" title="담벼락"
+            aria-current={pulimTab === 'wall' ? 'page' : undefined}><Icon name="post" /><span>담벼락</span></a>
+          <a className="plain-button nav-tab" href={base + '#/search'} aria-label="검색" title="검색"
+            aria-current={pulimTab === 'search' ? 'page' : undefined}><Icon name="search" /><span>검색</span></a>
           <a className="plain-button nav-tab" href={base + '#/records'} aria-label="내 기록" title="내 기록"
             aria-current={records ? 'page' : undefined}><Icon name="records" /><span>기록</span></a>
         </>}
@@ -61,6 +65,7 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
           {name && <p className="account-menu-name">{name}</p>}
           <button className="plain-button" type="button" onClick={() => navigate(base + '#/me')}><Icon name="person" />프로필</button>
           <button className="plain-button" type="button" onClick={() => navigate(base + '#/records')}><Icon name="records" />내 기록</button>
+          <button className="plain-button" type="button" onClick={() => navigate(base + '#/activity')}><Icon name="activity" />내 활동</button>
           <button className="plain-button" type="button" onClick={loggedOut}><Icon name="logout" />로그아웃</button>
         </PostMenu> : <a className="plain-button account-icon" href={base + '#/me'} aria-label="로그인" title="로그인"><Icon name="person" /></a>}
       </div>

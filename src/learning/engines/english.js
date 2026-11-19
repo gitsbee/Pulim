@@ -1,3 +1,5 @@
+import { readStudySound, saveStudySound } from "../soundSettings";
+
 export default function mountEnglish(runtime) {
   const { document, window, matchMedia, ResizeObserver, MutationObserver } = runtime;
 const forgeIcons = {
@@ -53,8 +55,9 @@ state.extra ??= {};
 state.ime ??= false;
 state.hints ??= {};
 state.theme ??= 'system';
-state.sound ??= true;
-state.volume ??= 70;
+const sharedSound = readStudySound({ enabled: state.sound ?? true, volume: state.volume ?? 70 });
+state.sound = sharedSound.enabled;
+state.volume = sharedSound.volume;
 state.progress ??= {};
 state.drafts ??= {};
 state.segmentDrafts ??= {};
@@ -204,6 +207,7 @@ function renderCollection() {
   ] : [['overview', '단어장']];
   app.innerHTML = `<section class="history-view">
     ${heading(review ? '학습 기록' : '단어장', review ? '' : `1번 리스트 · ${words.length}단어`)}
+    ${review ? `<button type="button" class="button secondary ranking-entry-point" data-ranking>${icon('history')} 온라인 랭킹</button>` : ''}
     <input id="search" class="search" placeholder="영어 또는 뜻 검색" aria-label="단어 검색" type="search">
     ${groups.map(([key, title]) => review ? `<details class="history-group" open>
       <summary>${title}</summary><div data-words="${key}"></div>
@@ -271,7 +275,7 @@ document.addEventListener('click', event => {
   if (theme) theme.checked = true;
   settingsDialog.showModal();
   settingsDialog.scrollTop = 0;
-  settingsDialog.querySelector('.settings-units [aria-pressed="true"]')?.focus();
+  settingsDialog.querySelector('.settings-units [aria-selected="true"]')?.focus();
 });
 settingsDialog.addEventListener('close', () => {
   if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
@@ -292,8 +296,8 @@ updateVolumeTrack();
 new ResizeObserver(updateVolumeTrack).observe($('#sound-volume'));
 $('#manual-setting').checked = preferences.manual;
 $('#manual-setting').onchange = event => { preferences.manual = event.target.checked; state.range = preferences; save(); if (view === 'home') renderSetup(); };
-$('#sound-enabled').onchange = event => { state.sound = event.target.checked; save(); };
-$('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; updateVolumeTrack(); save(); };
+$('#sound-enabled').onchange = event => { state.sound = event.target.checked; saveStudySound({ enabled: state.sound, volume: state.volume }); };
+$('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; updateVolumeTrack(); saveStudySound({ enabled: state.sound, volume: state.volume }); };
 $('#ime').checked = state.ime;
 $('#ime').onchange = event => { state.ime = event.target.checked; save(); h3Reset(); };
 

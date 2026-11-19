@@ -226,7 +226,7 @@
       </header>
       <section class="history-overview-card history-status" aria-labelledby="history-summary-title"><h2 id="history-summary-title">현재 기록</h2><dl id="history-summary" class="metrics history-summary" aria-label="성적 요약"></dl></section>
 
-      <section id="personal-ranking" class="ranking-section history-overview-card" aria-labelledby="ranking-title"></section>
+      <button type="button" class="button secondary ranking-entry-point" data-ranking><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg>온라인 랭킹</button>
       <details class="review-panel history-group" open>
         <summary id="review-heading">복습할 문제</summary>
         <div id="review-list"></div>
@@ -270,7 +270,6 @@
   <dialog id="daily-protected-dialog" class="confirm-dialog" aria-labelledby="daily-protected-title"><h2 id="daily-protected-title">오늘의 문제 기록</h2><p>오늘의 문제는 기록을 삭제하거나 최초 결과를 수정할 수 없습니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>확인</button></form></dialog>
   <dialog id="item-confirm-dialog" class="confirm-dialog" aria-labelledby="item-confirm-title"><h2 id="item-confirm-title"></h2><p id="item-confirm-message"></p><div class="home-actions"><button type="button" id="item-cancel" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="item-confirm" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>확인</span></button></div></dialog>
   <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">학습 기록을 초기화할까요?</h2><p>풀이 기록, 필기와 보관 문제가 삭제됩니다. 오늘의 도전 결과는 유지됩니다.</p><div class="home-actions"><button type="button" id="cancel-reset" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>취소</button><button type="button" id="confirm-reset" class="button danger"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>기록 초기화</button></div></dialog>
-  <dialog id="fullscreen-error-dialog" class="confirm-dialog" aria-labelledby="fullscreen-error-title"><h2 id="fullscreen-error-title">전체화면을 사용할 수 없습니다</h2><form method="dialog" class="home-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>확인</button></form></dialog>
   <dialog id="preferences-dialog" class="preferences-dialog" aria-labelledby="preferences-title">
     <header class="preferences-header"><h2 id="preferences-title">설정</h2><form method="dialog"><button class="plain-button preferences-close" aria-label="닫기"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></form></header>
     <section class="preferences-section" aria-labelledby="settings-screen"><h3 id="settings-screen">화면 및 테마</h3>
@@ -283,15 +282,10 @@
         <label class="select-card"><input name="theme" value="paper" type="radio"><span>종이</span></label>
       </div>
     </fieldset>
-    <label class="mix-toggle settings-toggle"><span>전체화면</span><input id="fullscreen-enabled" type="checkbox" role="switch" aria-describedby="fullscreen-status"></label>
-    <p id="fullscreen-status" role="status" hidden></p>
     </section>
     <section class="preferences-section" aria-labelledby="settings-input"><h3 id="settings-input">입력</h3>
     <label class="mix-toggle settings-toggle"><span>펜 전용</span><input id="pen-only" type="checkbox" role="switch"></label>
     <div class="volume-setting"><label for="pen-sensitivity">펜 압력 감도</label><output id="pen-sensitivity-value" for="pen-sensitivity">85%</output><span class="range-track"><input id="pen-sensitivity" type="range" min="0" max="100" step="5" value="85"></span><p class="sensitivity-help">감도가 높으면 가벼운 압력에도 선이 굵게 표시됩니다.</p></div>
-    </section>
-    <section class="preferences-section" aria-labelledby="settings-problem"><h3 id="settings-problem">문제 설정</h3>
-    <label class="mix-toggle settings-toggle"><span>확장 문제 포함</span><input id="plus-enabled" type="checkbox" role="switch"></label>
     </section>
     <section class="preferences-section" aria-labelledby="settings-sound"><h3 id="settings-sound">음향 및 소리</h3>
     <label class="mix-toggle settings-toggle"><span>효과음</span><input id="sound-enabled" type="checkbox" role="switch"></label>
@@ -302,6 +296,9 @@
       <button type="button" data-support="help" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-book"/></svg>도움말</button>
       <button type="button" data-support="about" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#i-logo"/></svg>소개</button>
     </div>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-service"><h3 id="settings-service">문제 설정</h3>
+    <label class="mix-toggle settings-toggle"><span>확장 문제 포함</span><input id="plus-enabled" type="checkbox" role="switch"></label>
     </section>
   </dialog>
   <noscript><p>문제를 풀려면 자바스크립트를 켜 주세요.</p></noscript>
