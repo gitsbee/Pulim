@@ -174,7 +174,7 @@ service cloud.firestore {
       allow delete: if false;
 
       function parent() { return get(/databases/$(database)/documents/posts/$(postId)).data; }
-      function reactable() { return signedIn() && parent().get('deleted', false) == false && parent().get('kind', 'post') == 'post'; }
+      function reactable() { return signedIn() && parent().get('deleted', false) == false && parent().get('kind', 'post') in ['post', 'repost']; }
       function beforeKind() {
         let path = /databases/$(database)/documents/posts/$(postId)/reactions/$(request.auth.uid);
         return exists(path) ? get(path).data.kind : 'none';

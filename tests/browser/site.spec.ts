@@ -104,7 +104,7 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await expect(shared).toHaveCount(0);
     await quote(reader, foreign);
     await expect(shared).toBeVisible();
-    await shared.getByRole('link', { name: '원 포스트 보기', exact: true }).click();
+    await shared.getByRole('link', { name: '원문 보기', exact: true }).click();
     const detail = reader.getByRole('dialog', { name: '포스트 보기', exact: true });
     await expect(detail.getByText('첫 번째 이야기 #일상 #React', { exact: true })).toBeVisible();
     await reader.keyboard.press('Escape');
@@ -148,8 +148,8 @@ test('desktop navigation, private reactions, activity, exploration, inline searc
     await expect(original).toHaveCount(0);
     await expect(reader.getByText('수정한 이야기 #기록', { exact: true })).toHaveCount(0);
     await openWall(reader);
-    await shared.getByRole('link', { name: '원 포스트 보기', exact: true }).click();
-    await expect(detail.getByText('삭제되었거나 찾을 수 없는 게시물입니다.')).toBeVisible();
+    await expect(shared.getByText('삭제되었거나 찾을 수 없는 원문입니다.')).toBeVisible();
+    await expect(shared.getByRole('link', { name: '원문 보기', exact: true })).toHaveCount(0);
   } finally { await first.close(); await second.close(); }
 });
 
@@ -234,6 +234,18 @@ test('quote text and independent comment threads survive original deletion safel
     await quote(reader, foreign, '리포스트에 덧붙인 생각 #의견');
     const shared = reader.getByRole('article', { name: 'comment_reader의 리포스트', exact: true });
     await expect(shared.getByText('리포스트에 덧붙인 생각 #의견', { exact: true })).toBeVisible();
+    await expect(shared.locator('.post-badges').getByText('리포스트', { exact: true })).toBeVisible();
+    await shared.getByRole('button', { name: '좋아요 0', exact: true }).click();
+    await expect(shared.getByRole('button', { name: '좋아요 1', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(foreign.getByRole('button', { name: '좋아요 0', exact: true })).toBeVisible();
+    await shared.getByRole('button', { name: '싫어요 0', exact: true }).click();
+    await expect(shared.getByRole('button', { name: '싫어요 1', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    const repostAction = shared.getByRole('button', { name: '원문 리포스트 1', exact: true });
+    await expect(repostAction).toHaveAttribute('aria-pressed', 'true');
+    await expect(repostAction.locator('svg')).toHaveCSS('fill', 'none');
+    await repostAction.click();
+    await expect(reader.getByRole('dialog', { name: '리포스트 수정' })).toBeVisible();
+    await reader.keyboard.press('Escape');
     await foreign.getByRole('button', { name: '댓글 0', exact: true }).click();
     const readerDetail = reader.getByRole('dialog', { name: '포스트 보기', exact: true });
     const readerComments = readerDetail.getByRole('region', { name: '댓글', exact: true });
@@ -279,8 +291,10 @@ test('quote text and independent comment threads survive original deletion safel
     await expect(readerDetail.getByText('리포스트만의 댓글', { exact: true })).toBeVisible();
     await expect(readerDetail.getByText('삭제되었거나 찾을 수 없는 원문입니다.')).toBeVisible();
     await reader.setViewportSize({ width: 390, height: 844 });
-    await reader.evaluate(() => localStorage.setItem('postpost:theme', 'dark')); await reader.reload();
+    await reader.evaluate(() => localStorage.setItem('pulim:theme', 'dark')); await reader.reload();
+    await expect(reader.locator('html')).toHaveAttribute('data-theme', 'dark');
     await expect(readerDetail.getByText('리포스트만의 댓글', { exact: true })).toBeVisible();
+    expect((await readerDetail.boundingBox())?.width).toBe(390);
     expect(await reader.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
     await reader.screenshot({ path: 'test-results/repost-comments-mobile.png', fullPage: true });
   } finally { await ownerContext.close(); await readerContext.close(); await anonContext.close(); }
