@@ -1,52 +1,23 @@
 # 풀림 (Pulim)
 
-풀림은 수학과 영어를 연습하고 담벼락에서 질문과 풀이를 나누는 학습 서비스입니다. React, TypeScript, Firebase Authentication과 Firestore를 사용합니다.
+**수학은 손으로 풀고, 영어는 기억에서 꺼내 보세요.** 풀림은 수학과 영어를 연습하고, 담벼락에서 질문과 풀이를 나누는 학습 공간입니다.
 
-- 문제공방 디자인을 공유하는 한 페이지에서 상단의 풀림·수학·영어 아이콘으로 이동합니다. 화면 모드도 세 화면에 같이 적용됩니다. 풀림의 담벼락에서 글과 댓글을 읽고 작성할 수 있습니다.
-- 수학에서는 문제공방의 문제 생성·채점·해설·필기 기능을 사용합니다. 영어에서는 단어장과 암기·선택·입력 연습을 제공합니다.
-- 문제공방의 오늘의 문제는 수학 화면에 있습니다. 기존 학습 범위와 복습 기록을 바탕으로 준비합니다.
-- 내 기록에서 로그인 후 푼 수학·영어 문제의 이름과 결과를 기기 간 확인합니다. 진행 중인 초안, 필기와 복습 상태는 사용한 브라우저에 저장됩니다.
-- 담벼락에는 글·댓글·좋아요·싫어요·리포스트와 해시태그 검색이 있습니다. 검색 대상은 현재 불러온 게시물입니다.
-- 이메일과 비밀번호로 로그인합니다. 공개 프로필의 고유 핸들은 가입 시 설정합니다.
+[풀림 시작하기](https://gitsbee.github.io/Pulim/) · [소개](https://gitsbee.github.io/Pulim/About/) · [도움말](https://gitsbee.github.io/Pulim/#/help)
 
-학습 도구 구성, 데이터 저장 범위와 운영 방식은 [풀림 통합 설계](docs/PULLEEM.md)를 참고하세요.
+## 무엇을 할 수 있나요?
 
-## 로컬 실행
+- **수학**에서 공통수학의 단원과 난이도를 골라 문제를 풀어 보세요. 풀이 여백에 직접 쓰고 채점과 해설을 확인할 수 있습니다. ‘오늘의 문제’로 학습을 시작하거나, 기록에서 틀린 문제를 다시 풀 수 있어요.
+- **영어**에서 단어 뜻을 떠올리는 암기, 보기에서 고르는 선택, 직접 입력하는 스펠 연습을 할 수 있습니다. 틀린 단어와 북마크는 기록에서 다시 만나 볼 수 있어요.
+- **담벼락**에 막힌 문제를 질문하고, 다른 사람의 풀이에 댓글을 남겨 보세요. 좋아요·싫어요·리포스트로 반응할 수 있습니다. 검색은 현재 불러온 글의 본문, 작성자와 태그를 대상으로 합니다.
 
-Node.js 22.12 이상이 필요합니다.
+## 처음이라면
 
-```sh
-npm ci
-cp .env.example .env.local
-# .env.local에 Firebase 웹 앱 설정 네 항목을 입력합니다.
-npm run dev
-```
+1. [홈](https://gitsbee.github.io/Pulim/)의 ‘한 문제 맛보기’에서 수학과 영어를 한 문제씩 체험해 보세요.
+2. 상단에서 원하는 과목을 열고 연습할 범위를 고르세요. 로그인 없이도 연습할 수 있습니다.
+3. 기기 간 풀이 결과를 확인하거나 담벼락에 참여하려면 프로필 아이콘을 눌러 가입하세요. 가입할 때 공개 프로필에 사용할 핸들과 닉네임을 정합니다. 로그인과 비밀번호 재설정에는 가입한 이메일을 사용합니다.
 
-기존 `.env.local`이 있다면 유지하고 필요한 항목만 편집하세요. 로컬 주소 뒤에 `/Pulim/`을 붙여 접속합니다. Firebase 설정을 바꾼 후 개발 서버를 다시 시작하세요.
+로그인 후 풀었던 문제의 요약과 결과는 각 과목의 **기록** 탭에서 확인할 수 있습니다. 필기, 진행 중인 문제, 복습 상태는 사용한 브라우저에 남습니다. **프로필 → 내 정보 관리**에서 브라우저에 저장된 수학·영어 기록을 백업하거나 복원할 수 있어요.
 
-| 환경 변수 | Firebase 웹 앱 설정 |
-| --- | --- |
-| `VITE_FIREBASE_API_KEY` | `apiKey` |
-| `VITE_FIREBASE_AUTH_DOMAIN` | `authDomain` |
-| `VITE_FIREBASE_PROJECT_ID` | `projectId` |
-| `VITE_FIREBASE_APP_ID` | `appId` |
+설정에서 밝게·어둡게·종이 테마와 효과음, 펜 입력, 세벌식 390을 조정할 수 있습니다. 쓴 글과 댓글은 공개되므로 개인정보는 게시하지 마세요.
 
-이 값은 웹 앱의 공개 설정으로 빌드에 포함됩니다. 서비스 계정 개인 키나 비밀번호는 넣지 마세요. Authentication에서 이메일·비밀번호 로그인을 사용하고 Firestore 보안 규칙으로 데이터 접근을 제어합니다.
-
-## 검증
-
-```sh
-npm test
-npm run build
-npm run test:rules
-npx playwright install chromium
-npm run test:e2e
-```
-
-보안 규칙 테스트에는 Java 21 이상이 필요합니다. 브라우저 테스트는 데모 Auth·Firestore 에뮬레이터를 사용합니다. 시스템 Chromium을 사용할 때는 `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium npm run test:e2e`로 실행할 수 있습니다.
-
-## GitHub Pages 배포
-
-저장소 이름을 기준으로 Pages 주소는 `https://gitsbee.github.io/Pulim/`이며, Vite 기본 경로도 `/Pulim/`입니다. `beta`에 push하면 GitHub Actions가 검증·빌드 후 Pages에 배포합니다. 저장소의 Pages 소스는 GitHub Actions로 설정하고 `github-pages` 환경에서 `beta`를 허용해야 합니다. Actions의 네 `VITE_FIREBASE_*` 값과 Firebase Authentication의 `gitsbee.github.io` 승인 도메인도 필요합니다.
-
-Firestore 규칙은 Pages 배포로 자동 갱신되지 않습니다. 규칙을 변경한 경우 [firestore.rules](firestore.rules)를 Firebase 콘솔에 게시하세요. 기존 규칙이 이미 적용된 프로젝트는 배포 후 로그인, 담벼락, 두 과목의 문제 풀이와 다른 기기에서의 기록을 확인하세요.
+풀림 코드와 디자인에 기여하려면 [저장소 작업 지침](AGENTS.md)과 [디자인 시스템 v4 가이드](docs/design-system/v4/README.md)를 참고하세요.
