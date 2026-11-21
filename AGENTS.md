@@ -1,6 +1,6 @@
 # 풀림 저장소 작업 지침
 
-풀림(Pulim)은 수학·영어 학습과 담벼락을 한 사이트에서 제공한다. [운영 사이트](https://gitsbee.github.io/Pulim/)는 GitHub Pages에서 제공하며, [활성 개발·배포 브랜치](https://github.com/gitsbee/Pulim/tree/beta)는 `beta`다. 기능이나 화면을 바꾸기 전에 사용자가 요청한 범위와 현재 코드, 관련 테스트, 아래의 디자인 기준을 함께 확인한다.
+풀림(Pulim)은 수학·영어 학습과 담벼락을 한 사이트에서 제공한다. [운영 사이트](https://gitsbee.github.io/Pulim/)는 GitHub Pages에서 제공하며, 활성 개발 브랜치는 `beta`, 배포 브랜치는 `main`이다. 기능이나 화면을 바꾸기 전에 사용자가 요청한 범위와 현재 코드, 관련 테스트, 아래의 디자인 기준을 함께 확인한다.
 
 ## 어디부터 읽을지
 
@@ -38,7 +38,7 @@
 
 ## 배포와 사용자에게 전달할 사항
 
-- `beta`에 push하면 GitHub Actions가 에뮬레이터 검증과 프로덕션 빌드를 거쳐 Pages를 배포한다. 저장소의 Pages 소스는 GitHub Actions이고 `github-pages` 환경에서 `beta`를 허용해야 한다. 워크플로는 네 `VITE_FIREBASE_*` 값을 Secrets 또는 Variables에서 읽는다. 운영 Firebase Authentication에는 이메일·비밀번호 제공자와 `gitsbee.github.io` 승인 도메인이 필요하다.
+- `main`에 push하면 GitHub Actions가 에뮬레이터 검증과 프로덕션 빌드를 거쳐 Pages를 배포한다. 저장소의 Pages 소스는 GitHub Actions이고 `github-pages` 환경에서 `main`을 허용해야 한다. 워크플로는 네 `VITE_FIREBASE_*` 값을 Secrets 또는 Variables에서 읽는다. 운영 Firebase Authentication에는 이메일·비밀번호 제공자와 `gitsbee.github.io` 승인 도메인이 필요하다.
 - Pages 배포와 Firestore 규칙 반영은 별개다. 권한 변경이 있으면 변경된 규칙과 기능의 의존성을 보고하고, 운영 Firebase에 실제로 반영됐는지를 별도로 확인한다. 운영 규칙은 해당 프로젝트의 권한과 배포 범위를 확인한 뒤 Firebase에서 적용한다.
 - 사용자에게 보이는 변경, 확인한 화면과 테스트 결과, 관련 브랜치·커밋을 짧게 전달한다. 설정·규칙 적용이 필요한 경우 대상과 적용 전 영향을 함께 알려 준다. 로컬 검증, 원격 push, Pages 배포 및 실제 운영 동작의 확인 여부는 각각 정확히 적는다. 실행 환경 때문에 확인하지 못한 항목이나 제품 동작에 영향을 주는 결정도 남긴다.
 
