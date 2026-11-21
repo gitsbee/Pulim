@@ -1,3 +1,4 @@
+import Icon from './Icon';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { User } from 'firebase/auth';
 import { collection, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
@@ -56,7 +57,7 @@ export default function Composer({ user, onBusy, alwaysExpanded = false }: { use
     <div className="section-heading"><h2 id="composer-title">글 쓰기</h2>{!alwaysExpanded && <button className="button secondary" type="button" disabled={busy} onClick={() => setExpanded(false)}>접기</button>}</div>
     <form onSubmit={submit}>
       <label className="sr-only" htmlFor="body">게시할 글</label><textarea id="body" value={body} onChange={e => { id.current = null; setBody(e.target.value); setNotice(''); }} placeholder="무슨 생각을 하고 있나요? #태그도 남겨보세요." maxLength={MAX_POST_LENGTH} required disabled={busy} />
-      <div className="composer-footer"><span className="muted">{body.length.toLocaleString()} / {MAX_POST_LENGTH.toLocaleString()}</span><div className="actions"><button className="button secondary" type="button" disabled={busy || !body} onClick={() => { if (confirm('저장된 초안을 지울까요?')) { id.current = null; setBody(''); setNotice(''); } }}>초안 지우기</button><button className="button primary" disabled={busy || !body.trim()}>{busy ? '게시 확인 중…' : '게시하기'}</button></div></div>
+      <div className="composer-footer"><span className="muted">{body.length.toLocaleString()} / {MAX_POST_LENGTH.toLocaleString()}</span><div className="actions"><button className="button secondary" type="button" disabled={busy || !body} onClick={() => { if (confirm('저장된 초안을 지울까요?')) { id.current = null; setBody(''); setNotice(''); } }}><Icon name="trash" />초안 지우기</button><button className="button primary" disabled={busy || !body.trim()}><Icon name="post" />{busy ? '게시 확인 중…' : '게시하기'}</button></div></div>
     </form>
     <p className="muted">전체 공개 · #태그 최대 10개 · 탭 초안 자동 저장</p>
     {slow && <p role="status">서버 응답을 기다리고 있어요. 초안은 유지됩니다. 중복 게시를 막기 위해 완료를 기다려 주세요.</p>}

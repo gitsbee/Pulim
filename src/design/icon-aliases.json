@@ -1,0 +1,17 @@
+{
+  "app": {
+    "repeat": "social-repeat"
+  },
+  "math": {
+    "logo": "pulleem",
+    "challenge": "star",
+    "history": "records"
+  },
+  "english": {
+    "logo": "pulleem",
+    "history": "records",
+    "play": "resume",
+    "list": "search",
+    "cards": "pulleem"
+  }
+}

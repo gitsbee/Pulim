@@ -1,3 +1,4 @@
+import { iconMarkup } from '../design/icons';
 import { subjects, type Subject } from './daily';
 
 const labels = { screen: '화면', input: '입력', sound: '소리', support: '지원' };
@@ -78,7 +79,7 @@ export function groupStudySettings(root: HTMLElement, service: Subject | 'pulim'
 
 const modes = { system: '시스템', light: '라이트', dark: '다크', paper: '종이' };
 
-const closeIcon = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>';
+const closeIcon = iconMarkup('close');
 export const settingsHeader = `<header class="preferences-header"><h2 id="preferences-title">설정</h2>
   <form method="dialog"><button class="plain-button preferences-close" aria-label="닫기">${closeIcon}</button></form></header>`;
 
@@ -99,8 +100,8 @@ export function fillSettings(root: HTMLElement) {
       </div>
     </section>
     <section class="preferences-section" aria-labelledby="settings-support"><h3 id="settings-support">사용자 지원</h3>
-      <div class="support-links"><button type="button" class="button secondary" data-support="help"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z"/></svg>도움말</button>
-      <button type="button" class="button secondary" data-support="about"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7v.1"/></svg>소개</button></div>
+      <div class="support-links"><button type="button" class="button secondary" data-support="help">${iconMarkup('book')}도움말</button>
+      <button type="button" class="button secondary" data-support="about">${iconMarkup('info')}소개</button></div>
     </section>`);
 }
 

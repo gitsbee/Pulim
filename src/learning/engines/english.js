@@ -1,38 +1,9 @@
+import { iconMarkup } from "../../design/icons";
 import { readStudySound, saveStudySound } from "../soundSettings";
 
 export default function mountEnglish(runtime) {
   const { document, window, matchMedia, ResizeObserver, MutationObserver } = runtime;
-const forgeIcons = {
-  "logo": "<path d=\"m3 7 9-4 9 4-9 4-9-4ZM3 12l9 4 9-4M3 17l9 4 9-4\"/>",
-  "book": "<path d=\"M12 5v15M4 4h4a4 4 0 0 1 4 4 4 4 0 0 1 4-4h4v14h-4a4 4 0 0 0-4 2 4 4 0 0 0-4-2H4z\"/>",
-  "history": "<path d=\"M4 20h16M7 16v-4m5 4V8m5 8V4\"/>",
-  "trash": "<path d=\"M4 6h16M9 6V3h6v3m3 0-1 14H7L6 6m4 4v6m4-6v6\"/>",
-  "close": "<path d=\"m6 6 12 12M18 6 6 18\"/>",
-  "check": "<path d=\"m5 12 5 5 9-10\"/>",
-  "settings": `<path d="M10 3h4l.6 2.5 2 .9L19 5.5 21 9l-1.9 1.7v2.6L21 15l-2 3.5-2.4-.9-2 .9L14 21h-4l-.6-2.5-2-.9L5 18.5 3 15l1.9-1.7v-2.6L3 9l2-3.5 2.4.9 2-.9z"/><circle cx="12" cy="12" r="3"/>`,
-  "repeat": "<path d=\"M5 8a8 8 0 1 1-1 7m1-12v5h5\"/>",
-  "search": "<circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"m15 15 5 5\"/>",
-  "next": "<path d=\"M4 12h15m-6-6 6 6-6 6\"/>",
-  "chevron-left": "<path d=\"m15 5-7 7 7 7\"/>",
-  "chevron-right": "<path d=\"m9 5 7 7-7 7\"/>",
-  "difficulty-low": "<path d=\"M6 12h12\"/>",
-  "difficulty-medium": "<path d=\"M6 9h12m-12 6h12\"/>",
-  "difficulty-high": "<path d=\"M6 6h12m-12 6h12m-12 6h12\"/>",
-  "target": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1\"/>",
-  "play": "<path d=\"M8 5v14l11-7z\"/>",
-  "list": "<circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"m15 15 5 5\"/>",
-  "star": "<path d=\"m12 3 2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z\"/>",
-  "cards": "<path d=\"m3 7 9-4 9 4-9 4-9-4ZM3 12l9 4 9-4M3 17l9 4 9-4\"/>",
-  "keyboard": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M7 9h.01M11 9h.01M15 9h.01M7 13h.01M17 13h.01m-7 2h5\"/>",
-  "bulb": "<path d=\"M9 18h6m-5 3h4M9 15c0-1.6-3-2.1-3-6a6 6 0 0 1 12 0c0 3.9-3 4.4-3 6Z\"/>",
-  "eye": "<path d=\"M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6Z\"/><circle cx=\"12\" cy=\"12\" r=\"2.5\"/>"
-};
-
-function icon(name) {
-  return `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${forgeIcons[name]}</svg>`;
-}
-
-;
+const icon = name => iconMarkup(name, 'english');
 
 const $ = selector => document.querySelector(selector);
 const app = $('#app');
@@ -498,7 +469,7 @@ function renderCard(word, index) {
     ${flash || !question.revealed ? `<button class="button primary action-start answer-face" id="flip" aria-pressed="${question.revealed}">${question.revealed ? escapeHtml(word.ko) : flash ? '뜻 보기' : '정답 확인'}</button>` : ''}
     <div class="session-actions recall-actions">${flash ? `
       <button class="button secondary action-skip" id="previous" ${position === 0 ? 'disabled' : ''}>${icon('chevron-left')} 이전</button>
-      <button class="button primary" id="next">다음 문제 ${icon('next')}</button>` : question.revealed ? `
+      <button class="button primary" id="next">${icon('next')} 다음 문제</button>` : question.revealed ? `
       <div class="recall-levels">
         <button class="button recall-level" data-tone="danger" id="miss">${icon('difficulty-high')} <span class="ui-strong">어려움</span></button>
         <button class="button recall-level" data-tone="review" id="medium">${icon('difficulty-medium')} <span class="ui-strong">보통</span></button>
@@ -531,7 +502,7 @@ function renderChoice(word, index) {
     question.options = [word.ko, ...unique.slice(0,3)].sort(() => Math.random()-.5); persistRound();
   }
   const done = question.phase !== 'input';
-  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number ui-strong">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'is-wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">다음 문제 ${icon('next')}</button>${starMarkup(index)}</div>`;
+  $('#interaction').innerHTML = `<div class="choice-list" role="group" aria-label="뜻 선택">${question.options.map((value,i) => `<button type="button" class="choice-option ${done && normalize(value) === normalize(word.ko) ? 'choice-correct' : done && question.selected === i ? 'choice-wrong' : ''}" data-choice="${i}" ${done ? 'disabled' : ''}><span class="choice-number ui-strong">${i+1}</span><span class="choice-text">${escapeHtml(value)}</span></button>`).join('')}</div><div id="feedback" aria-live="polite">${done ? `<div class="verdict ${outcomes[position] === 'wrong' ? 'is-wrong' : ''}">${icon(outcomes[position] === 'wrong' ? 'close' : 'check')} ${outcomes[position] === 'wrong' ? '오답' : '정답'} · ${escapeHtml(word.ko)}</div>` : ''}</div><div class="session-actions"><button class="button primary" id="choice-next" ${done ? '' : 'hidden'} aria-keyshortcuts="Space">${icon('next')} 다음 문제</button>${starMarkup(index)}</div>`;
   app.querySelectorAll('[data-choice]').forEach(button => button.onclick = () => { question.selected=Number(button.dataset.choice); question.phase='done'; recordOutcome(normalize(question.options[question.selected]) === normalize(word.ko) ? 'correct' : 'wrong'); renderChoice(word,index); bindStars(); $('#choice-next').focus(); });
   if (done) $('#choice-next').onclick = next;
 }
@@ -591,7 +562,7 @@ function renderType(word, index) {
     $('#hint-button').disabled = finished || rewriting;
     $('#show-answer').disabled = finished || rewriting;
     if (finished) {
-      submit.innerHTML = '<span>다음 문제</span>' + icon('next');
+      submit.innerHTML = icon('next') + '<span>다음 문제</span>';
       submit.classList.remove('action-start');
       submit.setAttribute('aria-keyshortcuts', 'Space');
     } else {
@@ -613,7 +584,7 @@ function renderType(word, index) {
     if (phase !== 'shown' && phase !== 'wrong') return;
     feedback.insertAdjacentHTML('beforeend', `<div class="feedback-actions">
       ${phase === 'wrong' ? '<button type="button" class="button secondary" id="accept">인정 답안으로 추가</button>' : ''}
-      <button type="button" class="button secondary" id="rewrite">정답 보고 다시 쓰기</button>
+      <button type="button" class="button secondary" id="rewrite">${icon('repeat')} 정답 보고 다시 쓰기</button>
     </div>`);
     $('#rewrite').onclick = () => {
       question.phase = 'rewrite';

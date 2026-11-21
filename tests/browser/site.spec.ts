@@ -216,7 +216,7 @@ test('mobile two-step signup, email-only login, back navigation and persistent d
   await expect(page.getByRole('article').filter({ hasText: '모바일 글 #테스트' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
   expect(await page.locator('.post-body').first().evaluate(el => getComputedStyle(el).color)).toBe('rgb(244, 244, 244)');
-  await expect(page.locator('.post').first()).toHaveCSS('background-color', 'rgb(34, 34, 34)');
+  await expect(page.locator('.post').first()).toHaveCSS('background-color', 'rgb(32, 32, 32)');
   await page.screenshot({ path: 'test-results/search-dark-mobile.png', fullPage: true });
   await openWall(page);
   await page.screenshot({ path: 'test-results/feed-dark-mobile.png', fullPage: true });
@@ -450,7 +450,7 @@ test('one header, two control styles and shared support at mobile width', async 
 
   const gear = tabs.getByRole('button', { name: '설정', exact: true });
   await expectFlat(gear);
-  await expect(gear.locator('svg circle')).toHaveCount(1);
+  await expect(gear.locator('svg use')).toHaveAttribute('href', '#ico-settings');
   await gear.click();
   const settings = page.getByRole('dialog', { name: '설정', exact: true });
   const units = settings.getByRole('tablist', { name: '설정 탭' });
@@ -498,7 +498,7 @@ test('one header, two control styles and shared support at mobile width', async 
     if (engine === 'english') {
       const gaps = await page.locator('.study-english .home-overview > .home-session').evaluateAll(cards =>
         cards.slice(1).map((card, index) => card.getBoundingClientRect().top - cards[index].getBoundingClientRect().bottom));
-      expect(gaps).toEqual([18, 18]);
+      expect(gaps).toEqual([16, 16]);
     }
     await header.getByRole('button', { name: '기록', exact: true }).click();
     const ranking = page.locator('[data-ranking]');

@@ -1,3 +1,4 @@
+import { iconHref, iconMarkup } from "../../design/icons";
 import { readStudySound, saveStudySound } from "../soundSettings";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -13733,7 +13734,7 @@ export default function mountMath(runtime) {
     expand.setAttribute("aria-pressed","false");
     expand.setAttribute("aria-label","필기 전체 화면");
     expand.title="필기 전체 화면";
-    expand.querySelector("use").setAttribute("href","#i-expand");
+    expand.querySelector("use").setAttribute("href","#ico-expand");
     resize();
     if ($("session-view").hidden) return;
     if (returnToQuestion) {
@@ -13823,7 +13824,7 @@ export default function mountMath(runtime) {
     expand.setAttribute("aria-pressed","true");
     expand.setAttribute("aria-label","전체 화면 닫기");
     expand.title="전체 화면 닫기";
-    expand.querySelector("use").setAttribute("href","#i-collapse");
+    expand.querySelector("use").setAttribute("href","#ico-collapse");
     fullscreen.showModal();
     updateFloatingControls();
     expand.focus({preventScroll:true});
@@ -13954,7 +13955,7 @@ export default function mountMath(runtime) {
   }
   function variableTag(v,withValue=false) {
     const role=v.given?"given":v.target?"target":"internal";
-    return `<span class="inspection-tag ${role}"><code>${esc(v.key)}${withValue?" = "+esc(v.value):""}</code> ${esc(v.label)}</span>`;
+    return `<span class="inspection-tag ${role}">${iconMarkup("function")}<code>${esc(v.key)}${withValue?" = "+esc(v.value):""}</code> ${esc(v.label)}</span>`;
   }
   function render(p,comparison) {
     const data=p.inspection??{variables:[],conditions:[]};
@@ -13998,7 +13999,7 @@ export default function mountMath(runtime) {
     $("result").innerHTML=`<div class="inspection-grid">
       <article class="inspection-card">
         <h2>생성된 문제</h2>
-        <div class="inspection-tags"><span class="inspection-tag">${esc(p.level)} · ${esc(p.template)}</span><span class="inspection-tag">${esc(presentation)}</span>${assessment?`<span class="context-chip chip-difficulty" data-difficulty="${assessment.grade}"><svg class="icon" aria-hidden="true"><use href="#i-difficulty-${assessment.grade}"/></svg>${ForgeCatalog.difficultyLabels[assessment.grade]}</span>`:""}</div>
+        <div class="inspection-tags"><span class="inspection-tag">${iconMarkup("math")}${esc(p.level)} · ${esc(p.template)}</span><span class="inspection-tag">${iconMarkup("info")}${esc(presentation)}</span>${assessment?`<span class="context-chip chip-difficulty" data-difficulty="${assessment.grade}"><svg class="icon" aria-hidden="true"><use href="#ico-difficulty-${assessment.grade}"/></svg>${ForgeCatalog.difficultyLabels[assessment.grade]}</span>`:""}</div>
         <div class="inspection-problem"><p>${prose(p.intro,p.format,true)}</p>${mathBlock(p)}${plotBlock(p)}<p><strong>${prose(p.question,p.format,true)}</strong></p>${choices?`<ol>${choices}</ol>`:""}</div>
         <p class="inspection-answer"><strong>정답</strong> ${answer(p)}</p>
         <details><summary>풀이 보기</summary>${solutionList(p)}</details>
@@ -14007,7 +14008,7 @@ export default function mountMath(runtime) {
         <h2>생성 과정</h2>
         <ol class="inspection-flow">
           <li><h3>답 경로 선택</h3><p>${esc(p.answerPath.label)} · ${esc(presentation)}</p><div class="inspection-roles">${groups}</div></li>
-          ${data.concepts?`<li><h3>연결된 개념</h3><div class="inspection-tags">${data.concepts.map(concept=>`<span class="inspection-tag">${esc(concept)}</span>`).join("")}</div></li>`:""}
+          ${data.concepts?`<li><h3>연결된 개념</h3><div class="inspection-tags">${data.concepts.map(concept=>`<span class="inspection-tag">${iconMarkup("book")}${esc(concept)}</span>`).join("")}</div></li>`:""}
           ${assessment?`<li><h3>수학 개념 연결 난도</h3><p>개념 ${assessment.concepts}종${!evidence&&assessment.depth?` · 가장 긴 연결 ${assessment.depth}단계`:""}</p></li>`:""}
           ${hasTrace?`<li><h3>수학 관계 연결</h3>${graph??`<ol class="inspection-relations">${connections}</ol>${links?`<ul class="inspection-links" aria-label="관계 사이 연결">${links}</ul>`:""}`}</li>`:"<li>기록된 관계 연결이 없습니다.</li>"}
           ${hasTrace?`<li><h3>조건과 수치 구성</h3><ul>${(data.conditions??[]).map(c=>`<li>${esc(c)}</li>`).join("")}</ul>
@@ -14289,7 +14290,7 @@ export default function mountMath(runtime) {
       && (settings.strategy!=="custom" || JSON.stringify(normalizeSelection(settings.units,settings.level,previous.customTypes).sort())===JSON.stringify([...settings.customTypes].sort()));
   }
 
-  const metaIcon = name => `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+  const metaIcon = name => `<svg class="icon" aria-hidden="true"><use href="${iconHref(name, "math")}"/></svg>`;
 
   function metricRows(entries) {
     return entries.map(([icon,label,value,tone,detail])=>`<div class="metric ${tone ?? ""}">
@@ -14720,7 +14721,7 @@ export default function mountMath(runtime) {
         return count ? `${name} ${count}건` : null;
       }).filter(Boolean);
       const available=pool(TYPES[type].unit,level).includes(type);
-      return `<details class="stat-row" data-stat="${esc(key)}"${openedTypes.has(key)?" open":""}><summary class="stat-title"><strong>${label}</strong><span class="meta-tag">${esc(UNITS[TYPES[type].unit])} · ${level}</span></summary><div class="stat-detail">
+      return `<details class="stat-row" data-stat="${esc(key)}"${openedTypes.has(key)?" open":""}><summary class="stat-title"><strong>${label}</strong><span class="meta-tag">${metaIcon(unitIcons[TYPES[type].unit] ?? "book")}${esc(UNITS[TYPES[type].unit])} · ${level}</span></summary><div class="stat-detail">
         <dl class="range-list stat-metrics">${metricRows([["book","일반 정답률",accuracy(initial),"tone-progress",ratio(initial)],["repeat","복습 정답률",accuracy(retries),"tone-score",ratio(retries)]])}</dl>
         ${initial.total ? `<p>일반 풀이 평균 ${readableTime(initial.average)}</p>` : ""}
         ${errors.length ? `<ul class="error-counts" aria-label="오답 원인">${errors.map(error=>`<li>${esc(error)}</li>`).join("")}</ul>` : ""}
@@ -14914,7 +14915,7 @@ export default function mountMath(runtime) {
   const strategyIcons = { new:"new", balanced:"balance", wrong:"repeat", custom:"settings" };
   $("strategy-options").innerHTML = Object.entries(STRATEGIES).map(([id,label]) => `
     <label class="select-card strategy-card strategy-${id}"><input type="radio" name="strategy" value="${id}">
-      <span><svg class="icon" aria-hidden="true"><use href="#i-${strategyIcons[id]}"/></svg><strong>${esc(label)}</strong></span>
+      <span><svg class="icon" aria-hidden="true"><use href="${iconHref(strategyIcons[id], "math")}"/></svg><strong>${esc(label)}</strong></span>
     </label>`).join("");
 
   function updateUnitCounts() {
@@ -14930,7 +14931,7 @@ export default function mountMath(runtime) {
     $("unit-options").innerHTML = units.map(id => `
       <label class="select-card unit-card unit-${id}">
         <input type="checkbox" name="unit" value="${id}">
-        <span><svg class="icon" aria-hidden="true"><use href="#i-${unitIcons[id]}"/></svg>
+        <span><svg class="icon" aria-hidden="true"><use href="${iconHref(unitIcons[id], "math")}"/></svg>
           <span class="unit-copy"><strong>${esc(UNITS[id])}</strong><span data-type-count="${id}"></span></span>
         </span>
       </label>`).join("");
