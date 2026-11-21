@@ -1,6 +1,10 @@
 # 풀림 저장소 작업 지침
 
-풀림(Pulim)은 수학·영어 학습과 담벼락을 한 사이트에서 제공한다. [운영 사이트](https://gitsbee.github.io/Pulim/)는 GitHub Pages에서 제공하며, 활성 개발 브랜치는 `beta`, 배포 브랜치는 `main`이다. 기능이나 화면을 바꾸기 전에 사용자가 요청한 범위와 현재 코드, 관련 테스트, 아래의 디자인 기준을 함께 확인한다.
+풀림(Pulim)은 수학·영어 학습과 담벼락을 한 사이트에서 제공한다. [운영 사이트](https://gitsbee.github.io/Pulim/)는 GitHub Pages에서 제공하며, 활성 개발 브랜치는 `develop`, 배포 브랜치는 `main`이다. 기능이나 화면을 바꾸기 전에 사용자가 요청한 범위와 현재 코드, 관련 테스트, 아래의 디자인 기준을 함께 확인한다.
+
+## 브랜치 운영
+
+`main`은 운영 배포, `develop`은 통합 개발, `release`는 출시 준비, `hotfix`는 운영 긴급 수정에 사용한다. 출시 준비는 `develop`에서 `release`로 반영하고 검증 후 `main`과 `develop`에 반영한다. 긴급 수정은 `main`에서 `hotfix`로 반영하고 검증 후 `main`과 `develop`에 반영한다. 실제 릴리스 작업 중 다른 변경이 있는지 각 브랜치를 확인한다.
 
 ## 어디부터 읽을지
 
@@ -12,6 +16,7 @@
 | [src/learning/settingsUnits.ts](src/learning/settingsUnits.ts), [src/learning/inputSettings.ts](src/learning/inputSettings.ts), [src/learning/recordTools.ts](src/learning/recordTools.ts), [src/learning/store.ts](src/learning/store.ts) | 공통 설정 탭과 입력 설정, 프로필의 로컬 기록 관리, 로그인 사용자의 풀이 결과 동기화. |
 | [src/design/](src/design/), [src/forge.css](src/forge.css), [src/pulim.css](src/pulim.css) | 실제 앱에서 사용하는 공통 토큰·아이콘, 공통 컴포넌트 스타일, 서비스별 배치. |
 | [src/firebase.ts](src/firebase.ts), [src/profiles.ts](src/profiles.ts), [src/data.ts](src/data.ts), [src/comments.ts](src/comments.ts), [firestore.rules](firestore.rules) | Firebase 연결, 프로필·핸들, 글·반응·댓글 쓰기와 서버측 검증. |
+| [docs/ROADMAP.md](docs/ROADMAP.md), [docs/archive/](docs/archive/) | 현재 개발 제안과 과거 계획의 보관본. |
 | [tests/](tests/), [playwright.config.ts](playwright.config.ts), [deploy-pages.yml](.github/workflows/deploy-pages.yml) | 단위·보안 규칙·브라우저 테스트와 Pages 배포. |
 
 ## 화면과 디자인을 바꿀 때
