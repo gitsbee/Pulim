@@ -398,7 +398,10 @@ test('one study document, shared dark theme and synchronized practice records', 
     await other.getByRole('link', { name: '영어', exact: true }).click();
     await expect(other.locator('.study-english')).toBeVisible();
     await other.getByRole('button', { name: '기록', exact: true }).click();
-    await expect(other.getByText('as part of', { exact: true })).toBeVisible();
+    const syncedRecords = other.locator('.record-panel').filter({
+      has: other.getByRole('heading', { name: '동기화된 풀이 기록', exact: true }),
+    });
+    await expect(syncedRecords.getByText('as part of', { exact: true })).toBeVisible();
   } finally {
     unblockMath();
     await context.close();
