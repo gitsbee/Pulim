@@ -1,3 +1,4 @@
+import Icon from '../components/Icon';
 import { useEffect, useState } from 'react';
 import { limit, onSnapshot, orderBy, query, type Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -9,7 +10,7 @@ import { attemptCollection, scoreCollection, type Attempt } from './store';
 type SavedAttempt = Attempt & { createdAt: Timestamp | null };
 const resultNames = { correct: '정답', wrong: '오답', seen: '학습', hinted: '힌트 정답' };
 
-export function LearningRecords({ uid, onLogin }: { uid?: string; onLogin: () => void }) {
+export function LearningRecords({ uid, onLogin, fixedSubject }: { uid?: string; onLogin?: () => void; fixedSubject?: Subject }) {
   const [items, setItems] = useState<SavedAttempt[]>([]);
   const [size, setSize] = useState(30);
   const [subject, setSubject] = useState<Subject | 'all'>('all');
@@ -24,14 +25,15 @@ export function LearningRecords({ uid, onLogin }: { uid?: string; onLogin: () =>
     }, error => { setError(errorMessage(error)); setLoading(false); });
   }, [uid, size]);
 
-  const visible = items.filter(item => subject === 'all' || item.subject === subject);
+  const filter = fixedSubject ?? subject;
+  const visible = items.filter(item => filter === 'all' || item.subject === filter);
   return <section className="panel record-panel">
-    <h2>풀이 기록</h2>
-    {!uid ? <><p>로그인하면 수학과 영어 풀이 결과를 다른 기기에서도 볼 수 있어요.</p><button className="button secondary" onClick={onLogin}>로그인</button></> : <>
-      <div className="filter-tabs" aria-label="기록 과목">
+    <h2>{fixedSubject ? '동기화된 풀이 기록' : '풀이 기록'}</h2>
+    {!uid ? <><p>로그인하면 수학과 영어 풀이 결과를 다른 기기에서도 볼 수 있어요.</p><button className="button secondary" onClick={onLogin}><Icon name="login" />로그인</button></> : <>
+      {!fixedSubject && <div className="filter-tabs" aria-label="기록 과목">
         {(['all', 'math', 'english'] as const).map(value => <button className="button secondary" key={value} aria-pressed={subject === value}
           onClick={() => setSubject(value)}>{value === 'all' ? '전체' : subjects[value]}</button>)}
-      </div>
+      </div>}
       <p className="muted">불러온 기록 {visible.length}개 · 정답 {visible.filter(item => item.result === 'correct').length}개</p>
       {loading && <p role="status">기록을 불러오는 중…</p>}
       {error && <p className="error" role="alert">{error}</p>}
@@ -42,7 +44,7 @@ export function LearningRecords({ uid, onLogin }: { uid?: string; onLogin: () =>
           <span className={item.result === 'wrong' ? 'wrong-result' : 'correct-result'}>{resultNames[item.result]}</span>
         </li>)}
       </ul>
-      {items.length === size && <button className="button secondary" onClick={() => setSize(value => value + 30)}>이전 기록 더 보기</button>}
+      {items.length === size && <button className="button secondary" onClick={() => setSize(value => value + 30)}><Icon name="more" />이전 기록 더 보기</button>}
     </>}
   </section>;
 }

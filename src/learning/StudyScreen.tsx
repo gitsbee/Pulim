@@ -1,6 +1,7 @@
+import { bindStudyInputs } from './inputSettings';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Leaderboard } from './LearningRecords';
+import { Leaderboard, LearningRecords } from './LearningRecords';
 import type { Theme } from '../hooks/useTheme';
 import { subjects, type Subject } from './daily';
 import { readPracticeAttempt, type Attempt } from './store';
@@ -62,8 +63,9 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
         dialog.insertAdjacentHTML('afterbegin', settingsHeader);
         fillSettings(dialog);
         const ungroup = groupStudySettings(dialog, subject);
+        const inputs = bindStudyInputs(dialog, account);
         const align = alignSettings(dialog);
-        disposeSettings = () => { align(); ungroup(); };
+        disposeSettings = () => { inputs(); align(); ungroup(); };
         const updateRanking = () => setRankingTarget(root.querySelector('[data-ranking]'));
         if (subject === 'english') {
           historyObserver = new MutationObserver(updateRanking);
@@ -131,7 +133,10 @@ export default function StudyScreen({ subject, account, theme, setTheme, onAttem
         <button className="button secondary" onClick={() => { setStatus('loading'); setRetry(value => value + 1); }}>다시 시도</button></div>}
     </section>}
     {status === 'ready' && isHistory && rankingTarget && createPortal(
-      <Leaderboard key={day} day={day} subject={subject} uid={account === 'guest' ? undefined : account} />, rankingTarget,
+      <>
+        <Leaderboard key={day} day={day} subject={subject} uid={account === 'guest' ? undefined : account} />
+        {account !== 'guest' && <LearningRecords uid={account} fixedSubject={subject} />}
+      </>, rankingTarget,
     )}
     <div ref={ref} className={`study-engine study-${subject}`} hidden={status !== 'ready'} />
   </>;

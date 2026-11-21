@@ -1,3 +1,4 @@
+import Icon from './Icon';
 import { useId, useState, type FormEvent } from 'react';
 import type { User } from 'firebase/auth';
 import { deletePost, repost } from '../data';
@@ -23,5 +24,5 @@ export default function RepostComposer({ original, existing, user, onClose, onSa
     try { await deletePost(existing); onSaved('리포스트를 취소했어요.'); }
     catch (error) { setError(errorMessage(error)); } finally { setBusy(false); }
   }
-  return <Modal title={existing ? '리포스트 수정' : '리포스트 작성'} onClose={close}><form onSubmit={submit}><label htmlFor={id}>리포스트에 덧붙일 글</label><textarea id={id} autoFocus value={body} onChange={event => setBody(event.target.value)} maxLength={2000} disabled={busy} placeholder="내 생각을 덧붙여 보세요. (선택)" /><p className="field-counter">{body.length} / 2,000</p><OriginalReference original={original} linked={false} />{error && <p className="error" role="alert">{error}</p>}<div className="actions"><button className="button primary" disabled={busy}>{busy ? '저장 중…' : existing ? '리포스트 저장' : '리포스트하기'}</button>{existing && <button className="button danger" type="button" onClick={cancel} disabled={busy}>리포스트 취소</button>}</div></form></Modal>;
+  return <Modal title={existing ? '리포스트 수정' : '리포스트 작성'} onClose={close}><form onSubmit={submit}><label htmlFor={id}>리포스트에 덧붙일 글</label><textarea id={id} autoFocus value={body} onChange={event => setBody(event.target.value)} maxLength={2000} disabled={busy} placeholder="내 생각을 덧붙여 보세요. (선택)" /><p className="field-counter">{body.length} / 2,000</p><OriginalReference original={original} linked={false} />{error && <p className="error" role="alert">{error}</p>}<div className="actions"><button className="button primary" disabled={busy}><Icon name={existing ? 'save' : 'repeat'} />{busy ? '저장 중…' : existing ? '리포스트 저장' : '리포스트하기'}</button>{existing && <button className="button danger" type="button" onClick={cancel} disabled={busy}><Icon name="trash" />리포스트 취소</button>}</div></form></Modal>;
 }

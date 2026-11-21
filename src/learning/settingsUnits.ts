@@ -15,6 +15,7 @@ export function groupStudySettings(root: HTMLElement, service: Subject | 'pulim'
     button.type = 'button';
     button.className = 'plain-button nav-tab';
     button.textContent = labels[key] || (service === 'pulim' ? '풀림' : subjects[service]);
+    section.firstElementChild?.classList.add('sr-only');
     section.id = `settings-section-${key}`;
     button.id = `settings-tab-${key}`;
     button.setAttribute('role', 'tab');
@@ -84,13 +85,21 @@ export const settingsHeader = `<header class="preferences-header"><h2 id="prefer
   <form method="dialog"><button class="plain-button preferences-close" aria-label="닫기">${closeIcon}</button></form></header>`;
 
 export function fillSettings(root: HTMLElement) {
-  const input = root.querySelector('[aria-labelledby="settings-input"]')!;
+
   const service = root.querySelector('[aria-labelledby="settings-service"]')!;
-  input.insertAdjacentHTML('beforebegin', `
+  service.insertAdjacentHTML('beforebegin', `
     <section class="preferences-section" aria-labelledby="settings-screen"><h3 id="settings-screen">화면 및 테마</h3>
       <fieldset><legend class="sr-only">화면 테마</legend><div class="theme-options">
         ${Object.entries(modes).map(([value, label]) => `<label class="select-card"><input type="radio" name="theme" value="${value}"><span>${label}</span></label>`).join('')}
       </div></fieldset>
+    </section>
+    <section class="preferences-section" aria-labelledby="settings-input"><h3 id="settings-input">입력</h3>
+      <label class="mix-toggle settings-toggle"><span>펜 전용</span><input id="pen-only" type="checkbox" role="switch"></label>
+      <div class="volume-setting"><label for="pen-sensitivity">펜 압력 감도</label><output id="pen-sensitivity-value" for="pen-sensitivity">85%</output>
+        <span class="range-track"><input id="pen-sensitivity" type="range" min="0" max="100" step="5" value="85"></span>
+      </div>
+      <label class="mix-toggle settings-toggle"><span>세벌식 390</span><input id="ime" type="checkbox" role="switch" aria-describedby="ime-help"></label>
+      <p id="ime-help" class="help">영어 답안을 입력할 때 사용합니다. 물리 키보드를 영문 상태로 두세요.</p>
     </section>`);
   service.insertAdjacentHTML('beforebegin', `
     <section class="preferences-section" aria-labelledby="settings-sound"><h3 id="settings-sound">음향 및 소리</h3>

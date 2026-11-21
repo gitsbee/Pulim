@@ -10,24 +10,11 @@
   </header>
   <div id="app"></div>
   <dialog class="preferences-dialog" id="preferences" aria-labelledby="preferences-title">
-    <section class="preferences-section" aria-labelledby="settings-input">
-      <h3 id="settings-input">입력</h3>
-      <label class="mix-toggle settings-toggle"><span>세벌식 390</span><input id="ime" type="checkbox" role="switch" aria-describedby="ime-help"></label>
-      <p id="ime-help" class="help">세벌식 390 사용 시 물리 키보드를 영문 상태로 두세요.</p>
-    </section>
     <section class="preferences-section" aria-labelledby="settings-service"><h3 id="settings-service">문제 설정</h3>
       <label class="mix-toggle settings-toggle"><span>범위 수동 설정</span><input id="manual-setting" type="checkbox" role="switch"></label>
     </section>
   </dialog>
-  <dialog id="reset-dialog" aria-labelledby="reset-title">
-    <h2 id="reset-title">학습 기록을 초기화할까요?</h2>
-    <p>학습 현황, 오답, 힌트 정답, 북마크, 인정 답안과 진행 중인 학습이 이 브라우저에서 삭제됩니다.</p>
-    <form method="dialog" class="dialog-actions">
-      <button class="button secondary" value="cancel" autofocus><span class="icon-slot" data-icon="close"></span>취소</button>
-      <button class="button danger" value="reset"><span class="icon-slot" data-icon="trash"></span>기록 초기화</button>
-    </form>
-  </dialog>
-  <dialog id="segment-reset-dialog" aria-labelledby="segment-reset-title"><h2 id="segment-reset-title">이 구간의 학습을 초기화할까요?</h2><p>선택한 학습 방식과 범위의 진행 상태가 초기화됩니다. 다른 학습 기록과 북마크는 유지됩니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary" value="cancel" autofocus>취소</button><button class="button danger" value="reset">구간 초기화</button></form></dialog>
+  <dialog id="segment-reset-dialog" aria-labelledby="segment-reset-title"><h2 id="segment-reset-title">이 구간의 학습을 초기화할까요?</h2><p>선택한 학습 방식과 범위의 진행 상태가 초기화됩니다. 다른 학습 기록과 북마크는 유지됩니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary" value="cancel" autofocus><span class="icon-slot" data-icon="close"></span>취소</button><button class="button danger" value="reset"><span class="icon-slot" data-icon="trash"></span>구간 초기화</button></form></dialog>
   <dialog id="replace-round" aria-labelledby="replace-title">
     <h2 id="replace-title">새 학습을 시작할까요?</h2>
     <p>같은 방식의 진행 중인 학습을 새로 시작합니다.</p>

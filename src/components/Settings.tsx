@@ -1,3 +1,5 @@
+import { bindStudyInputs } from '../learning/inputSettings';
+import { iconMarkup } from '../design/icons';
 import { useLayoutEffect, useRef } from 'react';
 import type { Theme } from '../hooks/useTheme';
 import { base } from '../hooks/useNavigation';
@@ -5,11 +7,12 @@ import { alignSettings, fillSettings, groupStudySettings } from '../learning/set
 import { readStudySound, saveStudySound } from '../learning/soundSettings';
 import type { SupportKind } from './Support';
 
-export default function Settings({ theme, setTheme, openSupport, signedIn }: {
+export default function Settings({ theme, setTheme, openSupport, signedIn, account }: {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   openSupport: (kind: SupportKind) => void;
   signedIn: boolean;
+  account: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const latest = useRef({ theme, setTheme, openSupport, signedIn });
@@ -18,11 +21,8 @@ export default function Settings({ theme, setTheme, openSupport, signedIn }: {
   useLayoutEffect(() => {
     const panel = root.current!;
     panel.innerHTML = `
-      <section class="preferences-section" aria-labelledby="settings-input"><h3 id="settings-input">입력</h3>
-        <p>담벼락 글쓰기와 검색에는 기기의 기본 입력기를 사용해요. 펜과 세벌식 설정은 수학과 영어에서 각각 조정할 수 있어요.</p>
-      </section>
       <section class="preferences-section" aria-labelledby="settings-service"><h3 id="settings-service">계정과 담벼락</h3>
-        <div class="support-links"><a class="button secondary" href="${base}#/me">${latest.current.signedIn ? '프로필 관리' : '로그인'}</a></div>
+        <div class="support-links"><a class="button secondary" href="${base}#/me">${iconMarkup(latest.current.signedIn ? 'person' : 'login')}<span>${latest.current.signedIn ? '프로필 관리' : '로그인'}</span></a></div>
       </section>`;
     fillSettings(panel);
     const ungroup = groupStudySettings(panel, 'pulim');
@@ -33,6 +33,7 @@ export default function Settings({ theme, setTheme, openSupport, signedIn }: {
     enabled.checked = sound.enabled;
     volume.value = String(sound.volume);
     output.value = volume.value + '%';
+    const inputs = bindStudyInputs(panel, account);
     const align = alignSettings(panel);
     const abort = new AbortController();
     const options = { signal: abort.signal };
@@ -49,16 +50,16 @@ export default function Settings({ theme, setTheme, openSupport, signedIn }: {
       output.value = volume.value + '%';
       saveStudySound({ enabled: enabled.checked, volume: volume.valueAsNumber });
     }, options);
-    return () => { abort.abort(); align(); ungroup(); panel.replaceChildren(); };
-  }, []);
+    return () => { abort.abort(); inputs(); align(); ungroup(); panel.replaceChildren(); };
+  }, [account]);
 
   useLayoutEffect(() => {
     const selected = root.current?.querySelector<HTMLInputElement>(`[name="theme"][value="${theme}"]`);
     if (selected) selected.checked = true;
-  }, [theme]);
+  }, [theme, account]);
 
   useLayoutEffect(() => {
-    const link = root.current?.querySelector('.support-links a');
+    const link = root.current?.querySelector('.support-links a span');
     if (link) link.textContent = signedIn ? '프로필 관리' : '로그인';
   }, [signedIn]);
 

@@ -61,8 +61,8 @@
           <legend>직접 연습할 유형</legend>
           <div class="custom-type-actions">
             <p id="custom-type-count" role="status"></p>
-            <button type="button" id="custom-select-all" class="button secondary">전체 선택</button>
-            <button type="button" id="custom-clear" class="button secondary">선택 해제</button>
+            <button type="button" id="custom-select-all" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-check"/></svg>전체 선택</button>
+            <button type="button" id="custom-clear" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-close"/></svg>선택 해제</button>
           </div>
           <label class="type-search" for="custom-search">유형 검색 <input type="search" id="custom-search" placeholder="예  진리집합"></label>
           <div id="custom-type-options" class="custom-type-options"></div>
@@ -163,8 +163,8 @@
         <label>답안 형식<select id="inspection-format"><option value="">자동</option><option value="written">서답형</option><option value="choice">선택형</option></select></label>
         <label>연결 난도<select id="inspection-difficulty"><option value="">자동</option><option value="high">상</option><option value="medium">중</option><option value="low">하</option></select></label>
         <label>생성 번호<input id="inspection-seed" type="number" min="0" max="4294967295" step="1" required></label>
-        <button class="button" type="submit">생성</button>
-        <button class="button secondary" id="inspection-random" type="button">새 번호로 생성</button>
+        <button class="button" type="submit"><svg class="icon" aria-hidden="true"><use href="#ico-next"/></svg>생성</button>
+        <button class="button secondary" id="inspection-random" type="button"><svg class="icon" aria-hidden="true"><use href="#ico-repeat"/></svg>새 번호로 생성</button>
       </form>
       <p id="inspection-status" role="status"></p>
       <div id="inspection-result"></div>
@@ -181,12 +181,12 @@
       <details class="review-panel history-group" open>
         <summary id="review-heading">복습할 문제</summary>
         <div id="review-list"></div>
-        <button type="button" id="review-more" class="button secondary list-more" hidden>더 보기</button>
+        <button type="button" id="review-more" class="button secondary list-more" hidden><svg class="icon" aria-hidden="true"><use href="#ico-more"/></svg>더 보기</button>
       </details>
       <details class="review-panel parked-panel history-group" open>
         <summary id="parked-heading">보관한 문제</summary>
         <div id="parked-list"></div>
-        <button type="button" id="parked-more" class="button secondary list-more" hidden>더 보기</button>
+        <button type="button" id="parked-more" class="button secondary list-more" hidden><svg class="icon" aria-hidden="true"><use href="#ico-more"/></svg>더 보기</button>
       </details>
       <section aria-labelledby="type-stats-title" class="history-section">
         <h2 id="type-stats-title">유형별 성적</h2>
@@ -204,28 +204,13 @@
           <label for="history-unit">단원 <select id="history-unit"><option value="">전체 단원</option></select></label>
         </div>
         <div id="recent-attempts"></div>
-        <button type="button" id="history-more" class="button secondary list-more" hidden>더 보기</button>
-      </details>
-      <details class="record-settings history-group">
-        <summary>내 정보 관리</summary>
-        <div class="home-actions">
-          <button type="button" id="export-records" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-download"/></svg>기록 내보내기</button>
-          <button type="button" id="import-records" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-upload"/></svg>기록 가져오기</button>
-          <button type="button" id="reset-records" class="button danger"><svg class="icon" aria-hidden="true"><use href="#ico-trash"/></svg>기록 초기화하기</button>
-          <input id="backup-file" type="file" accept=".json,application/json" hidden>
-        </div>
-        <p id="backup-status" role="status"></p>
+        <button type="button" id="history-more" class="button secondary list-more" hidden><svg class="icon" aria-hidden="true"><use href="#ico-more"/></svg>더 보기</button>
       </details>
     </section>
   </div>
   <dialog id="daily-protected-dialog" class="confirm-dialog" aria-labelledby="daily-protected-title"><h2 id="daily-protected-title">오늘의 문제 기록</h2><p>오늘의 문제는 기록을 삭제하거나 최초 결과를 수정할 수 없습니다.</p><form method="dialog" class="dialog-actions"><button class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-check"/></svg>확인</button></form></dialog>
   <dialog id="item-confirm-dialog" class="confirm-dialog" aria-labelledby="item-confirm-title"><h2 id="item-confirm-title"></h2><p id="item-confirm-message"></p><div class="home-actions"><button type="button" id="item-cancel" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-close"/></svg>취소</button><button type="button" id="item-confirm" class="button danger"><svg class="icon" aria-hidden="true"><use href="#ico-trash"/></svg><span>확인</span></button></div></dialog>
-  <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">학습 기록을 초기화할까요?</h2><p>풀이 기록, 필기와 보관 문제가 삭제됩니다. 오늘의 도전 결과는 유지됩니다.</p><div class="home-actions"><button type="button" id="cancel-reset" class="button secondary"><svg class="icon" aria-hidden="true"><use href="#ico-close"/></svg>취소</button><button type="button" id="confirm-reset" class="button danger"><svg class="icon" aria-hidden="true"><use href="#ico-trash"/></svg>기록 초기화</button></div></dialog>
   <dialog id="preferences-dialog" class="preferences-dialog" aria-labelledby="preferences-title">
-    <section class="preferences-section" aria-labelledby="settings-input"><h3 id="settings-input">입력</h3>
-    <label class="mix-toggle settings-toggle"><span>펜 전용</span><input id="pen-only" type="checkbox" role="switch"></label>
-    <div class="volume-setting"><label for="pen-sensitivity">펜 압력 감도</label><output id="pen-sensitivity-value" for="pen-sensitivity">85%</output><span class="range-track"><input id="pen-sensitivity" type="range" min="0" max="100" step="5" value="85"></span><p class="sensitivity-help">감도가 높으면 가벼운 압력에도 선이 굵게 표시됩니다.</p></div>
-    </section>
     <section class="preferences-section" aria-labelledby="settings-service"><h3 id="settings-service">문제 설정</h3>
     <label class="mix-toggle settings-toggle"><span>확장 문제 포함</span><input id="plus-enabled" type="checkbox" role="switch"></label>
     </section>

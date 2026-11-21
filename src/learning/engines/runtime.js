@@ -11,7 +11,7 @@ function scopedStorage(storage, namespace) {
   });
 }
 
-export function createStudyRuntime(root, { account, subject, vocabulary, report, updateView, getTheme, setTheme }) {
+export function createStudyRuntime(root, { account, subject, vocabulary, report, updateView, getTheme, setTheme, recordsOnly = false }) {
   const abort = new AbortController();
   const localEvents = new EventTarget();
   const observations = new Set();
@@ -106,7 +106,7 @@ export function createStudyRuntime(root, { account, subject, vocabulary, report,
     },
     ResizeObserver: observe(ResizeObserver),
     MutationObserver: observe(MutationObserver),
-    getTheme, setTheme, updateView,
+    getTheme, setTheme, updateView, recordsOnly,
     ready() { initialization.forEach(callback => callback()); },
     addEventListener(type, callback) {
       if (type === 'hashchange') listen(localEvents, type, callback);
@@ -127,8 +127,10 @@ export function createStudyRuntime(root, { account, subject, vocabulary, report,
       abort.abort();
       observations.forEach(observer => observer.disconnect());
       for (const dialog of root.querySelectorAll('dialog[open]')) dialog.close();
-      document.documentElement.style.removeProperty('--session-header-height');
-      document.documentElement.style.removeProperty('--keyboard-inset');
+      if (!recordsOnly) {
+        document.documentElement.style.removeProperty('--session-header-height');
+        document.documentElement.style.removeProperty('--keyboard-inset');
+      }
     },
   };
 }

@@ -209,7 +209,7 @@ textarea { vertical-align: top; resize: vertical; }
 .pulim-header { position: sticky; top: 0; z-index: 8; border-bottom: var(--border-width) solid var(--divider); }
 .settings-units {
   display: flex; gap: 2px; justify-content: space-between;
-  border-bottom: var(--border-width) solid var(--divider);
+  margin-bottom: var(--pulim-space-16);
 }
 .settings-units .nav-tab { min-width: 0; flex: 1; white-space: nowrap; }
 .settings-units .nav-tab::after { inset: auto 5px 0; }
@@ -244,12 +244,8 @@ textarea { vertical-align: top; resize: vertical; }
 .home-section { margin-top: var(--pulim-space-24); }
 .home-section > h2 { margin-bottom: 12px; }
 .home-section .subject-card { display: flex; flex-direction: column; align-items: flex-start; }
-.home-section .subject-card p { flex: 1; }
-.home-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--pulim-space-16); }
-.home-tools h2 { display: flex; align-items: center; gap: 8px; }
-.home-tools .plain-button { padding-inline: 0; text-decoration: underline; text-underline-offset: .2em; }
 @media (max-width: 570px) {
-  .home-hero, .home-tools { grid-template-columns: minmax(0, 1fr); }
+  .home-hero { grid-template-columns: minmax(0, 1fr); }
   .home-symbols { display: none; }
 }
 
@@ -269,4 +265,21 @@ textarea { vertical-align: top; resize: vertical; }
 }
 .profile-editor .profile-form-action { width: 100%; }
 
-.account form > .button, .home-tools .plain-button { width: 100%; }
+.account form > .button { width: 100%; }
+
+/* Landing cards share one layout and size to their own content. */
+.home-section .subject-grid { align-items: start; gap: var(--pulim-space-16); }
+.home-section .subject-card { margin: 0; }
+.home-section .subject-card h3 { margin: 0; }
+.subject-column { display: grid; gap: var(--pulim-space-16); min-width: 0; }
+.home-hero {
+  background: radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--palette-blue) 20%, transparent), transparent 68%),
+    linear-gradient(125deg, color-mix(in srgb, var(--palette-green) 10%, var(--panel)), var(--panel));
+  border-color: var(--divider);
+}
+.home-hero .home-headline { letter-spacing: -.035em; }
+.home-intro > p { margin-bottom: var(--pulim-space-16); }
+.home-demo .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); }
+.home-demo h3 { margin: 0; }
+.home-demo [role="status"]:empty { display: none; }
+.profile-records select { display: block; margin-top: var(--pulim-space-4); }

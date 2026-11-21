@@ -184,9 +184,6 @@ function renderCollection() {
       <summary>${title}</summary><div data-words="${key}"></div>
       ${key === 'hints' && Object.values(state.hints).some(Boolean) ? `<button class="button primary action-start wide review-start" id="practice-hints">${icon('repeat')} 복습 시작</button>` : ''}
     </details>` : '<div data-words="overview"></div>').join('')}
-    ${review ? `<details class="record-settings history-group"><summary>내 정보 관리</summary>
-      <div><button class="button danger" data-reset>${icon('trash')} 기록 초기화하기</button></div>
-    </details>` : ''}
   </section>`;
   if ($('#practice-hints')) $('#practice-hints').onclick = () => {
     beginRound('type', words.map((_, index) => index).filter(index => state.hints[index]));
@@ -261,34 +258,7 @@ $('#manual-setting').checked = preferences.manual;
 $('#manual-setting').onchange = event => { preferences.manual = event.target.checked; state.range = preferences; save(); if (view === 'home') renderSetup(); };
 $('#sound-enabled').onchange = event => { state.sound = event.target.checked; saveStudySound({ enabled: state.sound, volume: state.volume }); };
 $('#sound-volume').oninput = event => { state.volume = Number(event.target.value); $('#sound-volume-value').textContent = state.volume + '%'; saveStudySound({ enabled: state.sound, volume: state.volume }); };
-$('#ime').checked = state.ime;
-$('#ime').onchange = event => { state.ime = event.target.checked; save(); h3Reset(); };
-
-const resetDialog = $('#reset-dialog');
-document.addEventListener('click', event => {
-  if (!event.target.closest('[data-reset]')) return;
-  settingsDialog.close();
-  resetDialog.returnValue = '';
-  resetDialog.showModal();
-});
-resetDialog.addEventListener('close', () => {
-  if (resetDialog.returnValue !== 'reset') return;
-  for (const key of ['progress', 'wrong', 'hints', 'stars', 'extra']) state[key] = {};
-  state.drafts = {};
-  state.segmentDrafts = {};
-  state.segmentProgress = {};
-  state.modeProgress = { flash: {}, recall: {}, choice: {}, type: {} };
-  delete state.draft;
-  session = [];
-  outcomes = [];
-  question = null;
-  preferences = { ...defaultRange };
-  $('#manual-setting').checked = false;
-  delete state.range;
-  mode = 'recall';
-  save();
-  go('home');
-});
+$('#ime').onchange = () => h3Reset();
 
 const recallLabels = { wrong: '어려움', medium: '보통', correct: '쉬움' };
 const gradeLabels = { correct: '정답', hinted: '힌트 정답', wrong: '오답', remaining: '남은 개수' };
@@ -466,7 +436,7 @@ function renderSession() {
 function renderCard(word, index) {
   const flash = mode === 'flash';
   $('#interaction').innerHTML = `
-    ${flash || !question.revealed ? `<button class="button primary action-start answer-face" id="flip" aria-pressed="${question.revealed}">${question.revealed ? escapeHtml(word.ko) : flash ? '뜻 보기' : '정답 확인'}</button>` : ''}
+    ${flash || !question.revealed ? `<button class="button primary action-start answer-face" id="flip" aria-pressed="${question.revealed}">${icon(question.revealed || flash ? 'eye' : 'check')} ${question.revealed ? escapeHtml(word.ko) : flash ? '뜻 보기' : '정답 확인'}</button>` : ''}
     <div class="session-actions recall-actions">${flash ? `
       <button class="button secondary action-skip" id="previous" ${position === 0 ? 'disabled' : ''}>${icon('chevron-left')} 이전</button>
       <button class="button primary" id="next">${icon('next')} 다음 문제</button>` : question.revealed ? `
@@ -583,7 +553,7 @@ function renderType(word, index) {
     feedback.innerHTML = `<div class="verdict is-${kind}">${icon(kind === 'wrong' ? 'close' : 'check')}<div>${face}</div></div>`;
     if (phase !== 'shown' && phase !== 'wrong') return;
     feedback.insertAdjacentHTML('beforeend', `<div class="feedback-actions">
-      ${phase === 'wrong' ? '<button type="button" class="button secondary" id="accept">인정 답안으로 추가</button>' : ''}
+      ${phase === 'wrong' ? '<button type="button" class="button secondary" id="accept">${iconMarkup("plus")} 인정 답안으로 추가</button>' : ''}
       <button type="button" class="button secondary" id="rewrite">${icon('repeat')} 정답 보고 다시 쓰기</button>
     </div>`);
     $('#rewrite').onclick = () => {
@@ -654,8 +624,8 @@ function renderComplete() {
       ${chip(`${session.length}개 단어`, 'cards', 'neutral')}</div>
     <div class="complete-stats">${statsMarkup()}</div>
     <div class="complete-actions">
-      <button class="plain-button" id="back-home">학습 범위 선택</button>
-      <button class="button primary action-start" id="repeat">같은 구간 다시 학습</button>
+      <button class="plain-button" id="back-home">${iconMarkup("back")} 학습 범위 선택</button>
+      <button class="button primary action-start" id="repeat">${icon("repeat")} 같은 구간 다시 학습</button>
     </div></section>`;
   $('#back-home').onclick = () => go('home');
   $('#repeat').onclick = startRound;
@@ -677,7 +647,7 @@ let imeInput=null;
 function h3Reset(){H3.cho=H3.jung=H3.jong=0;H3.hist=[];H3.out=''}
 function h3Put(val){let v=imeInput.value, end=imeInput.selectionStart;if(H3.out&&v.slice(0,end).endsWith(H3.out)){let start=end-H3.out.length;imeInput.setRangeText(val,start,end,'end')}else imeInput.setRangeText(val,end,imeInput.selectionEnd,'end');H3.out=val;imeInput.dispatchEvent(new Event('input',{bubbles:true}))}
 function h3Jamo(code){const snap={cho:H3.cho,jung:H3.jung,jong:H3.jong};let fresh=false;if(code<0x1161){if(H3.cho&&!H3.jung&&!H3.jong&&h3c(H3.cho,code))H3.cho=h3c(H3.cho,code);else fresh=true;if(fresh){h3Reset();H3.cho=code}}else if(code<0x11a8){if(H3.jung&&!H3.jong&&h3c(H3.jung,code))H3.jung=h3c(H3.jung,code);else if(!H3.jung&&!H3.jong)H3.jung=code;else{fresh=true;h3Reset();H3.jung=code}}else{if(H3.jong&&h3c(H3.jong,code))H3.jong=h3c(H3.jong,code);else if(H3.cho&&H3.jung&&!H3.jong)H3.jong=code;else{fresh=true;h3Reset();H3.jong=code}}if(!fresh)H3.hist.push(snap);else H3.hist=[];h3Put(h3Render())}
-function attachIME(inp){imeInput=inp;h3Reset();inp.addEventListener('keydown',e=>{if(inp.readOnly||!state.ime||e.ctrlKey||e.metaKey||e.altKey||e.isComposing||e.keyCode===229)return;if(inp.selectionStart!==inp.selectionEnd||!inp.value.slice(0,inp.selectionStart).endsWith(H3.out))h3Reset();if(e.code==='Backspace'&&H3.out){e.preventDefault();if(H3.hist.length){Object.assign(H3,H3.hist.pop());h3Put(h3Render())}else{h3Put('');h3Reset()}return}let c=usChar(e.code||'',e.shiftKey);if(c===undefined){if(!/^Shift|CapsLock/.test(e.code))h3Reset();return}let v=K390[c];if(typeof v==='number'){e.preventDefault();h3Jamo(v)}else{h3Reset();if(typeof v==='string'){e.preventDefault();inp.setRangeText(v,inp.selectionStart,inp.selectionEnd,'end');inp.dispatchEvent(new Event('input',{bubbles:true}))}}});inp.addEventListener('blur',h3Reset)}
+function attachIME(inp){imeInput=inp;h3Reset();inp.addEventListener('keydown',e=>{if(inp.readOnly||!$('#ime').checked||e.ctrlKey||e.metaKey||e.altKey||e.isComposing||e.keyCode===229)return;if(inp.selectionStart!==inp.selectionEnd||!inp.value.slice(0,inp.selectionStart).endsWith(H3.out))h3Reset();if(e.code==='Backspace'&&H3.out){e.preventDefault();if(H3.hist.length){Object.assign(H3,H3.hist.pop());h3Put(h3Render())}else{h3Put('');h3Reset()}return}let c=usChar(e.code||'',e.shiftKey);if(c===undefined){if(!/^Shift|CapsLock/.test(e.code))h3Reset();return}let v=K390[c];if(typeof v==='number'){e.preventDefault();h3Jamo(v)}else{h3Reset();if(typeof v==='string'){e.preventDefault();inp.setRangeText(v,inp.selectionStart,inp.selectionEnd,'end');inp.dispatchEvent(new Event('input',{bubbles:true}))}}});inp.addEventListener('blur',h3Reset)}
 
 Promise.resolve(window.studyBridge.vocabulary).then(entries => {
   words = entries.map(([en, ko]) => ({ en, ko }));

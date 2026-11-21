@@ -28,6 +28,8 @@ export const iconNames = [
   "info",
   "close",
   "logout",
+  "login",
+  "asterisk",
   "plus",
   "external",
   "resume",

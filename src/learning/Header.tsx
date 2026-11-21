@@ -61,7 +61,6 @@ export default function Header({ user, name, loggedOut, subject, view, pulimTab,
         {user ? <PostMenu label="계정 메뉴" icon="person" iconOnly>
           {name && <p className="account-menu-name">{name}</p>}
           <button className="plain-button" type="button" onClick={() => navigate(base + '#/me')}><Icon name="person" />프로필</button>
-          <button className="plain-button" type="button" onClick={() => navigate(base + '#/records')}><Icon name="records" />내 기록</button>
           <button className="plain-button" type="button" onClick={() => navigate(base + '#/activity')}><Icon name="activity" />내 활동</button>
           <button className="plain-button" type="button" onClick={loggedOut}><Icon name="logout" />로그아웃</button>
         </PostMenu> : <a className="plain-button account-icon" href={base + '#/me'} aria-label="로그인" title="로그인"><Icon name="person" /></a>}

@@ -7,6 +7,7 @@ export default function mountMath(runtime) {
   const { document, window, matchMedia, ResizeObserver, MutationObserver } = runtime;
   const { location, addEventListener } = runtime;
   const globalThis = { katex, crypto: window.crypto };
+  let recordTools;
   let ForgePreferences, MathForge, ForgeNotation, ForgeTopics, ForgeAnswerPaths, ForgeExpressionCompiler, ForgePlaneCompositions, ForgeTypeFamilies, ForgeVariations, ForgeLineCompiler, ForgePlaneConceptCompiler, ForgeChallengeRelations, ForgeGeometryEquations, ForgeChallengeGeometry, ForgeChallengeValidation, ForgeProblemProse, ForgeRelationSearch, ForgeChallengeCompiler, ForgeLogicCompiler, ForgeFunctionCurriculum, ForgeFunctionRelations, ForgeFunctionBounds, ForgeFunctionSymbolic, ForgeFunctionSynthesis, ForgeFunctionIntervalSynthesis, ForgeFunctionRelationPractice, ForgePieceFunctionSynthesis, ForgeFiniteFunctionSynthesis, ForgeAlgebraSynthesis, ForgeFunctionCompiler, ForgeCatalog, ForgeCurriculum, ForgeLearning, ForgeBackup, ForgeRecommendations, ForgeMathView, ForgeScratchpad, ForgeInspection;
 /* preferences.js */
 (() => {
@@ -13535,11 +13536,8 @@ export default function mountMath(runtime) {
   const pen=$("tool-pen");
   const eraser=$("tool-eraser");
   const ctx=canvas.getContext("2d");
-  const preferenceKey="math-forge:pen-only";
   const inkKey="math-forge:active-ink";
-  const sensitivityKey="math-forge:pen-sensitivity";
   const sensitivityInput=$("pen-sensitivity");
-  let sensitivity=85;
   let id;
   let commands=[];
   let tool="pen";
@@ -13578,7 +13576,7 @@ export default function mountMath(runtime) {
 
   function strokeWidth(event) {
     if (event.pointerType!=="pen" || !Number.isFinite(event.pressure) || event.pressure<=0) return 3;
-    const response=Math.pow(Math.min(1,event.pressure),1.8-sensitivity*0.015);
+    const response=Math.pow(Math.min(1,event.pressure),1.8-sensitivityInput.valueAsNumber*0.015);
     return Math.max(1.8, Math.min(5, 1.8+response*3.2));
   }
 
@@ -13845,24 +13843,6 @@ export default function mountMath(runtime) {
   eraser.addEventListener("click",()=>{tool="eraser";syncTools();});
   undo.addEventListener("click",()=>{commands.pop();resize();syncTools();storeInk();});
   clear.addEventListener("click",()=>{commands.push({tool:"clear"});resize();syncTools();storeInk();});
-  try {
-    const savedSensitivity=window.studyBridge.local.getItem(sensitivityKey);
-    if (savedSensitivity!==null && Number.isFinite(Number(savedSensitivity))) sensitivity=Math.max(0,Math.min(100,Number(savedSensitivity)));
-  } catch { /* Use the default when preferences cannot be stored. */ }
-  sensitivityInput.value=String(sensitivity);
-  $("pen-sensitivity-value").value=sensitivity+"%";
-  sensitivityInput.addEventListener("input",()=>{
-    sensitivity=Number(sensitivityInput.value);
-    $("pen-sensitivity-value").value=sensitivity+"%";
-    try { window.studyBridge.local.setItem(sensitivityKey,String(sensitivity)); } catch { /* Keep the setting for this page. */ }
-  });
-
-  try {
-    penOnly.checked=window.studyBridge.local.getItem(preferenceKey)==="true";
-  } catch { /* Default to all input. */ }
-  penOnly.addEventListener("change",()=>{
-      try { window.studyBridge.local.setItem(preferenceKey,String(penOnly.checked)); } catch { /* Use the setting for this page. */ }
-  });
   ForgeScratchpad = globalThis.ForgeScratchpad = Object.freeze({start,acceptsPointer,exitFullscreen,renderSaved});
 })();
 
@@ -14131,6 +14111,11 @@ export default function mountMath(runtime) {
   let pendingRemoval = null;
   let previewSelection = null;
   let previewDate = null;
+
+  if (runtime.recordsOnly) {
+    recordTools = { exportRecords, importRecords, resetRecords };
+    return;
+  }
 
   function parseJSON(text) {
     try { return JSON.parse(text); } catch { return null; }
@@ -15297,70 +15282,45 @@ ${text}`;
   document.addEventListener("forge-themechange",()=>{
     for (const panel of $("recent-attempts").querySelectorAll(".saved-ink[open]")) showSavedInk(panel);
   });
-  $("reset-records").addEventListener("click",()=>$("reset-dialog").showModal());
-  $("cancel-reset").addEventListener("click",()=>$("reset-dialog").close());
-  $("confirm-reset").addEventListener("click",async()=>{
-    try {
-      const today = learning.day();
-      const todayPlan = learning.read("daily:" + today);
-      const todayAttempts = listAttempts().filter(record => record.dailyDay === today);
-      await learning.clearLearning();
-      memory.clear();
-      if (todayPlan) { learning.write("daily:" + today, todayPlan); learning.write("daily-days", [today]); }
-      for (const record of todayAttempts) saveAttempt(record);
-      draft=null;
-      activeSince=null;
-      $("reset-dialog").close();
-      $("backup-status").textContent="학습 기록을 초기화했습니다.";
-      renderHistory();
-      renderStart();
-    } catch {
-      $("reset-dialog").close();
-      $("backup-status").textContent="기록을 초기화하지 못했습니다. 브라우저 저장 공간을 확인해 주세요.";
-    }
-  });
-  $("export-records").addEventListener("click",async()=>{
+  async function resetRecords() {
+    const today = learning.day();
+    const todayPlan = learning.read("daily:" + today);
+    const todayAttempts = listAttempts().filter(record => record.dailyDay === today);
+    await learning.clearLearning();
+    memory.clear();
+    if (todayPlan) { learning.write("daily:" + today, todayPlan); learning.write("daily-days", [today]); }
+    for (const record of todayAttempts) saveAttempt(record);
+    draft=null;
+    activeSince=null;
+  }
+
+  async function exportRecords() {
     const daily=learning.read("daily-days",[]).map(date=>({date,plan:learning.read("daily:"+date)})).filter(item=>item.plan);
-    const data={version:1,ignoredReviews:learning.read("ignored-reviews",[]),attempts:listAttempts(),parked:learning.read("parked",[]),draft:draft ? captureDraft() : null,daily,ink:await learning.allInk()};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:"application/json"}));
-    const link=document.createElement("a");
-    link.href=url;
-    link.download=`문제공방-기록-${learning.day()}.json`;
-    link.click();
-    setTimeout(()=>URL.revokeObjectURL(url),30000);
-    $("backup-status").textContent="학습 기록 백업을 내려받았습니다.";
-  });
-  $("import-records").addEventListener("click",()=>$("backup-file").click());
-  $("backup-file").addEventListener("change",async event=>{
-    const file=event.target.files[0];
-    event.target.value="";
-    if (!file) return;
-    try {
-      if (file.size>40*1024*1024) throw new RangeError("Large backup");
-      const data=ForgeBackup.readBackup(await file.text());
-      listAttempts();
-      const previousIds=new Set(memory.keys());
-      const imported=data.attempts.filter(record=>!previousIds.has(record.id));
-      for (const record of imported) saveAttempt(record);
-      const known=new Set((await learning.allInk()).map(item=>item.id));
-      await Promise.all(data.ink.filter(item=>!known.has(item.id)).map(learning.putInk));
-      const parked=new Map(learning.read("parked",[]).map(item=>[item.id,item]));
-      const candidates=data.draft && !data.draft.record ? [...data.parked,data.draft] : data.parked;
-      for (const item of candidates) if (!memory.has(item.id) && !parked.has(item.id)) parked.set(item.id,item);
-      learning.write("parked",[...parked.values()]);
-      learning.write("ignored-reviews",[...new Set([...learning.read("ignored-reviews",[]),...(data.ignoredReviews ?? [])])]);
-      const days=new Set(learning.read("daily-days",[]));
-      for (const {date,plan} of data.daily) {
-        if (!learning.read("daily:"+date)) learning.write("daily:"+date,plan);
-        days.add(date);
-      }
-      learning.write("daily-days",[...days]);
-      $("backup-status").textContent=`새 풀이 기록 ${imported.length}개를 가져왔습니다.`;
-      renderHistory();
-    } catch {
-      $("backup-status").textContent="백업을 읽을 수 없습니다. 문제공방에서 내보낸 JSON 파일을 선택해 주세요.";
+    return {version:1,ignoredReviews:learning.read("ignored-reviews",[]),attempts:listAttempts(),parked:learning.read("parked",[]),draft:draft,daily,ink:await learning.allInk()};
+  }
+
+  async function importRecords(content) {
+    const data=ForgeBackup.readBackup(content);
+    listAttempts();
+    const previousIds=new Set(memory.keys());
+    const imported=data.attempts.filter(record=>!previousIds.has(record.id));
+    for (const record of imported) saveAttempt(record);
+    const known=new Set((await learning.allInk()).map(item=>item.id));
+    await Promise.all(data.ink.filter(item=>!known.has(item.id)).map(learning.putInk));
+    const parked=new Map(learning.read("parked",[]).map(item=>[item.id,item]));
+    const candidates=data.draft && !data.draft.record ? [...data.parked,data.draft] : data.parked;
+    for (const item of candidates) if (!memory.has(item.id) && !parked.has(item.id)) parked.set(item.id,item);
+    learning.write("parked",[...parked.values()]);
+    learning.write("ignored-reviews",[...new Set([...learning.read("ignored-reviews",[]),...(data.ignoredReviews ?? [])])]);
+    const days=new Set(learning.read("daily-days",[]));
+    for (const {date,plan} of data.daily) {
+      if (!learning.read("daily:"+date)) learning.write("daily:"+date,plan);
+      days.add(date);
     }
-  });
+    learning.write("daily-days",[...days]);
+    if (!storageAvailable || !learning.persistent()) throw new Error("기록을 저장하지 못했습니다.");
+    return imported.length;
+  }
   addEventListener("hashchange", updateRoute);
   addEventListener("storage", event => {
     if (event.key === null) memory.clear();
@@ -15376,5 +15336,6 @@ ${text}`;
   if (draft) renderProblem();
   updateRoute(false);
 })();
+  if (runtime.recordsOnly) return recordTools;
   runtime.ready();
 }
